@@ -52,6 +52,11 @@ function Game.new(data)
     return game
 end
 
+function Game:roll()
+    local p=self.players[1]
+    p.dice:roll()
+end
+
 function Game:update(dt)
     self.cam:update(dt)
 end
@@ -64,9 +69,6 @@ local gc_setCanvas,gc_setShader,gc_setBlendMode=gc.setCanvas,gc.setShader,gc.set
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle,gc_circle,gc_polygon=gc.rectangle,gc.circle,gc.polygon
-local gc_arc,gc_ellipse=gc.arc,gc.ellipse
-local gc_print,gc_printf=gc.print,gc.printf
-local gc_stencil,gc_setStencilTest=gc.stencil,gc.setStencilTest
 local gc_setAlpha=GC.setAlpha
 
 function Game:draw()
@@ -74,24 +76,34 @@ function Game:draw()
 
     -- Map
     local map=self.map
-    gc_setLineWidth(0.2)
-    gc_setColor(COLOR.L)
     for i=1,#map do
+        gc_setColor(COLOR.L)
         local cell=map[i]
         gc_rectangle('fill',cell.x-.45,cell.y-.45,.9,.9)
         if cell.next then
+            gc_setLineWidth(0.2)
             gc_line(cell.x,cell.y,cell.next.x,cell.next.y)
         end
+        gc_setColor(COLOR.D)
+        gc_setLineWidth(0.026)
+        gc_rectangle('line',cell.x-.45,cell.y-.45,.9,.9)
     end
 
     -- Players
     gc_setLineWidth(0.0626)
     for i=1,#self.players do
-        local player=self.players[i]
-        local cell=map[player.location]
-        gc_setColor(player.color)
+        local p=self.players[i]
+        local cell=map[p.location]
+        gc_setColor(p.color)
         gc_setAlpha(.5)
-        gc_circle('line',cell.x+player.biasX,cell.y+player.biasY,.26)
+        gc_circle('line',cell.x+p.biasX,cell.y+p.biasY,.26)
+
+        if p.dice.enable then
+            gc_push('transform')
+            gc_translate(cell.x,cell.y)
+            p.dice:draw()
+            gc_pop()
+        end
     end
 end
 

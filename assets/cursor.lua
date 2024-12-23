@@ -1,7 +1,6 @@
 local gc=love.graphics
 local gc_translate,gc_scale,gc_rotate,gc_shear=gc.translate,gc.scale,gc.rotate,gc.shear
 local gc_setColor,gc_setLineWidth,gc_setLineJoin=gc.setColor,gc.setLineWidth,gc.setLineJoin
-local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle,gc_circle,gc_polygon=gc.rectangle,gc.circle,gc.polygon
 
 local lib={}
@@ -15,8 +14,9 @@ local norm_poly={
     30*math.cos(norm_wid),30*math.sin(norm_wid),
 }
 function lib.pointer.draw(x,y)
-    gc_setColor(COLOR.L)
     gc_translate(x,y)
+
+    gc_setColor(COLOR.L)
     gc_rotate(.6)
     gc_polygon('fill',norm_poly)
 
@@ -52,8 +52,9 @@ for i=12,36,12 do
     end
 end
 function lib.move.draw(x,y)
-    gc_setColor(COLOR.L)
     gc_translate(x,y)
+
+    gc_setColor(COLOR.L)
     gc_rectangle('fill',-3,-10,6,20)
     gc_rectangle('fill',-10,-3,20,6)
     gc_polygon('fill',-7,-10,0,-17,7,-10)

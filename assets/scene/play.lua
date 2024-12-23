@@ -48,7 +48,7 @@ end
 function scene.keyDown(key,isRep)
     if isRep then return true end
     if key=='return' then
-        -- TODO
+        game:roll()
     elseif key=='escape' then
         SCN.back()
     end
@@ -65,7 +65,7 @@ function scene.draw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp',pos={1,1},x=-120,y=-180,w=160,h=80,fontSize=40,text=LANG'game_roll',code=WIDGET.c_pressKey'return'},
-    WIDGET.new{type='button_simp',pos={1,1},x=-120,y=-80,w=160,h=80,fontSize=40,text=LANG'game_back',code=WIDGET.c_backScn()},
+    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-120,w=120,h=60,text=LANG'game_roll',code=function() game:roll() end},
+    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-50,w=120,h=60,text=LANG'game_back',code=WIDGET.c_backScn()},
 }
 return scene
