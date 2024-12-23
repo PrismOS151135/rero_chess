@@ -5,5 +5,6 @@ local L={
     menu_quit="退出",
 
     game_back="返回",
+    game_roll="掷骰",
 }
 return L

@@ -67,18 +67,31 @@ local gc_rectangle,gc_circle,gc_polygon=gc.rectangle,gc.circle,gc.polygon
 local gc_arc,gc_ellipse=gc.arc,gc.ellipse
 local gc_print,gc_printf=gc.print,gc.printf
 local gc_stencil,gc_setStencilTest=gc.stencil,gc.setStencilTest
+local gc_setAlpha=GC.setAlpha
 
 function Game:draw()
     self.cam:apply()
+
+    -- Map
     local map=self.map
-    gc_setColor(COLOR.L)
     gc_setLineWidth(0.2)
+    gc_setColor(COLOR.L)
     for i=1,#map do
         local cell=map[i]
         gc_rectangle('fill',cell.x-.45,cell.y-.45,.9,.9)
         if cell.next then
             gc_line(cell.x,cell.y,cell.next.x,cell.next.y)
         end
+    end
+
+    -- Players
+    gc_setLineWidth(0.0626)
+    for i=1,#self.players do
+        local player=self.players[i]
+        local cell=map[player.location]
+        gc_setColor(player.color)
+        gc_setAlpha(.5)
+        gc_circle('line',cell.x+player.biasX,cell.y+player.biasY,.26)
     end
 end
 
