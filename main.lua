@@ -19,34 +19,6 @@ SCR.setSize(1000,600)
 
 STRING.install()
 
-local cursorWid=.8
-local cursorPolygon={
-    0*math.cos(0),0*math.sin(0),
-    30*math.cos(0),0*math.sin(0),
-    20*math.cos(cursorWid/2.1),20*math.sin(cursorWid/2.1),
-    30*math.cos(cursorWid),30*math.sin(cursorWid),
-}
-function ZENITHA.globalEvent.drawCursor(x,y)
-    GC.setColor(COLOR.L)
-    GC.translate(x,y)
-    GC.rotate(.6)
-    GC.polygon('fill',cursorPolygon)
-    GC.setColor(COLOR.D)
-    GC.setLineWidth(3)
-    GC.setLineJoin('bevel')
-    GC.polygon('line',cursorPolygon)
-end
-function ZENITHA.globalEvent.clickFX(x,y)
-    for i=1,3 do
-        local a=-i-math.random()+.26
-        local sr=MATH.rand(6,12)
-        local er=MATH.rand(15,22)
-        local sx,sy=x+sr*math.cos(a),y+sr*math.sin(a)
-        local ex,ey=x+er*math.cos(a),y+er*math.sin(a)
-        SYSFX.beam(0.16,sx,sy,ex,ey,4,0,0,0)
-    end
-end
-
 local button_simp=WIDGET.newClass('button_simp','button')
 function button_simp:draw()
     GC.push('transform')
@@ -141,6 +113,7 @@ LANG.setDefault('zh')
 Texts=LANG.set('zh')
 
 CHAR=require'assets.char'
+CURSOR=require'assets.cursor'
 
 for _,v in next,love.filesystem.getDirectoryItems('assets/background') do
     if FILE.isSafe('assets/background/'..v) and v:sub(-3)=='lua' then

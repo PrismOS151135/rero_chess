@@ -24,6 +24,15 @@ function scene.load()
 end
 
 function scene.mouseDown(x,y,k)
+    if k==1 then
+        CURSOR.set('move')
+    end
+end
+
+function scene.mouseUp(x,y,k)
+    if k==1 then
+        CURSOR.set('pointer')
+    end
 end
 
 function scene.mouseMove(x,y,dx,dy)
@@ -40,6 +49,8 @@ function scene.keyDown(key,isRep)
     if isRep then return true end
     if key=='return' then
         -- TODO
+    elseif key=='escape' then
+        SCN.back()
     end
     return true
 end

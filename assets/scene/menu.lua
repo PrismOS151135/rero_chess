@@ -2,6 +2,7 @@
 local scene={}
 
 function scene.load()
+    CURSOR.set('pointer')
     BG.set('title')
 end
 
