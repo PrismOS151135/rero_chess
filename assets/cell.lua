@@ -15,6 +15,7 @@ Cell.__index=Cell
 ---@field y? number
 ---@field dx? number
 ---@field dy? number
+---@field mapCenter? boolean
 
 ---@param data ReroChess.CellData
 function Cell.new(data,x,y)

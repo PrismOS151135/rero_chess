@@ -14,7 +14,7 @@ function scene.load()
             {},{dx=1},{dx=1},{dx=1},{dx=1},
             {dy=1},
             {dx=-1,dy=.626},
-            {dx=-1,dy=.626},
+            {dx=-1,dy=.626,mapCenter=true},
             {dx=-1,dy=.626},
             {dx=-1,dy=.626},
             {dy=1},
@@ -49,6 +49,6 @@ function scene.draw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp',pos={1,1},x=-120,y=-80,w=160,h=80,sound_press='back',fontSize=60,text=CHAR.icon.back,code=WIDGET.c_backScn()},
+    WIDGET.new{type='button_simp',pos={1,1},x=-120,y=-80,w=160,h=80,fontSize=40,text=LANG'game_back',code=WIDGET.c_backScn()},
 }
 return scene

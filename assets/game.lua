@@ -14,6 +14,7 @@ Game.__index=Game
 
 ---@param data ReroChess.MapData
 function Game.new(data)
+    local initX,initY
     local game=setmetatable({
         players=(function()
             local l={}
@@ -29,6 +30,10 @@ function Game.new(data)
                 local d=data.mapData[i]
                 if d.x then x=d.x elseif d.dx then x=x+d.dx end
                 if d.y then y=d.y elseif d.dy then y=y+d.dy end
+                if d.mapCenter then
+                    assert(not initX,"Multiple mapCenter")
+                    initX,initY=-x,-y
+                end
                 l[i]=Cell.new(d,x,y)
             end
             for i=1,#data.mapData-1 do
@@ -39,6 +44,10 @@ function Game.new(data)
         end)(),
         cam=GC.newCamera(),
     },Game)
+    if initX then
+        game.cam:move(initX,initY)
+        game.cam:update(1)
+    end
     game.cam:scale(100)
     return game
 end
@@ -58,7 +67,6 @@ local gc_rectangle,gc_circle,gc_polygon=gc.rectangle,gc.circle,gc.polygon
 local gc_arc,gc_ellipse=gc.arc,gc.ellipse
 local gc_print,gc_printf=gc.print,gc.printf
 local gc_stencil,gc_setStencilTest=gc.stencil,gc.setStencilTest
-local gc_mRect=GC.mRect
 
 function Game:draw()
     self.cam:apply()
@@ -67,7 +75,7 @@ function Game:draw()
     gc_setLineWidth(0.2)
     for i=1,#map do
         local cell=map[i]
-        gc_mRect('fill',cell.x,cell.y,.9,.9)
+        gc_rectangle('fill',cell.x-.45,cell.y-.45,.9,.9)
         if cell.next then
             gc_line(cell.x,cell.y,cell.next.x,cell.next.y)
         end
