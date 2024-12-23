@@ -23,7 +23,7 @@ local cursorWid=.8
 local cursorPolygon={
     0*math.cos(0),0*math.sin(0),
     30*math.cos(0),0*math.sin(0),
-    20*math.cos(cursorWid/2),20*math.sin(cursorWid/2),
+    20*math.cos(cursorWid/2.1),20*math.sin(cursorWid/2.1),
     30*math.cos(cursorWid),30*math.sin(cursorWid),
 }
 function ZENITHA.globalEvent.drawCursor(x,y)
