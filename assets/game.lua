@@ -5,6 +5,8 @@ local Cell=require("assets/cell")
 ---@field players ReroChess.Player[]
 ---@field map ReroChess.Cell[]
 ---@field cam Zenitha.Camera
+---
+---@field roundIndex integer
 local Game={}
 Game.__index=Game
 
@@ -43,7 +45,9 @@ function Game.new(data)
             return l
         end)(),
         cam=GC.newCamera(),
+        roundIndex=1,
     },Game)
+    for _,p in next,game.players do p.game=game end
     if initX then
         game.cam:move(initX,initY)
         game.cam:update(1)
@@ -53,8 +57,18 @@ function Game.new(data)
 end
 
 function Game:roll()
-    local p=self.players[1]
-    p.dice:roll()
+    local p=self.players[self.roundIndex]
+    if not p.dice.animState then
+        TASK.new(function()
+            p:roll()
+            repeat coroutine.yield() until p.dice.animState=='bounce'
+            TASK.yieldT(0.26)
+            p:move(p.dice.value)
+            repeat coroutine.yield() until not p.moving
+            self.roundIndex=self.roundIndex%#self.players+1
+            MSG('info',"Player "..self.roundIndex.." turn")
+        end)
+    end
 end
 
 function Game:update(dt)
@@ -62,14 +76,9 @@ function Game:update(dt)
 end
 
 local gc=love.graphics
-local gc_push,gc_pop,gc_clear=gc.push,gc.pop,gc.clear
-local gc_origin,gc_replaceTransform=gc.origin,gc.replaceTransform
-local gc_translate,gc_scale,gc_rotate,gc_shear=gc.translate,gc.scale,gc.rotate,gc.shear
-local gc_setCanvas,gc_setShader,gc_setBlendMode=gc.setCanvas,gc.setShader,gc.setBlendMode
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_draw,gc_line=gc.draw,gc.line
-local gc_rectangle,gc_circle,gc_polygon=gc.rectangle,gc.circle,gc.polygon
-local gc_setAlpha=GC.setAlpha
+local gc_rectangle=gc.rectangle
 
 function Game:draw()
     self.cam:apply()
@@ -90,20 +99,8 @@ function Game:draw()
     end
 
     -- Players
-    gc_setLineWidth(0.0626)
     for i=1,#self.players do
-        local p=self.players[i]
-        local cell=map[p.location]
-        gc_setColor(p.color)
-        gc_setAlpha(.5)
-        gc_circle('line',cell.x+p.biasX,cell.y+p.biasY,.26)
-
-        if p.dice.enable then
-            gc_push('transform')
-            gc_translate(cell.x,cell.y)
-            p.dice:draw()
-            gc_pop()
-        end
+        self.players[i]:draw()
     end
 end
 

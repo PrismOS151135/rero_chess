@@ -11,14 +11,12 @@ function scene.load()
             {name='Bob'},
         },
         mapData={
-            {},{dx=1},{dx=1},{dx=1},{dx=1},
-            {dy=1},
-            {dx=-1,dy=.626},
-            {dx=-1,dy=.626,mapCenter=true},
-            {dx=-1,dy=.626},
-            {dx=-1,dy=.626},
-            {dy=1},
-            {dx=1},{dx=1},{dx=1},{dx=1},
+            {},{dx=1,mapCenter=true},{dx=1},
+            -- {},{dx=1},{dx=1},{dx=1},{dx=1},
+            -- {dy=1},{dy=1},
+            -- {dx=-1},{dx=-1,mapCenter=true},{dx=-1},{dx=-1},
+            -- {dy=1},{dy=1},
+            -- {dx=1},{dx=1},{dx=1},{dx=1},
         },
     }
 end
