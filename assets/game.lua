@@ -66,7 +66,14 @@ function Game:roll()
             p:move(p.dice.value)
             repeat coroutine.yield() until not p.moving
             self.roundIndex=self.roundIndex%#self.players+1
-            MSG('info',"Player "..self.roundIndex.." turn")
+            TEXT:add{
+                text="Player "..self.roundIndex.." turn",
+                color=self.players[self.roundIndex].color,
+                duration=1.6,
+                x=500,y=300,k=1.5,
+                fontSize=40,
+                style='zoomout',
+            }
         end)
     end
 end
