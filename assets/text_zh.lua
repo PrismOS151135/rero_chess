@@ -1,7 +1,9 @@
 ---@class ReroChess.I18N
 local L={
     menu_title="略略自走棋",
-    menu_play="开始!",
+    menu_info="26F工作室 & 略nd  联合出品",
+    -- menu_play="开始!",
+    menu_play="演示",
     menu_quit="退出",
 
     game_back="返回",
