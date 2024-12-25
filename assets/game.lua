@@ -5,6 +5,7 @@ local Cell=require("assets/cell")
 ---@field players ReroChess.Player[]
 ---@field map ReroChess.Cell[]
 ---@field cam Zenitha.Camera
+---@field text Zenitha.Text
 ---
 ---@field roundIndex integer
 local Game={}
@@ -85,6 +86,7 @@ function Game.new(data)
             return l
         end)(),
         cam=GC.newCamera(),
+        text=TEXT.new(),
         roundIndex=1,
     },Game)
     for _,p in next,game.players do p.game=game end
@@ -98,14 +100,21 @@ end
 
 function Game:roll()
     local p=self.players[self.roundIndex]
-    if p.dice.animState=='hide' then
+    if p.dice.animState=='hide' and not p.moving then
         TASK.new(function()
             p:roll()
             repeat coroutine.yield() until p.dice.animState=='bounce'
-            TASK.yieldT(0.26)
             p:move(p.dice.value)
             repeat coroutine.yield() until not p.moving
             self.roundIndex=self.roundIndex%#self.players+1
+            TEXT:add{
+                text="Player "..self.roundIndex.." turn",
+                r=1,g=1,b=1,a=.4,
+                duration=1.4,
+                x=500-4,y=300-4,k=1.5,
+                fontSize=40,
+                style='zoomout',
+            }
             TEXT:add{
                 text="Player "..self.roundIndex.." turn",
                 color=self.players[self.roundIndex].color,
@@ -115,6 +124,13 @@ function Game:roll()
                 style='zoomout',
             }
         end)
+    end
+end
+
+function Game:step()
+    local p=self.players[self.roundIndex]
+    if p.moving then
+        p.moveSignal=true
     end
 end
 
@@ -139,6 +155,7 @@ function Game:getNext(id,dir)
 end
 
 function Game:update(dt)
+    self.text:update(dt)
     self.cam:update(dt)
 end
 
@@ -186,6 +203,8 @@ function Game:draw()
     for i=1,#self.players do
         self.players[i]:draw()
     end
+
+    self.text:draw()
 end
 
 return Game

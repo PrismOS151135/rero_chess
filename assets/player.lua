@@ -11,6 +11,7 @@
 ---@field dice ReroChess.Dice
 ---
 ---@field moving boolean
+---@field moveSignal boolean
 ---@field tarLocation integer
 ---@field stepRemain integer
 ---
@@ -129,6 +130,10 @@ function Player:move(stepCount)
             local ex,ey=map[nextPos].x+MATH.rand(-.15,.15),map[nextPos].y+MATH.rand(-.15,.15)
             local animLock=true
 
+            -- Wait signal
+            repeat coroutine.yield() until self.moveSignal
+            self.moveSignal=false
+
             -- Move chess
             TWEEN.new(function(t)
                 self.x=MATH.lerp(sx,ex,t)
@@ -153,6 +158,14 @@ function Player:move(stepCount)
                     self.stepRemain=math.abs(cell.propData)
                     dir=cell.propData>0 and 'next' or 'prev'
                     nextPos,dir=game:getNext(pos,dir)
+                    game.text:add{
+                        text=cell.propData>0 and '+'..cell.propData or cell.propData,
+                        x=self.x+.4,y=self.y-0.5,k=0.008,
+                        duration=2,
+                        color='D',
+                        style='appear',
+                        fontSize=30,
+                    }
                 elseif cell.prop=='teleport' then
                     pos=cell.propData
                     self.location=pos
@@ -167,12 +180,12 @@ end
 
 local gc=love.graphics
 local gc_push,gc_pop=gc.push,gc.pop
-local gc_translate,gc_scale=gc.translate,gc.scale
+local gc_translate,gc_scale,gc_rotate=gc.translate,gc.scale,gc.rotate
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_rectangle,gc_circle=gc.rectangle,gc.circle
 local gc_setAlpha=GC.setAlpha
 local gc_mRect,gc_mDraw=GC.mRect,GC.mDraw
-local diceText=GC.newText(assert(FONT.get(60)))
+local text=GC.newText(assert(FONT.get(60)))
 function Player:draw()
     -- Chess
     gc_setColor(self.color)
@@ -191,6 +204,23 @@ function Player:draw()
         gc_mDraw(self._name,0,0,nil,.01)
     gc_pop()
 
+    -- Step remain
+    if self.moving then
+        gc_push('transform')
+        gc_translate(self.x+.4,self.y-.2)
+        -- gc_translate(0,-.1*math.abs(math.sin(love.timer.getTime()*8)))
+        gc_rotate(math.sin(love.timer.getTime()*8)*.1)
+        local size=.4
+        gc_setColor(1,1,1,.9)
+        gc_mRect('fill',0,0,size,size)
+        gc_setColor(COLOR.D)
+        gc_setLineWidth(0.026)
+        gc_mRect('line',0,0,size,size)
+        text:set(tostring(self.stepRemain))
+        gc_mDraw(text,0,0,nil,.005)
+        gc_pop()
+    end
+
     -- Dice
     if self.dice.animState~='hide' then
         local d=self.dice
@@ -203,9 +233,10 @@ function Player:draw()
         gc_setColor(1,1,1,.42*d.alpha)
         gc_rectangle('fill',-.5,-.5,1,1)
         gc_setColor(0,0,0,d.alpha)
+        gc_setLineWidth(0.042)
         gc_rectangle('line',-.5,-.5,1,1)
-        diceText:set(tostring(d.value))
-        gc_mDraw(diceText,0,0,nil,.01)
+        text:set(tostring(d.value))
+        gc_mDraw(text,0,0,nil,.01)
         gc_pop()
     end
 end

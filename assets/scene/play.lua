@@ -64,6 +64,8 @@ function scene.keyDown(key,isRep)
     if isRep then return true end
     if key=='return' then
         game:roll()
+    elseif key=='space' then
+        game:step()
     elseif key=='escape' then
         SCN.back()
     end
