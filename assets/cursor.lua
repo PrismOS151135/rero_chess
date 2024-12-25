@@ -69,10 +69,13 @@ end
 
 local cursor={}
 
-function cursor.set(mode)
-    assert(lib[mode],'Invalid cursor mode: '..mode)
-    ZENITHA.globalEvent.drawCursor=lib[mode].draw or lib.pointer.draw
-    ZENITHA.globalEvent.clickFX=lib[mode].clickFX or NULL
+local curMode=false
+function cursor.set(m)
+    if m==curMode then return end
+    assert(lib[m],'Invalid cursor mode: '..m)
+    curMode=m
+    ZENITHA.globalEvent.drawCursor=lib[m].draw or lib.pointer.draw
+    ZENITHA.globalEvent.clickFX=lib[m].clickFX or NULL
 end
 
 return cursor

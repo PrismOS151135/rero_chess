@@ -40,7 +40,9 @@ end
 
 function scene.mouseDown(x,y,k)
     if k==1 then
-        CURSOR.set('move')
+        game:step()
+    elseif k==2 then
+        game:roll()
     end
 end
 
@@ -52,6 +54,7 @@ end
 
 function scene.mouseMove(x,y,dx,dy)
     if love.mouse.isDown(1) then
+        CURSOR.set('move')
         game.cam:move(dx,dy)
     end
 end
