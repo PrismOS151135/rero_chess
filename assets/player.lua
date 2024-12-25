@@ -1,7 +1,8 @@
 ---@class ReroChess.Player
 ---@field game ReroChess.Game
+---@field _name love.Text
 ---
----@field index integer
+---@field id integer
 ---@field name string
 ---@field color Zenitha.Color
 ---
@@ -26,7 +27,7 @@ Player.__index=Player
 ---Dice state
 ---@field valueIndex integer
 ---@field value integer
----@field animState false | 'roll' | 'bounce' | 'fade'
+---@field animState 'hide' | 'roll' | 'bounce' | 'fade'
 ---
 ---Animation properties
 ---@field x number
@@ -58,7 +59,7 @@ local defaultColor={
 ---@param data ReroChess.PlayerData
 function Player.new(index,data)
     local player=setmetatable({
-        index=index,
+        id=index,
         name=data.name,
 
         color=data.customColor or defaultColor[index],
@@ -67,12 +68,13 @@ function Player.new(index,data)
         dice={
             points=data.dicePoints or {1,2,3,4,5,6,7},
             weights=data.diceWeights or {1,1,1,1,1,1,.01},
-            animState=false,
+            animState='hide',
         },
 
-        x=(index-1)%2==0 and -.1 or .1,
-        y=(index-1)%4<=1 and -.1 or .1,
+        x=(index-1)%2==0 and -.2 or .2,
+        y=(index-1)%4<=1 and -.2 or .2,
     },Player)
+    player._name=GC.newText(FONT.get(20),player.name)
     assert(#player.dice.points==#player.dice.weights,"Dice points and weights mismatch")
     return player
 end
@@ -80,7 +82,7 @@ end
 local diceDisappearingCurve={1,1,.7,.4,0}
 function Player:roll()
     local d=self.dice
-    if not d.animState then
+    if d.animState=='hide' then
         d.animState='roll'
         d.alpha=1
         d.size=1
@@ -106,7 +108,7 @@ function Player:roll()
                 TWEEN.new(function(t)
                     d.alpha=MATH.lLerp(diceDisappearingCurve,t)
                 end):setDuration(1):setOnFinish(function()
-                    d.animState=false
+                    d.animState='hide'
                 end):run()
             end):run()
         end):run()
@@ -116,28 +118,48 @@ end
 function Player:move(stepCount)
     self.moving=true
     self.stepRemain=stepCount
-    local map=self.game.map
+    local game=self.game
+    local map=game.map
     local pos=self.location
-    local nextPos,dir=self.game:getNext(pos,self.moveDir)
+    local nextPos,dir=game:getNext(pos,self.moveDir)
 
     TASK.new(function()
         while self.stepRemain>0 do
-            local x1,y1=self.x,self.y
-            local x2,y2=map[nextPos].x+MATH.rand(-.15,.15),map[nextPos].y+MATH.rand(-.15,.15)
+            local sx,sy=self.x,self.y
+            local ex,ey=map[nextPos].x+MATH.rand(-.15,.15),map[nextPos].y+MATH.rand(-.15,.15)
             local animLock=true
+
+            -- Move chess
             TWEEN.new(function(t)
-                self.x=MATH.lerp(x1,x2,t)
-                self.y=MATH.lerp(y1,y2,t)+t*(t-1)*1.5
+                self.x=MATH.lerp(sx,ex,t)
+                self.y=MATH.lerp(sy,ey,t)+t*(t-1)*1.5
                 if t==1 then
                     pos=nextPos
                     self.location=pos
-                    nextPos,dir=self.game:getNext(pos,dir)
+                    nextPos,dir=game:getNext(pos,dir)
                 end
             end):setEase('Linear'):setDuration(0.26):setOnFinish(function()
                 animLock=false
             end):run()
+
+            -- Wait until Animation end
             repeat coroutine.yield() until not animLock
+
+            -- Check Cell Property
             self.stepRemain=self.stepRemain-1
+            if self.stepRemain==0 then
+                local cell=map[pos]
+                if cell.prop=='move' then
+                    self.stepRemain=math.abs(cell.propData)
+                    dir=cell.propData>0 and 'next' or 'prev'
+                    nextPos,dir=game:getNext(pos,dir)
+                elseif cell.prop=='teleport' then
+                    pos=cell.propData
+                    self.location=pos
+                    self.x,self.y=map[pos].x,map[pos].y
+                    nextPos,dir=game:getNext(pos,self.moveDir)
+                end
+            end
         end
         self.moving=false
     end)
@@ -149,19 +171,33 @@ local gc_translate,gc_scale=gc.translate,gc.scale
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_rectangle,gc_circle=gc.rectangle,gc.circle
 local gc_setAlpha=GC.setAlpha
-local gc_mDraw=GC.mDraw
+local gc_mRect,gc_mDraw=GC.mRect,GC.mDraw
 local diceText=GC.newText(assert(FONT.get(60)))
 function Player:draw()
+    -- Chess
     gc_setColor(self.color)
     gc_setAlpha(.5)
     gc_setLineWidth(0.0626)
     gc_circle('line',self.x,self.y,.26)
 
-    if self.dice.animState then
+    -- Name tag
+    gc_push('transform')
+        gc_translate(self.x,self.y-.5+.05*math.sin(love.timer.getTime()+self.id))
+        gc_setColor(.3,.3,.3,.5)
+        gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
+        gc_setColor(self.color)
+        gc_mDraw(self._name,0,0,nil,.01)
+        gc_setColor(1,1,1,.62)
+        gc_mDraw(self._name,0,0,nil,.01)
+    gc_pop()
+
+    -- Dice
+    if self.dice.animState~='hide' then
         local d=self.dice
         gc_push('transform')
         gc_translate(d.x,d.y)
         gc_scale(d.size*.626)
+        gc_setColor(self.color)
         gc_setAlpha(d.alpha)
         gc_rectangle('fill',-.5,-.5,1,1)
         gc_setColor(1,1,1,.42*d.alpha)

@@ -1,4 +1,9 @@
----@alias ReroChess.CellProp 'invis' | 'move' | 'teleport' | '' | string
+---@alias ReroChess.CellProp
+---| 'invis'
+---| 'move'
+---| 'teleport'
+---| 'text'
+---| string
 
 ---@class ReroChess.Cell
 ---@field id integer

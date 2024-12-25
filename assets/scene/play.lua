@@ -7,21 +7,22 @@ local scene={}
 function scene.load()
     game=require'assets.game'.new{
         playerData={
-            {name='Alice'},
-            {name='Bob'},
+            {name='略'},
+            {name='略略'},
+            {name='略略略'},
         },
         mapData={
             {label='start1'},
-            {dx=1},
-            {dx=1},
-            {dx=1},
             {dx=1,prop='move',propData=1},
-            {dx=1,prop='teleport',propData='start2'},
+            {dx=1,prop='move',propData=2},
             {dx=1},
+            {dx=1},
+            {dx=1,prop='move',propData=-3},
+            {dx=1,prop='teleport',propData='start2'},
 
             {x=3,y=1.5,prop='invis',mapCenter=true},
 
-            {x=0,y=3,label='start2'},
+            {x=0,y=3,label='start2',prop='text',propData='!!'},
             {dx=1},
             {dx=1},
             {dx=1},

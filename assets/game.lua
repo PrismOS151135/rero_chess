@@ -62,16 +62,16 @@ function Game.new(data)
                 if type(d.next)=='string' then
                     table.insert(l[id].next,l[d.next].id)
                 elseif type(d.next)=='table' then
-                    for j=1,#d.next do
-                        table.insert(l[j].next,l[d.next[j]].id)
+                    for _,lbl in next,d.next do
+                        table.insert(l[id].next,l[lbl].id)
                     end
                 end
             end
 
             -- Auto next
-            for i=1,#l-1 do
-                if #l[i].next==0 and MATH.mDist2(0,l[i].x,l[i].y,l[i+1].x,l[i+1].y)<=1 then
-                    table.insert(l[i].next,l[i+1].id)
+            for id=1,#l-1 do
+                if #l[id].next==0 and MATH.mDist2(0,l[id].x,l[id].y,l[id+1].x,l[id+1].y)<=1 then
+                    table.insert(l[id].next,l[id+1].id)
                 end
             end
 
@@ -98,7 +98,7 @@ end
 
 function Game:roll()
     local p=self.players[self.roundIndex]
-    if not p.dice.animState then
+    if p.dice.animState=='hide' then
         TASK.new(function()
             p:roll()
             repeat coroutine.yield() until p.dice.animState=='bounce'
@@ -146,6 +146,8 @@ local gc=love.graphics
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle=gc.rectangle
+local gc_mDraw=GC.mDraw
+local tileText=GC.newText(assert(FONT.get(40)))
 
 function Game:draw()
     self.cam:apply()
@@ -167,6 +169,16 @@ function Game:draw()
             gc_setColor(COLOR.D)
             gc_setLineWidth(0.026)
             gc_rectangle('line',cell.x-.45,cell.y-.45,.9,.9)
+            if cell.prop=='move' then
+                tileText:set(cell.propData>0 and '+'..cell.propData or cell.propData)
+                gc_mDraw(tileText,cell.x,cell.y,nil,.01)
+            elseif cell.prop=='teleport' then
+                tileText:set('??')
+                gc_mDraw(tileText,cell.x,cell.y,nil,.01)
+            elseif cell.prop=='text' then
+                tileText:set(cell.propData)
+                gc_mDraw(tileText,cell.x,cell.y,nil,.01)
+            end
         end
     end
 
