@@ -14,6 +14,20 @@ Game.__index=Game
 ---@field playerData ReroChess.PlayerData[]
 ---@field mapData ReroChess.CellData[]
 
+---@class ReroChess.CellData
+---@field dx? number
+---@field dy? number
+---@field x? number
+---@field y? number
+---
+---@field next? string | string[]
+---
+---@field label? string
+---@field prop? ReroChess.CellProp
+---@field propData? any
+---
+---@field mapCenter? boolean
+
 ---@param data ReroChess.MapData
 function Game.new(data)
     local initX,initY
@@ -26,7 +40,10 @@ function Game.new(data)
             return l
         end)(),
         map=(function()
+            ---@type ReroChess.Cell[]
             local l={}
+
+            -- Initialize
             local x,y=0,0
             for i=1,#data.mapData do
                 local d=data.mapData[i]
@@ -36,12 +53,35 @@ function Game.new(data)
                     assert(not initX,"Multiple mapCenter")
                     initX,initY=-x,-y
                 end
-                l[i]=Cell.new(d,x,y)
+                l[i]=Cell.new(d,x,y,i)
+                if d.label then l[d.label]=l[i] end
             end
-            for i=1,#data.mapData-1 do
-                l[i].next=l[i+1]
-                l[i+1].prev=l[i]
+
+            -- Manual next
+            for id,d in next,data.mapData do
+                if type(d.next)=='string' then
+                    table.insert(l[id].next,l[d.next].id)
+                elseif type(d.next)=='table' then
+                    for j=1,#d.next do
+                        table.insert(l[j].next,l[d.next[j]].id)
+                    end
+                end
             end
+
+            -- Auto next
+            for i=1,#l-1 do
+                if #l[i].next==0 and MATH.mDist2(0,l[i].x,l[i].y,l[i+1].x,l[i+1].y)<=1 then
+                    table.insert(l[i].next,l[i+1].id)
+                end
+            end
+
+            -- Auto prev
+            for _,c in next,l do
+                for _,n in next,c.next do
+                    table.insert(l[n].prev,c.id)
+                end
+            end
+
             return l
         end)(),
         cam=GC.newCamera(),
@@ -78,6 +118,26 @@ function Game:roll()
     end
 end
 
+---@param id integer Cell id
+---@param dir 'next' | 'prev' | false
+---@return integer, 'next' | 'prev' | false
+function Game:getNext(id,dir)
+    -- No direction
+    if not dir then return id,dir end
+
+    -- Reverse direction if no next cell
+    local cell=self.map[id]
+    if #cell[dir]==0 then dir=dir=='next' and 'prev' or 'next' end
+
+    -- No next cell
+    if not cell[dir] then return id,false end
+
+    -- Get next cell id
+    local list=cell[dir]
+    if #list==0 then return id,dir end
+    return list[1],dir
+end
+
 function Game:update(dt)
     self.cam:update(dt)
 end
@@ -93,16 +153,21 @@ function Game:draw()
     -- Map
     local map=self.map
     for i=1,#map do
-        gc_setColor(COLOR.L)
         local cell=map[i]
-        gc_rectangle('fill',cell.x-.45,cell.y-.45,.9,.9)
-        if cell.next then
-            gc_setLineWidth(0.2)
-            gc_line(cell.x,cell.y,cell.next.x,cell.next.y)
+        if cell.prop~='invis' then
+            gc_setColor(COLOR.L)
+            gc_rectangle('fill',cell.x-.45,cell.y-.45,.9,.9)
+            if #cell.next>0 then
+                gc_setLineWidth(0.2)
+                for n=1,#cell.next do
+                    local next=map[cell.next[n]]
+                    gc_line(cell.x,cell.y,next.x,next.y)
+                end
+            end
+            gc_setColor(COLOR.D)
+            gc_setLineWidth(0.026)
+            gc_rectangle('line',cell.x-.45,cell.y-.45,.9,.9)
         end
-        gc_setColor(COLOR.D)
-        gc_setLineWidth(0.026)
-        gc_rectangle('line',cell.x-.45,cell.y-.45,.9,.9)
     end
 
     -- Players

@@ -6,6 +6,7 @@
 ---@field color Zenitha.Color
 ---
 ---@field location integer
+---@field moveDir 'next' | 'prev' | false
 ---@field dice ReroChess.Dice
 ---
 ---@field moving boolean
@@ -25,7 +26,7 @@ Player.__index=Player
 ---Dice state
 ---@field valueIndex integer
 ---@field value integer
----@field animState false|'roll'|'bounce'|'fade'
+---@field animState false | 'roll' | 'bounce' | 'fade'
 ---
 ---Animation properties
 ---@field x number
@@ -39,6 +40,7 @@ Player.__index=Player
 ---@class ReroChess.PlayerData
 ---@field name string
 ---@field startLocation? integer
+---@field startMoveDir? 'next' | 'prev'
 ---@field customColor? Zenitha.Color
 ---@field dicePoints? integer[]
 ---@field diceWeights? number[]
@@ -61,6 +63,7 @@ function Player.new(index,data)
 
         color=data.customColor or defaultColor[index],
         location=data.startLocation or 1,
+        moveDir=data.startMoveDir or 'next',
         dice={
             points=data.dicePoints or {1,2,3,4,5,6,7},
             weights=data.diceWeights or {1,1,1,1,1,1,.01},
@@ -115,8 +118,8 @@ function Player:move(stepCount)
     self.stepRemain=stepCount
     local map=self.game.map
     local pos=self.location
-    local dir=map[pos+1] and 1 or map[pos-1] and -1 or 0
-    local nextPos=self.location+dir
+    local nextPos,dir=self.game:getNext(pos,self.moveDir)
+
     TASK.new(function()
         while self.stepRemain>0 do
             local x1,y1=self.x,self.y
@@ -128,10 +131,7 @@ function Player:move(stepCount)
                 if t==1 then
                     pos=nextPos
                     self.location=pos
-                    if not map[nextPos+dir] then
-                        dir=-dir
-                    end
-                    nextPos=nextPos+dir
+                    nextPos,dir=self.game:getNext(pos,dir)
                 end
             end):setEase('Linear'):setDuration(0.26):setOnFinish(function()
                 animLock=false
