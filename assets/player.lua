@@ -158,13 +158,10 @@ function Player:move(stepCount)
                     self.stepRemain=math.abs(cell.propData)
                     dir=cell.propData>0 and 'next' or 'prev'
                     nextPos,dir=game:getNext(pos,dir)
-                    game.text:add{
-                        text=cell.propData>0 and '+'..cell.propData or cell.propData,
-                        x=self.x+.4,y=self.y-0.5,k=0.008,
+                    self:popText{
+                        text=("%+d"):format(cell.propData),
                         duration=2,
-                        color='D',
-                        style='appear',
-                        fontSize=30,
+                        x=0.4,
                     }
                 elseif cell.prop=='teleport' then
                     pos=cell.propData
@@ -176,6 +173,20 @@ function Player:move(stepCount)
         end
         self.moving=false
     end)
+end
+
+function Player:popText(d)
+    self.game.text:add{
+        text=d.text,
+        x=self.x+(d.x or 0),
+        y=self.y+(d.y or 0),
+        k=0.008*(d.k or 1),
+        fontSize=40,
+        duration=d.duration or 2,
+        color=d.color or 'D',
+        style='score',
+        styleArg=1,
+    }
 end
 
 local gc=love.graphics
