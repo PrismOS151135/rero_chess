@@ -175,6 +175,7 @@ function Player:move(stepCount)
     end)
 end
 
+---@param d {text:string, x?:number, y?:number, k?:number, duration?:number, color?:Zenitha.Color}
 function Player:popText(d)
     self.game.text:add{
         text=d.text,

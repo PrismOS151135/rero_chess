@@ -1,5 +1,4 @@
 local Player=require("assets/player")
-local Cell=require("assets/cell")
 
 ---@class ReroChess.Game
 ---@field players ReroChess.Player[]
@@ -15,19 +14,30 @@ Game.__index=Game
 ---@field playerData ReroChess.PlayerData[]
 ---@field mapData ReroChess.CellData[]
 
----@class ReroChess.CellData
----@field dx? number
----@field dy? number
----@field x? number
----@field y? number
----
----@field next? string | string[]
----
----@field label? string
+---@alias ReroChess.CellProp
+---| 'invis'
+---| 'move'
+---| 'teleport'
+---| 'text'
+---| string
+
+---@class ReroChess.Cell
+---@field id integer
+---@field x number
+---@field y number
+---@field next? number[]
+---@field prev? number[]
 ---@field prop? ReroChess.CellProp
 ---@field propData? any
----
----@field mapCenter? boolean
+
+---@class ReroChess.CellData: ReroChess.Cell
+---@field id? integer
+---@field x? number
+---@field y? number
+---@field dx? number
+---@field dy? number
+---@field label? string
+---@field mapCenter? any
 
 ---@param data ReroChess.MapData
 function Game.new(data)
@@ -48,13 +58,22 @@ function Game.new(data)
             local x,y=0,0
             for i=1,#data.mapData do
                 local d=data.mapData[i]
-                if d.x then x=d.x elseif d.dx then x=x+d.dx end
-                if d.y then y=d.y elseif d.dy then y=y+d.dy end
+                x=d.x or d.dx and x+d.dx or x
+                y=d.y or d.dy and y+d.dy or y
                 if d.mapCenter then
                     assert(not initX,"Multiple mapCenter")
                     initX,initY=-x,-y
                 end
-                l[i]=Cell.new(d,x,y,i)
+                ---@type ReroChess.Cell
+                l[i]={
+                    id=i,
+                    x=x,y=y,
+
+                    next={},
+                    prev={},
+                    prop=d.prop,
+                    propData=d.propData,
+                }
                 if d.label then l[d.label]=l[i] end
             end
 
