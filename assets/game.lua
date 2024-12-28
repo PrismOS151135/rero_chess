@@ -27,6 +27,7 @@ Game.__index=Game
 ---@field y number
 ---@field next? number[]
 ---@field prev? number[]
+---@field stop? true
 ---@field prop? ReroChess.CellProp
 ---@field propData? any
 
@@ -36,6 +37,7 @@ Game.__index=Game
 ---@field y? number
 ---@field dx? number
 ---@field dy? number
+---@field next? string | string[]
 ---@field label? string
 ---@field mapCenter? any
 
@@ -71,6 +73,7 @@ function Game.new(data)
 
                     next={},
                     prev={},
+                    stop=d.stop,
                     prop=d.prop,
                     propData=d.propData,
                 }
@@ -190,30 +193,37 @@ function Game:draw()
 
     -- Map
     local map=self.map
-    for i=1,#map do
-        local cell=map[i]
-        if cell.prop~='invis' then
-            gc_setColor(COLOR.L)
-            gc_rectangle('fill',cell.x-.45,cell.y-.45,.9,.9)
-            if #cell.next>0 then
-                gc_setLineWidth(0.2)
-                for n=1,#cell.next do
-                    local next=map[cell.next[n]]
-                    gc_line(cell.x,cell.y,next.x,next.y)
-                end
+    do -- Line beneath
+        gc_setLineWidth(0.2)
+        gc_setColor(COLOR.L)
+        for i=1,#map do
+            local cell=map[i]
+            for n=1,#cell.next do
+                local next=map[cell.next[n]]
+                gc_line(cell.x,cell.y,next.x,next.y)
             end
-            gc_setColor(COLOR.D)
-            gc_setLineWidth(0.026)
-            gc_rectangle('line',cell.x-.45,cell.y-.45,.9,.9)
-            if cell.prop=='move' then
-                tileText:set(cell.propData>0 and '+'..cell.propData or cell.propData)
-                gc_mDraw(tileText,cell.x,cell.y,nil,.01)
-            elseif cell.prop=='teleport' then
-                tileText:set('??')
-                gc_mDraw(tileText,cell.x,cell.y,nil,.01)
-            elseif cell.prop=='text' then
-                tileText:set(cell.propData)
-                gc_mDraw(tileText,cell.x,cell.y,nil,.01)
+        end
+    end
+    do -- Cell
+        gc_setLineWidth(0.026)
+        for i=1,#map do
+            local cell=map[i]
+            if cell.prop~='invis' then
+                local x,y=cell.x,cell.y
+                gc_setColor(COLOR.L)
+                gc_rectangle('fill',x-.45,y-.45,.9,.9)
+                gc_setColor(COLOR.D)
+                gc_rectangle('line',x-.45,y-.45,.9,.9)
+                if cell.prop=='move' then
+                    tileText:set(cell.propData>0 and '+'..cell.propData or cell.propData)
+                    gc_mDraw(tileText,x,y,nil,.01)
+                elseif cell.prop=='teleport' then
+                    tileText:set('??')
+                    gc_mDraw(tileText,x,y,nil,.01)
+                elseif cell.prop=='text' then
+                    tileText:set(cell.propData)
+                    gc_mDraw(tileText,x,y,nil,.01)
+                end
             end
         end
     end
