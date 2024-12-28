@@ -10,10 +10,12 @@
 ---@field moveDir 'next' | 'prev' | false
 ---@field dice ReroChess.Dice
 ---
+---Variables for moving in round
 ---@field moving boolean
 ---@field moveSignal boolean
----@field tarLocation integer
 ---@field stepRemain integer
+---@field nextLocation integer
+---@field curDir 'next' | 'prev' | false
 ---
 ---@field x number
 ---@field y number
@@ -117,17 +119,15 @@ function Player:roll()
 end
 
 function Player:move(stepCount)
+    local map=self.game.map
     self.moving=true
     self.stepRemain=stepCount
-    local game=self.game
-    local map=game.map
-    local pos=self.location
-    local nextPos,dir=game:getNext(pos,self.moveDir)
+    self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
 
     TASK.new(function()
         while self.stepRemain>0 do
             local sx,sy=self.x,self.y
-            local ex,ey=map[nextPos].x+MATH.rand(-.15,.15),map[nextPos].y+MATH.rand(-.15,.15)
+            local ex,ey=map[self.nextLocation].x+MATH.rand(-.15,.15),map[self.nextLocation].y+MATH.rand(-.15,.15)
             local animLock=true
 
             -- Wait signal
@@ -139,9 +139,8 @@ function Player:move(stepCount)
                 self.x=MATH.lerp(sx,ex,t)
                 self.y=MATH.lerp(sy,ey,t)+t*(t-1)*1.5
                 if t==1 then
-                    pos=nextPos
-                    self.location=pos
-                    nextPos,dir=game:getNext(pos,dir)
+                    self.location=self.nextLocation
+                    self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
                 end
             end):setEase('Linear'):setDuration(0.26):setOnFinish(function()
                 animLock=false
@@ -151,23 +150,26 @@ function Player:move(stepCount)
             repeat coroutine.yield() until not animLock
 
             -- Check Cell Property
-            self.stepRemain=self.stepRemain-1
+            self.stepRemain=map[self.location].stop and 0 or self.stepRemain-1
             if self.stepRemain==0 then
-                local cell=map[pos]
+                local cell=map[self.location]
                 if cell.prop=='move' then
-                    self.stepRemain=math.abs(cell.propData)
-                    dir=cell.propData>0 and 'next' or 'prev'
-                    nextPos,dir=game:getNext(pos,dir)
                     self:popText{
                         text=("%+d"):format(cell.propData),
                         duration=2,
                         x=0.4,
                     }
+                    self.stepRemain=math.abs(cell.propData)
+                    self.curDir=cell.propData>0 and 'next' or 'prev'
+                    self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
                 elseif cell.prop=='teleport' then
-                    pos=cell.propData
-                    self.location=pos
-                    self.x,self.y=map[pos].x,map[pos].y
-                    nextPos,dir=game:getNext(pos,self.moveDir)
+                    self:popText{
+                        text="传送!",
+                        duration=2,
+                    }
+                    self.location=cell.propData
+                    self.x,self.y=map[self.location].x,map[self.location].y
+                    self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
                 end
             end
         end
