@@ -152,29 +152,34 @@ function Player:move(stepCount)
             -- Check Cell Property
             self.stepRemain=map[self.location].stop and 0 or self.stepRemain-1
             if self.stepRemain==0 then
-                local cell=map[self.location]
-                if cell.prop=='move' then
-                    self:popText{
-                        text=("%+d"):format(cell.propData),
-                        duration=2,
-                        x=0.4,
-                    }
-                    self.stepRemain=math.abs(cell.propData)
-                    self.curDir=cell.propData>0 and 'next' or 'prev'
-                    self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
-                elseif cell.prop=='teleport' then
-                    self:popText{
-                        text="传送!",
-                        duration=2,
-                    }
-                    self.location=cell.propData
-                    self.x,self.y=map[self.location].x,map[self.location].y
-                    self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
-                end
+                self:triggerCell()
             end
         end
         self.moving=false
     end)
+end
+
+function Player:triggerCell()
+    local map=self.game.map
+    local cell=map[self.location]
+    if cell.prop=='move' then
+        self:popText{
+            text=("%+d"):format(cell.propData),
+            duration=2,
+            x=0.4,
+        }
+        self.stepRemain=math.abs(cell.propData)
+        self.curDir=cell.propData>0 and 'next' or 'prev'
+        self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
+    elseif cell.prop=='teleport' then
+        self:popText{
+            text="传送!",
+            duration=2,
+        }
+        self.location=cell.propData
+        self.x,self.y=map[self.location].x,map[self.location].y
+        self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
+    end
 end
 
 ---@param d {text:string, x?:number, y?:number, k?:number, duration?:number, color?:Zenitha.Color}
