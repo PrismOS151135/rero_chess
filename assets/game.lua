@@ -214,7 +214,10 @@ function Game:draw()
                 gc_rectangle('fill',x-.45,y-.45,.9,.9)
                 gc_setColor(COLOR.D)
                 gc_rectangle('line',x-.45,y-.45,.9,.9)
-                if cell.prop=='move' then
+                if cell.stop then
+                    tileText:set("X")
+                    gc_mDraw(tileText,x,y,nil,.01)
+                elseif cell.prop=='move' then
                     tileText:set(cell.propData>0 and '+'..cell.propData or cell.propData)
                     gc_mDraw(tileText,x,y,nil,.01)
                 elseif cell.prop=='teleport' then
