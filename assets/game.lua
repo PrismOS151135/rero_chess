@@ -111,7 +111,12 @@ function Game.new(data)
         text=TEXT.new(),
         roundIndex=1,
     },Game)
-    for _,p in next,game.players do p.game=game end
+    for id,p in next,game.players do
+        p.game=game
+        local cell=assert(game.map[p.location],"Invalid start location for player "..id)
+        p.location=cell.id
+        p.x,p.y=p.x+cell.x,p.y+cell.y
+    end
     if initX then
         game.cam:move(initX,initY)
         game.cam:update(1)

@@ -43,7 +43,7 @@ Player.__index=Player
 
 ---@class ReroChess.PlayerData
 ---@field name string
----@field startLocation? integer
+---@field startLocation? integer|string
 ---@field startMoveDir? 'next' | 'prev'
 ---@field customColor? Zenitha.Color
 ---@field dicePoints? integer[]
