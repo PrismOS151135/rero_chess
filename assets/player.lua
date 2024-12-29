@@ -119,7 +119,6 @@ function Player:roll()
 end
 
 function Player:move(stepCount)
-    local map=self.game.map
     self.moving=true
     self.stepRemain=stepCount
     self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
@@ -127,7 +126,7 @@ function Player:move(stepCount)
     TASK.new(function()
         while self.stepRemain>0 do
             local sx,sy=self.x,self.y
-            local ex,ey=map[self.nextLocation].x+MATH.rand(-.15,.15),map[self.nextLocation].y+MATH.rand(-.15,.15)
+            local ex,ey=self.game.map[self.nextLocation].x+MATH.rand(-.15,.15),self.game.map[self.nextLocation].y+MATH.rand(-.15,.15)
             local animLock=true
 
             -- Wait signal
@@ -150,7 +149,7 @@ function Player:move(stepCount)
             repeat coroutine.yield() until not animLock
 
             -- Check Cell Property
-            self.stepRemain=map[self.location].stop and 0 or self.stepRemain-1
+            self.stepRemain=self.game.map[self.location].stop and 0 or self.stepRemain-1
             if self.stepRemain==0 then
                 self:triggerCell()
             end
