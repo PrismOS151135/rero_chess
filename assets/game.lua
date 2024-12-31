@@ -10,16 +10,18 @@ local Player=require("assets/player")
 local Game={}
 Game.__index=Game
 
----@class ReroChess.MapData
----@field playerData ReroChess.PlayerData[]
----@field mapData ReroChess.CellData[]
+---@enum (key) ReroChess.CellPropCmd
+local propCmd={
+    move='cmd',
+    teleport='cmd',
+    stop='cmd',
+    text='tag',
+}
 
----@alias ReroChess.CellProp
----| 'invis'
----| 'move'
----| 'teleport'
----| 'text'
----| string
+---@class ReroChess.CellProp (string|any)[]
+---@field [0]? true Instant trigger
+---@field [1] string
+---@field [...] any
 
 ---@class ReroChess.Cell
 ---@field id integer
@@ -27,9 +29,63 @@ Game.__index=Game
 ---@field y number
 ---@field next? number[]
 ---@field prev? number[]
----@field stop? true
----@field prop? ReroChess.CellProp
----@field propData? any
+---@field propList? ReroChess.CellProp[]
+---
+---@field sprite? string
+---@field text? string
+
+
+
+---@param data string | table
+---@return ReroChess.CellProp
+local function parseProp(data)
+    if data==nil then return {} end
+
+    -- Parse data
+    if type(data)=='string' then
+        ---@type any
+        data=STRING.split(data,' ')
+        for i=1,#data do
+            data[i]=STRING.split(data[i],',')
+        end
+    elseif type(data)=='table' then
+        if type(data[1])=='string' then
+            data={data}
+        else
+            assertf(
+                type(data[1])=='table',
+                'Invalid prop data format: %s',
+                type(data[1])
+            )
+        end
+    else
+        errorf('Invalid prop type: %s',type(data))
+    end
+
+    -- Check data format
+    for _,prop in next,data do
+        if prop[1]:sub(1,1)=='!' then
+            prop[0]=true
+            prop[1]=prop[1]:sub(2)
+        end
+        assert(propCmd[prop[1]],'Invalid prop command: %s',tostring(prop[1]))
+        if prop[1]=='move' then
+            prop[2]=tonumber(prop[2])
+            assert(
+                type(prop[2])=='number' and prop[2]%1==0,
+                'Prop(Move).dist must be integer'
+            )
+        elseif prop[1]=='teleport' then
+            prop[2]=tonumber(prop[2]) or prop[2]
+            assert(
+                type(prop[2])=='string' or
+                type(prop[2])=='number' and prop[2]%1==0,
+                'Prop(Teleport).target must be integer or string'
+            )
+        end
+    end
+    return data
+end
 
 ---@class ReroChess.CellData: ReroChess.Cell
 ---@field id? integer
@@ -39,7 +95,12 @@ Game.__index=Game
 ---@field dy? number
 ---@field next? string | string[]
 ---@field label? string
+---@field prop? string
 ---@field mapCenter? any
+
+---@class ReroChess.MapData
+---@field playerData ReroChess.PlayerData[]
+---@field mapData ReroChess.CellData[]
 
 ---@param data ReroChess.MapData
 function Game.new(data)
@@ -54,7 +115,7 @@ function Game.new(data)
         end)(),
         map=(function()
             ---@type ReroChess.Cell[]
-            local l={}
+            local cells={}
 
             -- Initialize
             local x,y=0,0
@@ -67,45 +128,65 @@ function Game.new(data)
                     initX,initY=-x,-y
                 end
                 ---@type ReroChess.Cell
-                l[i]={
-                    id=i,
-                    x=x,y=y,
-
-                    next={},
-                    prev={},
-                    stop=d.stop,
-                    prop=d.prop,
-                    propData=d.propData,
+                cells[i]={
+                    id=i,x=x,y=y,
+                    next={},prev={},
+                    propList=parseProp(d.prop),
                 }
-                if d.label then l[d.label]=l[i] end
+                if d.label then cells[d.label]=cells[i] end
             end
 
             -- Manual next
             for id,d in next,data.mapData do
                 if type(d.next)=='string' then
-                    table.insert(l[id].next,l[d.next].id)
+                    table.insert(cells[id].next,cells[d.next].id)
                 elseif type(d.next)=='table' then
-                    for _,lbl in next,d.next do
-                        table.insert(l[id].next,l[lbl].id)
+                    for _,label in next,d.next do
+                        table.insert(cells[id].next,cells[label].id)
                     end
                 end
             end
 
             -- Auto next
-            for id=1,#l-1 do
-                if #l[id].next==0 and MATH.mDist2(0,l[id].x,l[id].y,l[id+1].x,l[id+1].y)<=1 then
-                    table.insert(l[id].next,l[id+1].id)
+            for id=1,#cells-1 do
+                if #cells[id].next==0 and MATH.mDist2(0,cells[id].x,cells[id].y,cells[id+1].x,cells[id+1].y)<=1 then
+                    table.insert(cells[id].next,cells[id+1].id)
                 end
             end
 
             -- Auto prev
-            for _,c in next,l do
-                for _,n in next,c.next do
-                    table.insert(l[n].prev,c.id)
+            for _,cell in next,cells do
+                for _,n in next,cell.next do
+                    table.insert(cells[n].prev,cell.id)
                 end
             end
 
-            return l
+            -- Postprocess
+            for _,cell in next,cells do
+                local remCount=0
+                for i=1,#cell.propList do
+                    i=i-remCount
+                    local prop=cell.propList[i]
+
+                    if prop[1]=='move' then
+                        cell.text=("%+d"):format(prop[2])
+                    elseif prop[1]=='teleport' then
+                        cell.text="@"
+                        if type(prop[2])=='string' then
+                            prop[2]=assert(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
+                        end
+                    elseif prop[1]=='stop' then
+                        cell.text="X"
+                    end
+
+                    if propCmd[prop[1]]=='tag' then
+                        table.remove(cell.propList,i)
+                        remCount=remCount+1
+                    end
+                end
+            end
+
+            return cells
         end)(),
         cam=GC.newCamera(),
         text=TEXT.new(),
@@ -213,23 +294,14 @@ function Game:draw()
         gc_setLineWidth(0.026)
         for i=1,#map do
             local cell=map[i]
-            if cell.prop~='invis' then
+            if cell.propList~='invis' then
                 local x,y=cell.x,cell.y
                 gc_setColor(COLOR.L)
                 gc_rectangle('fill',x-.45,y-.45,.9,.9)
                 gc_setColor(COLOR.D)
                 gc_rectangle('line',x-.45,y-.45,.9,.9)
-                if cell.stop then
-                    tileText:set("X")
-                    gc_mDraw(tileText,x,y,nil,.01)
-                elseif cell.prop=='move' then
-                    tileText:set(cell.propData>0 and '+'..cell.propData or cell.propData)
-                    gc_mDraw(tileText,x,y,nil,.01)
-                elseif cell.prop=='teleport' then
-                    tileText:set('??')
-                    gc_mDraw(tileText,x,y,nil,.01)
-                elseif cell.prop=='text' then
-                    tileText:set(cell.propData)
+                if cell.text then
+                    tileText:set(cell.text)
                     gc_mDraw(tileText,x,y,nil,.01)
                 end
             end

@@ -1,3 +1,5 @@
+local cellEvent=require'assets.cell_event'
+
 ---@class ReroChess.Player
 ---@field game ReroChess.Game
 ---@field _name love.Text
@@ -145,39 +147,23 @@ function Player:move(stepCount)
                 animLock=false
             end):run()
 
-            -- Wait until Animation end
+            -- Wait until animation end
             repeat coroutine.yield() until not animLock
 
-            -- Check Cell Property
-            self.stepRemain=self.game.map[self.location].stop and 0 or self.stepRemain-1
-            if self.stepRemain==0 then
-                self:triggerCell()
-            end
+            self.stepRemain=self.stepRemain-1
+
+            -- Trigger cell property
+            self:triggerCell()
         end
         self.moving=false
     end)
 end
 
 function Player:triggerCell()
-    local map=self.game.map
-    local cell=map[self.location]
-    if cell.prop=='move' then
-        self:popText{
-            text=("%+d"):format(cell.propData),
-            duration=2,
-            x=0.4,
-        }
-        self.stepRemain=math.abs(cell.propData)
-        self.curDir=cell.propData>0 and 'next' or 'prev'
-        self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
-    elseif cell.prop=='teleport' then
-        self:popText{
-            text="传送!",
-            duration=2,
-        }
-        self.location=cell.propData
-        self.x,self.y=map[self.location].x,map[self.location].y
-        self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
+    for _,prop in next,self.game.map[self.location].propList do
+        if prop[0] or self.stepRemain==0 then
+            cellEvent[prop[1]](self,unpack(prop,2))
+        end
     end
 end
 
