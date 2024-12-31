@@ -12,7 +12,7 @@ function scene.load()
             {name='略略略',startLocation='start2'},
         },
         mapData={
-            {x=-3,y=-1.5,label='start1'},
+            {x=-3,y=-1.5,prop='label,start1'},
             {dx=1,prop='reverse'},
             {dx=1,prop='!step,2'},
             {dx=1,prop='!stop'},
@@ -20,8 +20,8 @@ function scene.load()
             {dx=1},
             {dx=1,prop='teleport,start2'},
 
-            {x=-1,y=0,label='start2'},
-            {dx=1,prop='move,1'},
+            {x=-1,y=0,prop='text,t label,start2'},
+            {dx=1,prop='center move,1'},
             {dx=1},
             {dy=1,prop='move,-3'},
             {dy=1,prop='move,2'},

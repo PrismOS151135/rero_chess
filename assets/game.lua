@@ -1,4 +1,4 @@
-local CellEvent=require'assets.cell_event'
+local Prop=require'assets.prop'
 local Player=require'assets.player'
 
 ---@class ReroChess.Game
@@ -61,27 +61,10 @@ local function parseProp(data)
             prop[0]=true
             prop[1]=prop[1]:sub(2)
         end
-        assertf(CellEvent[prop[1]],'Invalid prop command: %s',tostring(prop[1]))
-        if prop[1]=='step' then
-            prop[2]=tonumber(prop[2])
-            assert(
-                type(prop[2])=='number' and prop[2]%1==0 and prop[2]>0,
-                'prop(step).dist must be positive integer'
-            )
-        elseif prop[1]=='move' then
-            prop[2]=tonumber(prop[2])
-            assert(
-                type(prop[2])=='number' and prop[2]%1==0,
-                'prop(move).dist must be integer'
-            )
-        elseif prop[1]=='teleport' then
-            prop[2]=tonumber(prop[2]) or prop[2]
-            assert(
-                type(prop[2])=='string' or
-                type(prop[2])=='number' and prop[2]%1==0,
-                'prop(teleport).target must be integer or string'
-            )
-        end
+        local event=Prop[prop[1]]
+        for k,v in next,prop do print(k,v)end
+        assertf(event,'Invalid prop command: %s',tostring(prop[1]))
+        if event.parse then event.parse(prop) end
     end
     return data
 end
@@ -93,9 +76,7 @@ end
 ---@field dx? number
 ---@field dy? number
 ---@field next? string | string[]
----@field label? string
 ---@field prop? string
----@field mapCenter? any
 
 ---@class ReroChess.MapData
 ---@field playerData ReroChess.PlayerData[]
@@ -122,22 +103,57 @@ function Game.new(data)
                 local d=data.mapData[i]
                 x=d.x or d.dx and x+d.dx or x
                 y=d.y or d.dy and y+d.dy or y
-                if d.mapCenter then
-                    assert(not initX,"Multiple mapCenter")
-                    initX,initY=-x,-y
-                end
                 ---@type ReroChess.Cell
                 cells[i]={
                     id=i,x=x,y=y,
                     next={},prev={},
                     propList=parseProp(d.prop),
                 }
-                if d.label then cells[d.label]=cells[i] end
+                for _,prop in next,cells[i].propList do
+                    if prop[1]=='label' then
+                        cells[prop[2]]=cells[i]
+                    elseif prop[1]=='center' then
+                        assert(not initX,"Multiple map center")
+                        initX,initY=-x,-y
+                    end
+                end
+            end
+
+            -- Postprocess
+            for _,cell in next,cells do
+                local remCount=0
+                for i=1,#cell.propList do
+                    i=i-remCount
+                    local prop=cell.propList[i]
+
+                    if prop[1]=='text' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,prop[2]}
+                    elseif prop[1]=='move' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,("%+d"):format(prop[2])}
+                    elseif prop[1]=='teleport' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
+                        if type(prop[2])=='string' then
+                            prop[2]=assert(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
+                        end
+                    elseif prop[1]=='stop' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
+                    elseif prop[1]=='reverse' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,"R"}
+                    elseif prop[1]=='step' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,("(%d)"):format(prop[2])}
+                    end
+
+                    if Prop[prop[1]].tag then
+                        table.remove(cell.propList,i)
+                        remCount=remCount+1
+                    end
+                end
             end
 
             -- Manual next
             for id,d in next,data.mapData do
                 if type(d.next)=='string' then
+                    print(d.next)
                     table.insert(cells[id].next,cells[d.next].id)
                 elseif type(d.next)=='table' then
                     for _,label in next,d.next do
@@ -157,36 +173,6 @@ function Game.new(data)
             for _,cell in next,cells do
                 for _,n in next,cell.next do
                     table.insert(cells[n].prev,cell.id)
-                end
-            end
-
-            -- Postprocess
-            for _,cell in next,cells do
-                local remCount=0
-                for i=1,#cell.propList do
-                    i=i-remCount
-                    local prop=cell.propList[i]
-
-                    if prop[1]=='step' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,("(%d)"):format(prop[2])}
-                    elseif prop[1]=='move' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,("%+d"):format(prop[2])}
-                    elseif prop[1]=='teleport' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
-                        if type(prop[2])=='string' then
-                            prop[2]=assert(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
-                        end
-                        cells[prop[2]].text={prop[0] and COLOR.R or COLOR.D,"t"}
-                    elseif prop[1]=='stop' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
-                    elseif prop[1]=='reverse' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,"R"}
-                    end
-
-                    if CellEvent[prop[1]]==true then
-                        table.remove(cell.propList,i)
-                        remCount=remCount+1
-                    end
                 end
             end
 

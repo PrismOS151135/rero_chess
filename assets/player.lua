@@ -1,4 +1,4 @@
-local CellEvent=require'assets.cell_event'
+local Prop=require'assets.prop'
 
 ---@class ReroChess.Player
 ---@field game ReroChess.Game
@@ -162,7 +162,7 @@ end
 function Player:triggerCell()
     for _,prop in next,self.game.map[self.location].propList do
         if prop[0] or self.stepRemain==0 then
-            CellEvent[prop[1]](self,unpack(prop,2))
+            Prop[prop[1]].code(self,unpack(prop,2))
         end
     end
 end
