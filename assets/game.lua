@@ -1,6 +1,8 @@
 local Prop=require'assets.prop'
 local Player=require'assets.player'
 
+local it=next
+
 ---@class ReroChess.Game
 ---@field players ReroChess.Player[]
 ---@field map ReroChess.Cell[]
@@ -56,13 +58,13 @@ local function parseProp(data)
     end
 
     -- Check data format
-    for _,prop in next,data do
+    for _,prop in it,data do
         if prop[1]:sub(1,1)=='!' then
             prop[0]=true
             prop[1]=prop[1]:sub(2)
         end
         local event=Prop[prop[1]]
-        for k,v in next,prop do print(k,v)end
+        for k,v in it,prop do print(k,v)end
         assertf(event,'Invalid prop command: %s',tostring(prop[1]))
         if event.parse then event.parse(prop) end
     end
@@ -70,12 +72,11 @@ local function parseProp(data)
 end
 
 ---@class ReroChess.CellData: ReroChess.Cell
----@field id? integer
+---@field id nil
 ---@field x? number
 ---@field y? number
 ---@field dx? number
 ---@field dy? number
----@field next? string | string[]
 ---@field prop? string
 
 ---@class ReroChess.MapData
@@ -109,18 +110,22 @@ function Game.new(data)
                     next={},prev={},
                     propList=parseProp(d.prop),
                 }
-                for _,prop in next,cells[i].propList do
+                for _,prop in it,cells[i].propList do
                     if prop[1]=='label' then
                         cells[prop[2]]=cells[i]
                     elseif prop[1]=='center' then
                         assert(not initX,"Multiple map center")
                         initX,initY=-x,-y
+                    elseif prop[1]=='next' then
+                        for j=2,#prop do
+                            table.insert(cells[i].next,prop[j])
+                        end
                     end
                 end
             end
 
             -- Postprocess
-            for _,cell in next,cells do
+            for _,cell in it,cells do
                 local remCount=0
                 for i=1,#cell.propList do
                     i=i-remCount
@@ -133,7 +138,7 @@ function Game.new(data)
                     elseif prop[1]=='teleport' then
                         cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
                         if type(prop[2])=='string' then
-                            prop[2]=assert(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
+                            prop[2]=assertf(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
                         end
                     elseif prop[1]=='stop' then
                         cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
@@ -151,14 +156,9 @@ function Game.new(data)
             end
 
             -- Manual next
-            for id,d in next,data.mapData do
-                if type(d.next)=='string' then
-                    print(d.next)
-                    table.insert(cells[id].next,cells[d.next].id)
-                elseif type(d.next)=='table' then
-                    for _,label in next,d.next do
-                        table.insert(cells[id].next,cells[label].id)
-                    end
+            for _,cell in it,cells do
+                for i,label in it,cell.next do
+                    cell.next[i]=assert(cells[label],"Invalid nextCell label/id: "..label).id
                 end
             end
 
@@ -170,8 +170,8 @@ function Game.new(data)
             end
 
             -- Auto prev
-            for _,cell in next,cells do
-                for _,n in next,cell.next do
+            for _,cell in it,cells do
+                for _,n in it,cell.next do
                     table.insert(cells[n].prev,cell.id)
                 end
             end
@@ -182,7 +182,7 @@ function Game.new(data)
         text=TEXT.new(),
         roundIndex=1,
     },Game)
-    for id,p in next,game.players do
+    for id,p in it,game.players do
         p.game=game
         local cell=assert(game.map[p.location],"Invalid start location for player "..id)
         p.location=cell.id

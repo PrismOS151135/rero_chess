@@ -27,7 +27,7 @@ function scene.load()
             {dy=1,prop='move,2'},
             {dx=-1,prop='teleport,start1'},
             {dx=-1,prop='!reverse'},
-            {dy=-1,next='start2'},
+            {dy=-1,prop='next,start2'},
         },
     }
 end

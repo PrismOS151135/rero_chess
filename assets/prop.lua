@@ -10,7 +10,19 @@ Prop.label={
         )
     end,
 }
-
+Prop.next={
+    tag=true,
+    parse=function(prop)
+        for i=2,#prop do
+            prop[i]=tonumber(prop[i]) or prop[i]
+            assert(
+                type(prop[i])=='string' or
+                type(prop[i])=='number' and prop[i]%1==0 and prop[i]>0,
+                'next[*] must be positive integer'
+            )
+        end
+    end,
+}
 Prop.center={
     tag=true,
 }
@@ -112,6 +124,7 @@ Prop.reverse={
         }
         P.moveDir=P.moveDir=='next' and 'prev' or 'next'
         P.curDir=P.curDir=='next' and 'prev' or 'next'
+        P.nextLocation,P.curDir=P.game:getNext(P.location,P.curDir)
     end,
 }
 
