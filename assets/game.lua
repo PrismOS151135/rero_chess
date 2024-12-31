@@ -1,4 +1,5 @@
-local Player=require("assets/player")
+local CellEvent=require'assets.cell_event'
+local Player=require'assets.player'
 
 ---@class ReroChess.Game
 ---@field players ReroChess.Player[]
@@ -9,15 +10,6 @@ local Player=require("assets/player")
 ---@field roundIndex integer
 local Game={}
 Game.__index=Game
-
----@enum (key) ReroChess.CellPropCmd
-local propCmd={
-    step='cmd',
-    move='cmd',
-    teleport='cmd',
-    stop='cmd',
-    text='tag',
-}
 
 ---@class ReroChess.CellProp (string|any)[]
 ---@field [0]? true Instant trigger
@@ -69,7 +61,7 @@ local function parseProp(data)
             prop[0]=true
             prop[1]=prop[1]:sub(2)
         end
-        assert(propCmd[prop[1]],'Invalid prop command: %s',tostring(prop[1]))
+        assertf(CellEvent[prop[1]],'Invalid prop command: %s',tostring(prop[1]))
         if prop[1]=='step' then
             prop[2]=tonumber(prop[2])
             assert(
@@ -176,23 +168,22 @@ function Game.new(data)
                     local prop=cell.propList[i]
 
                     if prop[1]=='step' then
-                        cell.text=("(%d)"):format(prop[2])
+                        cell.text={prop[0] and COLOR.R or COLOR.D,("(%d)"):format(prop[2])}
                     elseif prop[1]=='move' then
-                        cell.text=("%+d"):format(prop[2])
+                        cell.text={prop[0] and COLOR.R or COLOR.D,("%+d"):format(prop[2])}
                     elseif prop[1]=='teleport' then
-                        cell.text="T"
+                        cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
                         if type(prop[2])=='string' then
                             prop[2]=assert(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
                         end
-                        cells[prop[2]].text="t"
+                        cells[prop[2]].text={prop[0] and COLOR.R or COLOR.D,"t"}
                     elseif prop[1]=='stop' then
-                        cell.text="X"
-                    end
-                    if type(cell.text)=='string' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,cell.text}
+                        cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
+                    elseif prop[1]=='reverse' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,"R"}
                     end
 
-                    if propCmd[prop[1]]=='tag' then
+                    if CellEvent[prop[1]]==true then
                         table.remove(cell.propList,i)
                         remCount=remCount+1
                     end
