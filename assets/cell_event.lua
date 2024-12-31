@@ -35,11 +35,13 @@ end
 
 ---@param P ReroChess.Player
 function cellEvent.stop(P)
-    P:popText{
-        text="停止!",
-        duration=2,
-    }
-    P.stepRemain=0
+    if P.stepRemain>0 then
+        P:popText{
+            text="停止!",
+            duration=2,
+        }
+        P.stepRemain=0
+    end
 end
 
 return cellEvent
