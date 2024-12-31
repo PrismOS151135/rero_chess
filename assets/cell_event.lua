@@ -1,13 +1,23 @@
 local cellEvent={}
 
 ---@param P ReroChess.Player
+function cellEvent.step(P,dist)
+    P:popText{
+        text=("+%d"):format(dist),
+        duration=2,
+        x=0.4,
+    }
+    P.stepRemain=P.stepRemain+dist
+end
+
+---@param P ReroChess.Player
 function cellEvent.move(P,dist)
     P:popText{
         text=("%+d"):format(dist),
         duration=2,
         x=0.4,
     }
-    P.stepRemain=P.stepRemain+math.abs(dist)
+    P.stepRemain=math.abs(dist)
     P.curDir=dist>0 and 'next' or 'prev'
     P.nextLocation,P.curDir=P.game:getNext(P.location,P.curDir)
 end

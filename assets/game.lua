@@ -12,6 +12,7 @@ Game.__index=Game
 
 ---@enum (key) ReroChess.CellPropCmd
 local propCmd={
+    step='cmd',
     move='cmd',
     teleport='cmd',
     stop='cmd',
@@ -69,18 +70,24 @@ local function parseProp(data)
             prop[1]=prop[1]:sub(2)
         end
         assert(propCmd[prop[1]],'Invalid prop command: %s',tostring(prop[1]))
-        if prop[1]=='move' then
+        if prop[1]=='step' then
+            prop[2]=tonumber(prop[2])
+            assert(
+                type(prop[2])=='number' and prop[2]%1==0 and prop[2]>0,
+                'prop(step).dist must be positive integer'
+            )
+        elseif prop[1]=='move' then
             prop[2]=tonumber(prop[2])
             assert(
                 type(prop[2])=='number' and prop[2]%1==0,
-                'Prop(Move).dist must be integer'
+                'prop(move).dist must be integer'
             )
         elseif prop[1]=='teleport' then
             prop[2]=tonumber(prop[2]) or prop[2]
             assert(
                 type(prop[2])=='string' or
                 type(prop[2])=='number' and prop[2]%1==0,
-                'Prop(Teleport).target must be integer or string'
+                'prop(teleport).target must be integer or string'
             )
         end
     end
@@ -168,13 +175,16 @@ function Game.new(data)
                     i=i-remCount
                     local prop=cell.propList[i]
 
-                    if prop[1]=='move' then
+                    if prop[1]=='step' then
+                        cell.text=("(%d)"):format(prop[2])
+                    elseif prop[1]=='move' then
                         cell.text=("%+d"):format(prop[2])
                     elseif prop[1]=='teleport' then
-                        cell.text="@"
+                        cell.text="T"
                         if type(prop[2])=='string' then
                             prop[2]=assert(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
                         end
+                        cells[prop[2]].text="t"
                     elseif prop[1]=='stop' then
                         cell.text="X"
                     end
