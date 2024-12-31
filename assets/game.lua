@@ -188,6 +188,9 @@ function Game.new(data)
                     elseif prop[1]=='stop' then
                         cell.text="X"
                     end
+                    if type(cell.text)=='string' then
+                        cell.text={prop[0] and COLOR.R or COLOR.D,cell.text}
+                    end
 
                     if propCmd[prop[1]]=='tag' then
                         table.remove(cell.propList,i)
@@ -311,6 +314,7 @@ function Game:draw()
                 gc_setColor(COLOR.D)
                 gc_rectangle('line',x-.45,y-.45,.9,.9)
                 if cell.text then
+                    gc_setColor(1,1,1)
                     tileText:set(cell.text)
                     gc_mDraw(tileText,x,y,nil,.01)
                 end
