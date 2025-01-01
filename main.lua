@@ -12,7 +12,7 @@ require'Zenitha'
 
 ZENITHA.setFirstScene('menu')
 ZENITHA.setAppName(require'version'.appName)
-ZENITHA.setMaxFPS(60)
+ZENITHA.setMainLoopSpeed(60)
 ZENITHA.setShowFPS(false)
 
 SCR.setSize(1000,600)
@@ -81,6 +81,17 @@ WIDGET.setDefaultOption{
     selector={},
     listBox={},
     inputBox={},
+}
+
+IMG.init{
+    chess='assets/texture/chess.png',
+    item='assets/texture/item.png',
+    ui='assets/texture/ui.png',
+    world={
+        world1='assets/texture/world1.png',
+        world2='assets/texture/world2.png',
+        world3='assets/texture/world3.png',
+    },
 }
 
 FONT.load{

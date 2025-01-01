@@ -62,12 +62,13 @@ local defaultColor={
 }
 
 ---@param data ReroChess.PlayerData
-function Player.new(index,data)
+function Player.new(id,data,game)
     local player=setmetatable({
-        id=index,
+        game=game,
+        id=id,
         name=data.name,
 
-        color=data.customColor or defaultColor[index],
+        color=data.customColor or defaultColor[id],
         location=data.startLocation or 1,
         moveDir=data.startMoveDir or 'next',
         dice={
@@ -76,8 +77,8 @@ function Player.new(index,data)
             animState='hide',
         },
 
-        x=(index-1)%2==0 and -.2 or .2,
-        y=(index-1)%4<=1 and -.2 or .2,
+        x=(id-1)%2==0 and -.2 or .2,
+        y=(id-1)%4<=1 and -.2 or .2,
     },Player)
     player._name=GC.newText(FONT.get(20),player.name)
     assert(#player.dice.points==#player.dice.weights,"Dice points and weights mismatch")

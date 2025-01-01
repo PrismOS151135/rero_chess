@@ -1,9 +1,8 @@
 local Prop=require'assets.prop'
 local Player=require'assets.player'
 
-local it=next
-
 ---@class ReroChess.Game
+---@field texturePack love.image
 ---@field players ReroChess.Player[]
 ---@field map ReroChess.Cell[]
 ---@field cam Zenitha.Camera
@@ -14,7 +13,7 @@ local Game={}
 Game.__index=Game
 
 ---@class ReroChess.CellProp (string|any)[]
----@field [0]? true Instant trigger
+---@field [0]? true Trigger Instant?
 ---@field [1] string
 ---@field [...] any
 
@@ -58,13 +57,12 @@ local function parseProp(data)
     end
 
     -- Check data format
-    for _,prop in it,data do
+    for _,prop in next,data do
         if prop[1]:sub(1,1)=='!' then
             prop[0]=true
             prop[1]=prop[1]:sub(2)
         end
         local event=Prop[prop[1]]
-        for k,v in it,prop do print(k,v)end
         assertf(event,'Invalid prop command: %s',tostring(prop[1]))
         if event.parse then event.parse(prop) end
     end
@@ -80,118 +78,122 @@ end
 ---@field prop? string
 
 ---@class ReroChess.MapData
+---@field texturePack string
 ---@field playerData ReroChess.PlayerData[]
 ---@field mapData ReroChess.CellData[]
-
+-- 
 ---@param data ReroChess.MapData
 function Game.new(data)
-    local initX,initY
+    assert(data.texturePack,"Missing field 'texturePack' (string)")
+    assert(data.playerData,"Missing field 'playerData'")
+    assert(data.mapData,"Missing field 'mapData'")
+
+    ---@type ReroChess.Game
     local game=setmetatable({
-        players=(function()
-            local l={}
-            for i=1,#data.playerData do
-                l[i]=Player.new(i,data.playerData[i])
-            end
-            return l
-        end)(),
-        map=(function()
-            ---@type ReroChess.Cell[]
-            local cells={}
+        texturePack=IMG.world[data.texturePack] or error("Invalid texture pack: "..data.texturePack),
+        map={},
+        players={},
 
-            -- Initialize
-            local x,y=0,0
-            for i=1,#data.mapData do
-                local d=data.mapData[i]
-                x=d.x or d.dx and x+d.dx or x
-                y=d.y or d.dy and y+d.dy or y
-                ---@type ReroChess.Cell
-                cells[i]={
-                    id=i,x=x,y=y,
-                    next={},prev={},
-                    propList=parseProp(d.prop),
-                }
-                for _,prop in it,cells[i].propList do
-                    if prop[1]=='label' then
-                        cells[prop[2]]=cells[i]
-                    elseif prop[1]=='center' then
-                        assert(not initX,"Multiple map center")
-                        initX,initY=-x,-y
-                    elseif prop[1]=='next' then
-                        for j=2,#prop do
-                            table.insert(cells[i].next,prop[j])
-                        end
-                    end
-                end
-            end
-
-            -- Postprocess
-            for _,cell in it,cells do
-                local remCount=0
-                for i=1,#cell.propList do
-                    i=i-remCount
-                    local prop=cell.propList[i]
-
-                    if prop[1]=='text' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,prop[2]}
-                    elseif prop[1]=='move' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,("%+d"):format(prop[2])}
-                    elseif prop[1]=='teleport' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
-                        if type(prop[2])=='string' then
-                            prop[2]=assertf(cells[prop[2]],'Invalid teleport target: %s',prop[2]).id
-                        end
-                    elseif prop[1]=='stop' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
-                    elseif prop[1]=='reverse' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,"R"}
-                    elseif prop[1]=='step' then
-                        cell.text={prop[0] and COLOR.R or COLOR.D,("(%d)"):format(prop[2])}
-                    end
-
-                    if Prop[prop[1]].tag then
-                        table.remove(cell.propList,i)
-                        remCount=remCount+1
-                    end
-                end
-            end
-
-            -- Manual next
-            for _,cell in it,cells do
-                for i,label in it,cell.next do
-                    cell.next[i]=assert(cells[label],"Invalid nextCell label/id: "..label).id
-                end
-            end
-
-            -- Auto next
-            for id=1,#cells-1 do
-                if #cells[id].next==0 and MATH.mDist2(0,cells[id].x,cells[id].y,cells[id+1].x,cells[id+1].y)<=1 then
-                    table.insert(cells[id].next,cells[id+1].id)
-                end
-            end
-
-            -- Auto prev
-            for _,cell in it,cells do
-                for _,n in it,cell.next do
-                    table.insert(cells[n].prev,cell.id)
-                end
-            end
-
-            return cells
-        end)(),
         cam=GC.newCamera(),
         text=TEXT.new(),
         roundIndex=1,
     },Game)
-    for id,p in it,game.players do
-        p.game=game
-        local cell=assert(game.map[p.location],"Invalid start location for player "..id)
+
+    do -- Initialize map
+        ---@type ReroChess.Cell[]
+        local map=game.map
+
+        -- Initialize
+        local x,y=0,0
+        local centered
+        for i=1,#data.mapData do
+            local d=data.mapData[i]
+            x=d.x or d.dx and x+d.dx or x
+            y=d.y or d.dy and y+d.dy or y
+            ---@type ReroChess.Cell
+            map[i]={
+                id=i,x=x,y=y,
+                next={},prev={},
+                propList=parseProp(d.prop),
+            }
+            for _,prop in next,map[i].propList do
+                if prop[1]=='label' then
+                    map[prop[2]]=map[i]
+                elseif prop[1]=='center' then
+                    assert(not centered,"Multiple map center")
+                    centered=true
+                    game.cam:move(-x,-y)
+                    game.cam:update(1)
+                elseif prop[1]=='next' then
+                    for j=2,#prop do
+                        table.insert(map[i].next,prop[j])
+                    end
+                end
+            end
+        end
+
+        -- Process props
+        for _,cell in next,map do
+            local remCount=0
+            for i=1,#cell.propList do
+                i=i-remCount
+                local prop=cell.propList[i]
+
+                if prop[1]=='text' then
+                    cell.text={prop[0] and COLOR.R or COLOR.D,prop[2]}
+                elseif prop[1]=='move' then
+                    cell.text={prop[0] and COLOR.R or COLOR.D,("%+d"):format(prop[2])}
+                elseif prop[1]=='teleport' then
+                    cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
+                    if type(prop[2])=='string' then
+                        prop[2]=assertf(map[prop[2]],'Invalid teleport target: %s',prop[2]).id
+                    end
+                elseif prop[1]=='stop' then
+                    cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
+                elseif prop[1]=='reverse' then
+                    cell.text={prop[0] and COLOR.R or COLOR.D,"R"}
+                elseif prop[1]=='step' then
+                    cell.text={prop[0] and COLOR.R or COLOR.D,("(%d)"):format(prop[2])}
+                end
+
+                if Prop[prop[1]].tag then
+                    table.remove(cell.propList,i)
+                    remCount=remCount+1
+                end
+            end
+        end
+
+        -- Manual next
+        for _,cell in next,map do
+            for i,label in next,cell.next do
+                cell.next[i]=(map[label] or error("Invalid nextCell label/id: "..label)).id
+            end
+        end
+
+        -- Auto next
+        for id=1,#map-1 do
+            if #map[id].next==0 and MATH.mDist2(0,map[id].x,map[id].y,map[id+1].x,map[id+1].y)<=1 then
+                table.insert(map[id].next,map[id+1].id)
+            end
+        end
+
+        -- Auto prev
+        for _,cell in next,map do
+            for _,n in next,cell.next do
+                table.insert(map[n].prev,cell.id)
+            end
+        end
+    end
+
+    -- Initialize players
+    for i=1,#data.playerData do
+        local p=Player.new(i,data.playerData[i],game)
+        local cell=game.map[p.location] or error("Invalid start location for player "..i)
         p.location=cell.id
         p.x,p.y=p.x+cell.x,p.y+cell.y
+        game.players[i]=p
     end
-    if initX then
-        game.cam:move(initX,initY)
-        game.cam:update(1)
-    end
+
     game.cam:scale(100)
     return game
 end
@@ -263,6 +265,10 @@ local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle=gc.rectangle
 local gc_mDraw=GC.mDraw
 local tileText=GC.newText(assert(FONT.get(40)))
+
+local CHESS=IMG.chess
+local ITEM=IMG.item
+local UI=IMG.ui
 
 function Game:draw()
     self.cam:apply()

@@ -52,12 +52,11 @@ function love.conf(t)
     W.borderless=mobile
     W.resizable=not mobile
     W.fullscreentype=mobile and 'exclusive' or 'desktop' -- Fullscreen type
+    W.width,W.height=1280,800
+    W.minwidth,W.minheight=160,100
     if portrait then
-        W.width,W.height=900,1440
-        W.minwidth,W.minheight=180,288
-    else
-        W.width,W.height=1440,900
-        W.minwidth,W.minheight=288,180
+        W.width,W.height=W.height,W.width
+        W.minwidth,W.minheight=W.minheight,W.minwidth
     end
     W.title=require'version'.appName..'  '..require'version'.appVer
 
