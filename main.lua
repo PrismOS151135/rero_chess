@@ -83,16 +83,27 @@ WIDGET.setDefaultOption{
     inputBox={},
 }
 
-IMG.init{
-    chess='assets/texture/chess.png',
-    item='assets/texture/item.png',
-    ui='assets/texture/ui.png',
-    world={
-        world1='assets/texture/world1.png',
-        world2='assets/texture/world2.png',
-        world3='assets/texture/world3.png',
-    },
-}
+do -- IMG
+    local path='assets/texture/'
+    IMG.init{
+        chess=path..'chess.png',
+        item=path..'item.png',
+        ui=path..'ui.png',
+        world={
+            world1=path..'world1.png',
+            world2=path..'world2.png',
+            world3=path..'world3.png',
+        },
+    }
+    IMG.menu=love.graphics.newArrayImage({
+        path..'menu_anim_1.png',
+        path..'menu_anim_2.png',
+        path..'menu_anim_3.png',
+        path..'menu_anim_4.png',
+        path..'menu_anim_5.png',
+        path..'menu_anim_6.png',
+    })
+end
 
 FONT.load{
     norm='assets/fonts/codePixelCJK-Regular.ttf',

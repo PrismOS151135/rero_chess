@@ -7,7 +7,7 @@ if love._os=='Web' then
 end
 
 function love.conf(t)
-    local identity='Techmino_DS'
+    local identity='rero_chess'
     local mobile=love._os=='Android' or love._os=='iOS'
     local msaa=4
     local portrait=false
@@ -22,7 +22,7 @@ function love.conf(t)
         end
     end
 
-    t.identity='Techmino_DS' -- Saving folder
+    t.identity='rero_chess' -- Saving folder
     t.externalstorage=true -- Use external storage on Android
     t.version="11.5"
     t.gammacorrect=false
