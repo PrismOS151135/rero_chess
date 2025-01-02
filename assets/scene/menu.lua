@@ -25,7 +25,7 @@ function scene.draw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp',pos={.5,.6},w=260,h=120,fontSize=60,text=LANG'menu_play',code=WIDGET.c_goScn'play'},
+    WIDGET.new{type='button_simp',pos={.5,.5},y=160,w=160,h=80,fontSize=40,text=LANG'menu_play',code=WIDGET.c_goScn'play'},
     WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-50,w=120,h=60,text=LANG'menu_quit',code=WIDGET.c_backScn()},
 }
 return scene
