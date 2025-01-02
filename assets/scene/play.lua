@@ -8,9 +8,9 @@ function scene.load()
     game=require'assets.game'.new{
         texturePack='default',
         playerData={
-            {name='略',startLocation='start1'},
-            {name='略略',startLocation='start2'},
-            {name='略略略',startLocation='start2'},
+            {name='略略',skin="关注娘",startLocation='start1'},
+            {name='略',skin="一只略",startLocation='start3'},
+            {name='略略略',skin=nil,startLocation='start2'},
         },
         mapData={
             {x=-3,y=-1.5,prop='label,start1'},
@@ -21,14 +21,14 @@ function scene.load()
             {dx=1},
             {dx=1,prop='teleport,start2'},
 
-            {x=-1,y=0,prop='text,t label,start2'},
+            {x=-2,y=0,prop='text,t label,start2'},
             {dx=1,prop='center move,1'},
             {dx=1},
             {dy=1,prop='move,-3'},
             {dy=1,prop='move,2'},
             {dx=-1,prop='teleport,start1'},
             {dx=-1,prop='!reverse'},
-            {dy=-1,prop='next,start2'},
+            {dy=-1,prop='next,start2 label,start3'},
         },
     }
 end

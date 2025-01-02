@@ -6,6 +6,7 @@ local Prop=require'assets.prop'
 ---
 ---@field id integer
 ---@field name string
+---@field skin string
 ---@field color Zenitha.Color
 ---
 ---@field location integer
@@ -45,6 +46,7 @@ Player.__index=Player
 
 ---@class ReroChess.PlayerData
 ---@field name string
+---@field skin? string
 ---@field startLocation? integer|string
 ---@field startMoveDir? 'next' | 'prev'
 ---@field customColor? Zenitha.Color
@@ -67,6 +69,7 @@ function Player.new(id,data,game)
         game=game,
         id=id,
         name=data.name,
+        skin=data.skin or '普通的棋子娘',
 
         color=data.customColor or defaultColor[id],
         location=data.startLocation or 1,
@@ -93,8 +96,8 @@ function Player:roll()
         d.alpha=1
         d.size=1
         d.clipTime=0
-        d.x=self.x
-        d.y=self.y-1
+        d.x=self.x+.7
+        d.y=self.y-.9
         TWEEN.new(function(t)
             if t>d.clipTime then
                 d.clipTime=t+1/64
@@ -187,61 +190,96 @@ local gc=love.graphics
 local gc_push,gc_pop=gc.push,gc.pop
 local gc_translate,gc_scale,gc_rotate=gc.translate,gc.scale,gc.rotate
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
-local gc_rectangle,gc_circle=gc.rectangle,gc.circle
+local gc_rectangle,gc_circle,gc_ellipse=gc.rectangle,gc.circle,gc.ellipse
+local gc_draw=gc.draw
 local gc_setAlpha=GC.setAlpha
 local gc_mRect,gc_mDraw=GC.mRect,GC.mDraw
 local text=GC.newText(assert(FONT.get(60)))
+function Player:drawShade()
+end
 function Player:draw()
-    -- Chess
-    gc_setColor(self.color)
-    gc_setAlpha(.5)
-    gc_setLineWidth(0.0626)
-    gc_circle('line',self.x,self.y,.26)
+    local skin=TEX.chess[self.skin]
 
-    -- Name tag
-    gc_push('transform')
-        gc_translate(self.x,self.y-.5+.05*math.sin(love.timer.getTime()+self.id))
-        gc_setColor(.3,.3,.3,.5)
-        gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
-        gc_setColor(self.color)
-        gc_mDraw(self._name,0,0,nil,.01)
-        gc_setColor(1,1,1,.62)
-        gc_mDraw(self._name,0,0,nil,.01)
-    gc_pop()
+    while true do
 
-    -- Step remain
-    if self.moving then
+        -- Layer 1
+        coroutine.yield()
+
+        -- Shade
+        gc_setColor(0,0,0,.2)
+        gc_ellipse('fill',self.x+TEX.chess[self.skin].shadeX,self.y+.1,.2,.08)
+
+        -- Layer 2
+        coroutine.yield()
+
         gc_push('transform')
-        gc_translate(self.x+.4,self.y-.2)
-        -- gc_translate(0,-.1*math.abs(math.sin(love.timer.getTime()*8)))
-        gc_rotate(math.sin(love.timer.getTime()*8)*.1)
-        local size=.4
-        gc_setColor(1,1,1,.9)
-        gc_mRect('fill',0,0,size,size)
-        gc_setColor(COLOR.D)
-        gc_setLineWidth(0.026)
-        gc_mRect('line',0,0,size,size)
-        text:set(tostring(self.stepRemain))
-        gc_mDraw(text,0,0,nil,.005)
+        gc_translate(self.x,self.y)
+
+        -- Chess
+        gc_setColor(1,1,1)
+        gc_draw(skin.base,0,0.1,nil,0.003,nil,128,256)
+        gc_draw(skin.normal,0,0.1,nil,0.003,nil,128,256)
+
+        -- Chess (circle)
+        -- gc_setColor(self.color)
+        -- gc_setAlpha(.5)
+        -- gc_setLineWidth(0.0626)
+        -- gc_circle('line',0,0,.26)
+
+        -- Step remain
+        if self.moving then
+            gc_push('transform')
+            gc_translate(.4,-.5)
+            -- gc_translate(0,-.1*math.abs(math.sin(love.timer.getTime()*8)))
+            gc_rotate(math.sin(love.timer.getTime()*8)*.1)
+            local size=.4
+            gc_setColor(1,1,1,.9)
+            gc_mRect('fill',0,0,size,size)
+            gc_setColor(COLOR.D)
+            gc_setLineWidth(0.026)
+            gc_mRect('line',0,0,size,size)
+            text:set(tostring(self.stepRemain))
+            gc_mDraw(text,0,0,nil,.005)
+            gc_pop()
+        end
+
         gc_pop()
-    end
 
-    -- Dice
-    if self.dice.animState~='hide' then
-        local d=self.dice
+        -- Layer 3
+        coroutine.yield()
+
+        -- Dice
+        if self.dice.animState~='hide' then
+            gc_push('transform')
+                local d=self.dice
+                gc_translate(d.x,d.y)
+                gc_scale(d.size*.626)
+                gc_setColor(self.color)
+                gc_setAlpha(d.alpha)
+                gc_rectangle('fill',-.5,-.5,1,1)
+                gc_setColor(1,1,1,.42*d.alpha)
+                gc_rectangle('fill',-.5,-.5,1,1)
+                gc_setColor(0,0,0,d.alpha)
+                gc_setLineWidth(0.042)
+                gc_rectangle('line',-.5,-.5,1,1)
+                text:set(tostring(d.value))
+                gc_mDraw(text,0,0,nil,.01)
+            gc_pop()
+        end
+
+        -- Layer 4
+        coroutine.yield()
+
+        -- Name Tag
         gc_push('transform')
-        gc_translate(d.x,d.y)
-        gc_scale(d.size*.626)
-        gc_setColor(self.color)
-        gc_setAlpha(d.alpha)
-        gc_rectangle('fill',-.5,-.5,1,1)
-        gc_setColor(1,1,1,.42*d.alpha)
-        gc_rectangle('fill',-.5,-.5,1,1)
-        gc_setColor(0,0,0,d.alpha)
-        gc_setLineWidth(0.042)
-        gc_rectangle('line',-.5,-.5,1,1)
-        text:set(tostring(d.value))
-        gc_mDraw(text,0,0,nil,.01)
+            gc_translate(self.x,self.y)
+            gc_translate(0,-1+.05*math.sin(love.timer.getTime()+self.id))
+            gc_setColor(.3,.3,.3,.5)
+            gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
+            gc_setColor(self.color)
+            gc_mDraw(self._name,0,0,nil,.01)
+            gc_setColor(1,1,1,.62)
+            gc_mDraw(self._name,0,0,nil,.01)
         gc_pop()
     end
 end

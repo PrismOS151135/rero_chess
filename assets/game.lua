@@ -5,6 +5,7 @@ local Player=require'assets.player'
 ---@field map ReroChess.Cell[]
 ---@field players ReroChess.Player[]
 ---@field spriteBatches love.SpriteBatch[]
+---@field drawCoroutine thread
 ---@field cam Zenitha.Camera
 ---@field text Zenitha.Text
 ---
@@ -38,9 +39,9 @@ local function parseProp(data)
     -- Parse data
     if type(data)=='string' then
         ---@type any
-        data=STRING.split(data,' ')
+        data=data:split(' ')
         for i=1,#data do
-            data[i]=STRING.split(data[i],',')
+            data[i]=data[i]:split(',')
         end
     elseif type(data)=='table' then
         if type(data[1])=='string' then
@@ -94,6 +95,7 @@ function Game.new(data)
         players={},
 
         spriteBatches={},
+        drawCoroutine={},
 
         cam=GC.newCamera(),
         text=TEXT.new(),
@@ -105,6 +107,9 @@ function Game.new(data)
     game.spriteBatches[2]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- Path
     game.spriteBatches[3]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- FG
     game.spriteBatches[4]=GC.newSpriteBatch(TEX.doodle,  nil,'dynamic') -- Doodle
+
+    local pathSB=game.spriteBatches[2]
+    local decoSB=game.spriteBatches[3]
 
     do -- Initialize map
         ---@type ReroChess.Cell[]
@@ -123,6 +128,14 @@ function Game.new(data)
                 next={},prev={},
                 propList=parseProp(d.prop),
             }
+            pathSB:add(
+                QUAD.world.tile[i%6+1],
+                x+MATH.rand(-.01,.01),
+                y+MATH.rand(-.01,.01),
+                MATH.rand(-.02,.02),
+                0.0038,nil,
+                128,128
+            )
             for _,prop in next,map[i].propList do
                 if prop[1]=='label' then
                     map[prop[2]]=map[i]
@@ -198,6 +211,11 @@ function Game.new(data)
         local cell=game.map[p.location] or error("Invalid start location for player "..i)
         p.location=cell.id
         p.x,p.y=p.x+cell.x,p.y+cell.y
+
+        local drawCo=coroutine.create(Player.draw)
+        coroutine.resume(drawCo,p)
+        game.drawCoroutine[i]=drawCo
+
         game.players[i]=p
     end
 
@@ -273,21 +291,19 @@ local gc_rectangle=gc.rectangle
 local gc_mDraw=GC.mDraw
 local tileText=GC.newText(assert(FONT.get(40)))
 
-local CHESS=TEX.chess
-local UI=TEX.ui
-
 function Game:draw()
     self.cam:apply()
 
-    for i=1,4 do
-        gc_draw(self.spriteBatches[i])
-    end
+    gc_setColor(1,1,1)
+    for i=1,4 do gc_draw(self.spriteBatches[i]) end
 
-    -- Map
-    local map=self.map
-    do -- Line beneath
+    if true then
+        -- Map
+
+        -- Line beneath
+        local map=self.map
         gc_setLineWidth(0.2)
-        gc_setColor(COLOR.L)
+        gc_setColor(1,1,1,.2)
         for i=1,#map do
             local cell=map[i]
             for n=1,#cell.next do
@@ -295,16 +311,16 @@ function Game:draw()
                 gc_line(cell.x,cell.y,next.x,next.y)
             end
         end
-    end
-    do -- Cell
+
+        -- Cell
         gc_setLineWidth(0.026)
         for i=1,#map do
             local cell=map[i]
             if cell.propList~='invis' then
                 local x,y=cell.x,cell.y
-                gc_setColor(COLOR.L)
+                gc_setColor(1,1,1,.2)
                 gc_rectangle('fill',x-.45,y-.45,.9,.9)
-                gc_setColor(COLOR.D)
+                gc_setColor(0,0,0,.2)
                 gc_rectangle('line',x-.45,y-.45,.9,.9)
                 if cell.text then
                     gc_setColor(1,1,1)
@@ -315,9 +331,12 @@ function Game:draw()
         end
     end
 
-    -- Players
-    for i=1,#self.players do
-        self.players[i]:draw()
+    --Player
+    local pList=self.players
+    for _=1,4 do
+        for i=1,#pList do
+            coroutine.resume(self.drawCoroutine[i])
+        end
     end
 
     self.text:draw()
