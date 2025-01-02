@@ -333,11 +333,11 @@ function Game:draw()
 
     --Player
     local pList=self.players
-    for _=1,4 do
-        for i=1,#pList do
-            coroutine.resume(self.drawCoroutine[i])
-        end
-    end
+    SHADER.light:send('k',0.4)
+    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
+    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
+    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
+    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
 
     self.text:draw()
 end

@@ -5,6 +5,7 @@ local game
 local scene={}
 
 function scene.load()
+    BG.set('play')
     game=require'assets.game'.new{
         texturePack='default',
         playerData={

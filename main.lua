@@ -90,8 +90,8 @@ do -- Image & Texture & Quad
             local t={}
             for _,meta in next,{
                 {name="普通的棋子娘",shadeX=0.02},
-                {name="一只略"},
-                {name="十七"},
+                {name="一只略",shadeX=-.005,shadeW=.22},
+                {name="十七",shadeX=0.015},
                 {name="棠棠猫",shadeX=0.013},
                 {name="关注娘",shadeX=0.013},
                 {name="铅笔略",shadeX=0.013},
@@ -182,7 +182,7 @@ SCN.addSwapStyle('swipe',{
     duration=.5,timeChange=.25,
     draw=function(t)
         t=t*2
-        GC.setColor(COLOR.LI)
+        GC.setColor(.6,.6,.6)
         GC.setAlpha(1-math.abs(t-.5))
         t=t*t*(2*t-3)*2+1
         GC.rectangle('fill',0,t*SCR.h,SCR.w,SCR.h)

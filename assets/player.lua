@@ -203,9 +203,18 @@ function Player:draw()
     while true do
         -- Layer 1
         do coroutine.yield()
+            -- Color Mark
+            -- gc_setColor(self.color)
+            -- gc_setAlpha(.8)
+            -- gc_setLineWidth(0.062)
+            -- gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,.3,.08)
+
             -- Shade
-            gc_setColor(0,0,0,.2)
+            gc_setColor(self.color)
+            gc_setAlpha(.4)
+            gc_setShader(SHADER.light)
             gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,skin.shadeW,skin.shadeH)
+            gc_setShader()
         end
 
         -- Layer 2
@@ -214,11 +223,11 @@ function Player:draw()
             gc_translate(self.x,self.y)
 
             -- Chess
+            -- gc_setColor(self.color)
+            -- gc_setShader(SHADER.color)
+            -- gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
+            -- gc_setShader()
             gc_setColor(1,1,1)
-            SHADER.color:send('targetColor',self.color)
-            gc_setShader(SHADER.color)
-            gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
-            gc_setShader()
             gc_draw(skin.base,0,0.1,nil,0.003,nil,128,256)
             gc_draw(skin.normal,0,0.1,nil,0.003,nil,128,256)
 
