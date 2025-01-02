@@ -6,7 +6,7 @@ local scene={}
 
 function scene.load()
     game=require'assets.game'.new{
-        texturePack='world1',
+        texturePack='default',
         playerData={
             {name='略',startLocation='start1'},
             {name='略略',startLocation='start2'},

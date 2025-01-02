@@ -12,8 +12,8 @@ function scene.draw()
     GC.translate(SCR.w/2,SCR.h/2)
     GC.setColor(1,1,1)
     GC.mDrawL(
-        IMG.menu,love.timer.getTime()*12%6+1,0,0,0,
-        math.min(SCR.w/IMG.menu:getWidth(),SCR.h/IMG.menu:getHeight())
+        TEX.menu,love.timer.getTime()*12%6+1,0,0,0,
+        math.min(SCR.w/TEX.menu:getWidth(),SCR.h/TEX.menu:getHeight())
     )
 
     GC.replaceTransform(SCR.xOy)

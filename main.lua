@@ -83,26 +83,64 @@ WIDGET.setDefaultOption{
     inputBox={},
 }
 
-do -- IMG
+do -- Image & Texture & Quad
     local path='assets/texture/'
-    IMG.init{
+    TEX=IMG.init({
         chess=path..'chess.png',
-        item=path..'item.png',
         ui=path..'ui.png',
+        doodle=path..'doodle.png',
         world={
-            world1=path..'world1.png',
-            world2=path..'world2.png',
-            world3=path..'world3.png',
+            default=path..'world_default.png',
+        },
+        menu=GC.newArrayImage{
+            path..'menu_anim_1.png',
+            path..'menu_anim_2.png',
+            path..'menu_anim_3.png',
+            path..'menu_anim_4.png',
+            path..'menu_anim_5.png',
+            path..'menu_anim_6.png',
+        },
+    },true)
+
+    -- Quad generator based on 128x128 grid
+    local function q(x,y,w,h) return GC.newQuad(x*128,y*128,(w or 1)*128,(h or w or 1)*128,2048,2048) end
+    QUAD={
+        world={
+            tile={
+                q(0,0,2),
+                q(0,2,2),
+                q(0,4,2),
+                q(0,6,2),
+                q(0,8,2),
+                q(0,10,2),
+            },
+            moveF    =q(2  ,0  ,0.5),
+            moveB    =q(2  ,0.5,0.5),
+            warn     =q(2.5,0  ,0.5),
+            quetion  =q(2.5,0.5,0.5),
+            hospital =q(3,0),
+            exit     =q(2,1),
+        },
+        doodle={
+            smile     =q(0,0),
+            what      =q(1,0),
+            explosion =q(2,0),
+            grass     =q(3,0),
+            flower    =q(4,0),
+            otto      =q(5,0),
+            drool     =q(6,0),
+            long_tu   =q(7,0),
+            ant       =q(8,0),
+            cat       =q(9,0),
+            poop      =q(10,0),
+            cry       =q(11,0),
+            heart     =q(12,0),
+            happy     =q(13,0),
+            banana    =q(14,0),
+            -- _      =crop128(15,0),
+            -- _      =crop128(0,1),
         },
     }
-    IMG.menu=love.graphics.newArrayImage({
-        path..'menu_anim_1.png',
-        path..'menu_anim_2.png',
-        path..'menu_anim_3.png',
-        path..'menu_anim_4.png',
-        path..'menu_anim_5.png',
-        path..'menu_anim_6.png',
-    })
 end
 
 FONT.load{

@@ -2,9 +2,9 @@ local Prop=require'assets.prop'
 local Player=require'assets.player'
 
 ---@class ReroChess.Game
----@field texturePack love.image
----@field players ReroChess.Player[]
 ---@field map ReroChess.Cell[]
+---@field players ReroChess.Player[]
+---@field spriteBatches love.SpriteBatch[]
 ---@field cam Zenitha.Camera
 ---@field text Zenitha.Text
 ---
@@ -81,7 +81,7 @@ end
 ---@field texturePack string
 ---@field playerData ReroChess.PlayerData[]
 ---@field mapData ReroChess.CellData[]
--- 
+--
 ---@param data ReroChess.MapData
 function Game.new(data)
     assert(data.texturePack,"Missing field 'texturePack' (string)")
@@ -90,14 +90,21 @@ function Game.new(data)
 
     ---@type ReroChess.Game
     local game=setmetatable({
-        texturePack=IMG.world[data.texturePack] or error("Invalid texture pack: "..data.texturePack),
         map={},
         players={},
+
+        spriteBatches={},
 
         cam=GC.newCamera(),
         text=TEXT.new(),
         roundIndex=1,
     },Game)
+
+    local worldTexture=TEX.world[data.texturePack] or error("Invalid texture pack: "..data.texturePack)
+    game.spriteBatches[1]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- BG
+    game.spriteBatches[2]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- Path
+    game.spriteBatches[3]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- FG
+    game.spriteBatches[4]=GC.newSpriteBatch(TEX.doodle,  nil,'dynamic') -- Doodle
 
     do -- Initialize map
         ---@type ReroChess.Cell[]
@@ -266,12 +273,15 @@ local gc_rectangle=gc.rectangle
 local gc_mDraw=GC.mDraw
 local tileText=GC.newText(assert(FONT.get(40)))
 
-local CHESS=IMG.chess
-local ITEM=IMG.item
-local UI=IMG.ui
+local CHESS=TEX.chess
+local UI=TEX.ui
 
 function Game:draw()
     self.cam:apply()
+
+    for i=1,4 do
+        gc_draw(self.spriteBatches[i])
+    end
 
     -- Map
     local map=self.map
