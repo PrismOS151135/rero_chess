@@ -5,7 +5,7 @@ local Player=require'assets.player'
 ---@field map ReroChess.Cell[]
 ---@field players ReroChess.Player[]
 ---@field spriteBatches love.SpriteBatch[]
----@field drawCoroutine thread
+---@field drawCoroutine {th:thread, p:ReroChess.Player}[]
 ---@field cam Zenitha.Camera
 ---@field text Zenitha.Text
 ---
@@ -220,7 +220,7 @@ function Game.new(data)
 
         local drawCo=coroutine.create(Player.draw)
         coroutine.resume(drawCo,p)
-        game.drawCoroutine[i]=drawCo
+        game.drawCoroutine[i]={th=drawCo,p=p}
 
         game.players[i]=p
     end
@@ -258,6 +258,14 @@ function Game:roll()
     end
 end
 
+---@param a {p:ReroChess.Player}
+---@param b {p:ReroChess.Player}
+local function coSorter(a,b)
+    return a.p.y<b.p.y
+end
+function Game:sortPlayerLayer()
+    table.sort(self.drawCoroutine,coSorter)
+end
 function Game:step()
     local p=self.players[self.roundIndex]
     if p.moving then
@@ -340,11 +348,11 @@ function Game:draw()
 
     --Player
     local pList=self.players
-    local drawCoroutines=self.drawCoroutine
-    for i=1,#pList do resume(drawCoroutines[i]) end
-    for i=1,#pList do resume(drawCoroutines[i]) end
-    for i=1,#pList do resume(drawCoroutines[i]) end
-    for i=1,#pList do resume(drawCoroutines[i]) end
+    local co=self.drawCoroutine
+    for i=1,#pList do resume(co[i].th) end
+    for i=1,#pList do resume(co[i].th) end
+    for i=1,#pList do resume(co[i].th) end
+    for i=1,#pList do resume(co[i].th) end
 
     self.text:draw()
 end

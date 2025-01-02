@@ -51,6 +51,7 @@ Player.__index=Player
 ---@field skin? string
 ---@field startLocation? integer|string
 ---@field startMoveDir? 'next' | 'prev'
+---@field size? number
 ---@field color? Zenitha.Color
 ---@field dicePoints? integer[]
 ---@field diceWeights? number[]
@@ -74,6 +75,7 @@ function Player.new(id,data,game)
         skin=data.skin or '普通的棋子娘',
 
         color=data.color or defaultColor[id],
+        size=(data.size or 0.7)/256,
         faceDir=1,
         face='normal',
         location=data.startLocation or 1,
@@ -163,6 +165,7 @@ function Player:move(stepCount)
 
             -- Trigger cell property
             self:triggerCell()
+            self.game:sortPlayerLayer()
         end
         self.moving=false
         self.face='normal'
@@ -202,8 +205,7 @@ local gc_draw=gc.draw
 local gc_setAlpha=GC.setAlpha
 local gc_mRect,gc_mDraw=GC.mRect,GC.mDraw
 local text=GC.newText(assert(FONT.get(60)))
-function Player:drawShade()
-end
+
 function Player:draw()
     local skin=TEX.chess[self.skin]
     while true do
@@ -234,8 +236,8 @@ function Player:draw()
             -- gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
             -- gc_setShader()
             gc_setColor(1,1,1)
-            gc_draw(skin.base,0,0.1,nil,self.faceDir*0.003,0.003,128,256)
-            gc_draw(skin[self.face],0,0.1,nil,self.faceDir*0.003,0.003,128,256)
+            gc_draw(skin.base,0,0.1,nil,self.faceDir*self.size,self.size,128,256)
+            gc_draw(skin[self.face],0,0.1,nil,self.faceDir*self.size,self.size,128,256)
 
             -- Chess (circle)
             -- gc_setColor(self.color)
@@ -288,7 +290,7 @@ function Player:draw()
             gc_push('transform')
             gc_translate(self.x,self.y)
             -- Name Tag
-                gc_translate(0,-.8+.05*math.sin(love.timer.getTime()+self.id))
+                gc_translate(0,self.size-.8+.05*math.sin(love.timer.getTime()+self.id))
                 gc_setColor(.3,.3,.3,.5)
                 gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
                 gc_setColor(self.color)
