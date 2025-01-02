@@ -201,7 +201,7 @@ function Player:draw()
     local skin=TEX.chess[self.skin]
     while true do
         -- Layer 1
-        do coroutine.yield()
+        do if coroutine.yield()~=true then error("Rendering signal mis-match") end
             -- Color Mark
             -- gc_setColor(self.color)
             -- gc_setAlpha(.8)

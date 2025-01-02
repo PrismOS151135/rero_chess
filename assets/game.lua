@@ -4,6 +4,7 @@ local Player=require'assets.player'
 ---@class ReroChess.Game
 ---@field map ReroChess.Cell[]
 ---@field players ReroChess.Player[]
+---@field textBatch love.Text
 ---@field spriteBatches love.SpriteBatch[]
 ---@field drawCoroutine {th:thread, p:ReroChess.Player}[]
 ---@field cam Zenitha.Camera
@@ -27,7 +28,6 @@ Game.__index=Game
 ---@field propList? ReroChess.CellProp[]
 ---
 ---@field sprite? string
----@field text? string
 
 
 
@@ -95,6 +95,7 @@ function Game.new(data)
         players={},
 
         spriteBatches={},
+        textBatch=GC.newText(FONT.get(40)),
         drawCoroutine={},
 
         cam=GC.newCamera(),
@@ -110,6 +111,43 @@ function Game.new(data)
 
     local pathSB=game.spriteBatches[2]
     local decoSB=game.spriteBatches[3]
+    local textB=game.textBatch
+
+    -- Tool func
+    local function getQuadCenter(quad)
+        local _,_,w,h=quad:getViewport()
+        return w/2,h/2
+    end
+    local function addQ(mode,cell,prop,item)
+        if mode=='text' then
+            textB:addf(
+                {prop[0] and COLOR.LR or COLOR.lC,item},
+                620,'center',
+                cell.x-310*.01,cell.y-.22,
+                nil,.01
+            )
+        elseif mode=='deco' then
+            -- decoSB:add(
+            pathSB:add(
+                item,
+                cell.x+.22,cell.y-.22,
+                nil,0.006,nil,
+                -- cell.x,cell.y,
+                -- nil,0.01,nil,
+                getQuadCenter(item)
+            )
+        elseif mode=='DECO' then
+            -- decoSB:add(
+            pathSB:add(
+                item,
+                -- cell.x+.22,cell.y-.22,
+                -- nil,0.006,nil,
+                cell.x,cell.y,
+                nil,0.01,nil,
+                getQuadCenter(item)
+            )
+        end
+    end
 
     do -- Initialize map
         ---@type ReroChess.Cell[]
@@ -128,13 +166,14 @@ function Game.new(data)
                 next={},prev={},
                 propList=parseProp(d.prop),
             }
+            local quad=QUAD.world.tile[i%6+1]
             pathSB:add(
-                QUAD.world.tile[i%6+1],
+                quad,
                 x+MATH.rand(-.01,.01),
                 y+MATH.rand(-.01,.01),
-                MATH.rand(-.02,.02),
+                MATH.rand(-.03,.03),
                 0.0038,nil,
-                128,128
+                getQuadCenter(quad)
             )
             for _,prop in next,map[i].propList do
                 if prop[1]=='label' then
@@ -160,20 +199,23 @@ function Game.new(data)
                 local prop=cell.propList[i]
 
                 if prop[1]=='text' then
-                    cell.text={prop[0] and COLOR.R or COLOR.D,prop[2]}
+                    addQ('text',cell,prop,prop[2])
+                elseif prop[1]=='step' then
+                    addQ('text',cell,prop,("+%d"):format(prop[2]))
+                    addQ('deco',cell,prop,QUAD.world.moveF)
                 elseif prop[1]=='move' then
-                    cell.text={prop[0] and COLOR.R or COLOR.D,("%+d"):format(prop[2])}
+                    addQ('text',cell,prop,("%d"):format(math.abs(prop[2]))..(prop[2]>0 and '+' or '-'))
+                    addQ('deco',cell,prop,prop[2]>0 and QUAD.world.moveF or QUAD.world.moveB)
                 elseif prop[1]=='teleport' then
-                    cell.text={prop[0] and COLOR.R or COLOR.D,"T"}
                     if type(prop[2])=='string' then
                         prop[2]=assertf(map[prop[2]],'Invalid teleport target: %s',prop[2]).id
                     end
+                    addQ('DECO',cell,prop,QUAD.world.question)
                 elseif prop[1]=='stop' then
-                    cell.text={prop[0] and COLOR.R or COLOR.D,"X"}
+                    addQ('text',cell,prop,"X")
+                    addQ('deco',cell,prop,QUAD.world.warn)
                 elseif prop[1]=='reverse' then
-                    cell.text={prop[0] and COLOR.R or COLOR.D,"R"}
-                elseif prop[1]=='step' then
-                    cell.text={prop[0] and COLOR.R or COLOR.D,("(%d)"):format(prop[2])}
+                    addQ('text',cell,prop,"R")
                 end
 
                 if Prop[prop[1]].tag then
@@ -302,18 +344,27 @@ local gc=love.graphics
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle=gc.rectangle
-local gc_mDraw=GC.mDraw
 local resume=coroutine.resume
-local tileText=GC.newText(assert(FONT.get(40)))
 
 function Game:draw()
     self.cam:apply()
 
+    local SB=self.spriteBatches
     gc_setColor(1,1,1)
-    for i=1,4 do gc_draw(self.spriteBatches[i]) end
+    gc_draw(SB[1]) -- BG
+    gc_draw(SB[2]) -- Path
+    gc_setColor(.26,.26,.26,.7)
+    gc_draw(self.textBatch,-.01,-.01)
+    gc_draw(self.textBatch,0.01,-.01)
+    gc_draw(self.textBatch,-.01,0.01)
+    gc_draw(self.textBatch,0.01,0.01)
+    gc_setColor(1,1,1)
+    gc_draw(self.textBatch)
+    gc_draw(SB[3]) -- FG
+    gc_draw(SB[4]) -- Doodle
 
-    if true then
-        -- Map
+    if false then
+        -- Map (Debug)
 
         -- Line beneath
         local map=self.map
@@ -337,11 +388,6 @@ function Game:draw()
                 gc_rectangle('fill',x-.45,y-.45,.9,.9)
                 gc_setColor(0,0,0,.2)
                 gc_rectangle('line',x-.45,y-.45,.9,.9)
-                if cell.text then
-                    gc_setColor(1,1,1)
-                    tileText:set(cell.text)
-                    gc_mDraw(tileText,x,y,nil,.01)
-                end
             end
         end
     end
@@ -349,7 +395,7 @@ function Game:draw()
     --Player
     local pList=self.players
     local co=self.drawCoroutine
-    for i=1,#pList do resume(co[i].th) end
+    for i=1,#pList do resume(co[i].th,true) end
     for i=1,#pList do resume(co[i].th) end
     for i=1,#pList do resume(co[i].th) end
     for i=1,#pList do resume(co[i].th) end
