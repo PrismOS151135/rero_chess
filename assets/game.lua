@@ -212,6 +212,12 @@ function Game.new(data)
         p.location=cell.id
         p.x,p.y=p.x+cell.x,p.y+cell.y
 
+        local nextLocation=game:getNext(p.location,p.moveDir)
+        if nextLocation then
+            local nCell=game.map[nextLocation]
+            p.faceDir=p.x<=nCell.x and 1 or -1
+        end
+
         local drawCo=coroutine.create(Player.draw)
         coroutine.resume(drawCo,p)
         game.drawCoroutine[i]=drawCo

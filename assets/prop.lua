@@ -57,6 +57,7 @@ Prop.step={
             x=0.4,
         }
         P.stepRemain=P.stepRemain+dist
+        P.face='forward'
     end,
 }
 
@@ -78,6 +79,7 @@ Prop.move={
         P.stepRemain=math.abs(dist)
         P.curDir=dist>0 and 'next' or 'prev'
         P.nextLocation,P.curDir=P.game:getNext(P.location,P.curDir)
+        P.face=P.curDir==P.moveDir and 'forward' or 'backward'
     end,
 }
 
@@ -99,6 +101,7 @@ Prop.teleport={
         P.location=target
         P.x,P.y=P.game.map[P.location].x,P.game.map[P.location].y
         P.nextLocation,P.curDir=P.game:getNext(P.location,P.moveDir)
+        P.face='jail'
     end,
 }
 
@@ -125,6 +128,7 @@ Prop.reverse={
         P.moveDir=P.moveDir=='next' and 'prev' or 'next'
         P.curDir=P.curDir=='next' and 'prev' or 'next'
         P.nextLocation,P.curDir=P.game:getNext(P.location,P.curDir)
+        P.face='backward'
     end,
 }
 

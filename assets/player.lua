@@ -8,6 +8,8 @@ local Prop=require'assets.prop'
 ---@field name string
 ---@field skin string
 ---@field color Zenitha.Color
+---@field faceDir -1 | 1
+---@field face 'normal' | 'forward' | 'backward' | 'selected' | 'jail'
 ---
 ---@field location integer
 ---@field moveDir 'next' | 'prev' | false
@@ -72,6 +74,8 @@ function Player.new(id,data,game)
         skin=data.skin or '普通的棋子娘',
 
         color=data.color or defaultColor[id],
+        faceDir=1,
+        face='normal',
         location=data.startLocation or 1,
         moveDir=data.startMoveDir or 'next',
         dice={
@@ -134,6 +138,7 @@ function Player:move(stepCount)
             local sx,sy=self.x,self.y
             local ex,ey=self.game.map[self.nextLocation].x+MATH.rand(-.15,.15),self.game.map[self.nextLocation].y+MATH.rand(-.15,.15)
             local animLock=true
+            self.faceDir=sx<=ex and 1 or -1
 
             -- Wait signal
             repeat coroutine.yield() until self.moveSignal
@@ -160,6 +165,7 @@ function Player:move(stepCount)
             self:triggerCell()
         end
         self.moving=false
+        self.face='normal'
     end)
 end
 
@@ -228,8 +234,8 @@ function Player:draw()
             -- gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
             -- gc_setShader()
             gc_setColor(1,1,1)
-            gc_draw(skin.base,0,0.1,nil,0.003,nil,128,256)
-            gc_draw(skin.normal,0,0.1,nil,0.003,nil,128,256)
+            gc_draw(skin.base,0,0.1,nil,self.faceDir*0.003,0.003,128,256)
+            gc_draw(skin[self.face],0,0.1,nil,self.faceDir*0.003,0.003,128,256)
 
             -- Chess (circle)
             -- gc_setColor(self.color)

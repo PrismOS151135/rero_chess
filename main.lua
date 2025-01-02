@@ -99,12 +99,12 @@ do -- Image & Texture & Quad
                 {name="普通的熊猫人",shadeX=0.013},
             } do
                 t[meta.name]={
-                    backward =("$1chess/$2/backward.png"):repD(path,meta.name),
                     base     =("$1chess/$2/base.png"    ):repD(path,meta.name),
-                    forward  =("$1chess/$2/forward.png" ):repD(path,meta.name),
-                    jail     =("$1chess/$2/jail.png"    ):repD(path,meta.name),
                     normal   =("$1chess/$2/normal.png"  ):repD(path,meta.name),
+                    forward  =("$1chess/$2/forward.png" ):repD(path,meta.name),
+                    backward =("$1chess/$2/backward.png"):repD(path,meta.name),
                     selected =("$1chess/$2/selected.png"):repD(path,meta.name),
+                    jail     =("$1chess/$2/jail.png"    ):repD(path,meta.name),
                     shadeX=meta.shadeX or 0,
                     shadeY=meta.shadeY or .1,
                     shadeW=meta.shadeW or .2,
