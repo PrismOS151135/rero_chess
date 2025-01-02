@@ -289,6 +289,7 @@ local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle=gc.rectangle
 local gc_mDraw=GC.mDraw
+local resume=coroutine.resume
 local tileText=GC.newText(assert(FONT.get(40)))
 
 function Game:draw()
@@ -333,11 +334,11 @@ function Game:draw()
 
     --Player
     local pList=self.players
-    SHADER.light:send('k',0.4)
-    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
-    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
-    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
-    for i=1,#pList do coroutine.resume(self.drawCoroutine[i]) end
+    local drawCoroutines=self.drawCoroutine
+    for i=1,#pList do resume(drawCoroutines[i]) end
+    for i=1,#pList do resume(drawCoroutines[i]) end
+    for i=1,#pList do resume(drawCoroutines[i]) end
+    for i=1,#pList do resume(drawCoroutines[i]) end
 
     self.text:draw()
 end

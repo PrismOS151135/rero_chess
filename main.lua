@@ -10,7 +10,7 @@ love.mouse.setVisible(false)
 
 require'Zenitha'
 
-ZENITHA.setFirstScene('menu')
+ZENITHA.setFirstScene('title')
 ZENITHA.setAppName(require'version'.appName)
 ZENITHA.setMainLoopSpeed(60)
 ZENITHA.setShowFPS(false)
@@ -118,7 +118,7 @@ do -- Image & Texture & Quad
         world={
             default=path..'world_default.png',
         },
-        menu=GC.newArrayImage{
+        menu={
             path..'menu_anim_1.png',
             path..'menu_anim_2.png',
             path..'menu_anim_3.png',
@@ -212,6 +212,15 @@ for _,v in next,love.filesystem.getDirectoryItems('assets/shader') do
         SHADER[name]=suc and res or error("Err in compiling Shader '"..name.."': "..tostring(res))
     end
 end
+-- Initialize shader parameters
+for k,v in next,{
+    gaussianBlur={
+        {'smpCount',10}, -- min(400 * radius, 40)
+        {'radius',0.026},
+    },
+    darker={{'k',0.4}},
+    lighter={{'k',0.2}},
+} do for i=1,#v do SHADER[k]:send(unpack(v[i])) end end
 
 for _,v in next,love.filesystem.getDirectoryItems('assets/background') do
     if FILE.isSafe('assets/background/'..v) and v:sub(-3)=='lua' then

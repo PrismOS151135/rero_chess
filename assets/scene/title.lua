@@ -7,15 +7,6 @@ function scene.load()
 end
 
 function scene.draw()
-    GC.clear(.89,.89,.89)
-    GC.replaceTransform(SCR.origin)
-    GC.translate(SCR.w/2,SCR.h/2)
-    GC.setColor(1,1,1)
-    GC.mDrawL(
-        TEX.menu,love.timer.getTime()*12%6+1,0,0,0,
-        math.min(SCR.w/TEX.menu:getWidth(),SCR.h/TEX.menu:getHeight())
-    )
-
     GC.replaceTransform(SCR.xOy)
     GC.setColor(COLOR.D)
     FONT.set(90)

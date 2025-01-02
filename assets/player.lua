@@ -212,7 +212,7 @@ function Player:draw()
             -- Shade
             gc_setColor(self.color)
             gc_setAlpha(.4)
-            gc_setShader(SHADER.light)
+            gc_setShader(SHADER.darker)
             gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,skin.shadeW,skin.shadeH)
             gc_setShader()
         end
@@ -224,7 +224,7 @@ function Player:draw()
 
             -- Chess
             -- gc_setColor(self.color)
-            -- gc_setShader(SHADER.color)
+            -- gc_setShader(SHADER.lighter)
             -- gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
             -- gc_setShader()
             gc_setColor(1,1,1)
