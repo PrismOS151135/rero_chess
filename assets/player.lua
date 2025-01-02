@@ -10,6 +10,7 @@ local Prop=require'assets.prop'
 ---@field color Zenitha.Color
 ---@field faceDir -1 | 1
 ---@field face 'normal' | 'forward' | 'backward' | 'selected' | 'jail'
+---@field size number
 ---
 ---@field location integer
 ---@field moveDir 'next' | 'prev' | false
@@ -279,12 +280,14 @@ function Player:draw()
         do coroutine.yield()
             gc_push('transform')
             gc_translate(self.x,self.y)
+
             -- Name Tag
-                gc_translate(0,self.size-.8+.05*math.sin(love.timer.getTime()+self.id))
-                gc_setColor(.3,.3,.3,.5)
-                gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
-                gc_setColor(self.color)
-                gc_mDraw(self._name,0,0,nil,.01)
+            gc_translate(0,(-256+10*math.sin(love.timer.getTime()+self.id))*self.size)
+            gc_setColor(.3,.3,.3,.5)
+            gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
+            gc_setColor(self.color)
+            gc_mDraw(self._name,0,0,nil,.01)
+
             gc_pop()
         end
     end
