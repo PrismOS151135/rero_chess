@@ -209,11 +209,12 @@ function Player:draw()
             -- gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,.3,.08)
 
             -- Shade
-            gc_setColor(self.color)
-            gc_setAlpha(.4)
-            gc_setShader(SHADER.darker)
-            gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,skin.shadeW,skin.shadeH)
-            gc_setShader()
+            gc_push('transform')
+            gc_translate(self.x+skin.shadeX,self.y+skin.shadeY)
+            gc_scale(1,.26)
+            gc_setColor(self.color[1]*.5,self.color[2]*.5,self.color[3]*.5,.62)
+            GC.blurCircle(.26,0,0,skin.shadeR)
+            gc_pop()
         end
 
         -- Layer 2

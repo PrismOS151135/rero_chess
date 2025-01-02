@@ -84,47 +84,47 @@ WIDGET.setDefaultOption{
 }
 
 do -- Image & Texture & Quad
-    local path='assets/texture/'
+
+    local path=function(i) return 'assets/texture/'..i end
     TEX=IMG.init({
         chess=(function()
             local t={}
             for _,meta in next,{
                 {name="普通的棋子娘",shadeX=0.02},
-                {name="一只略",shadeX=-.005,shadeW=.22},
+                {name="一只略",shadeX=-.005,shadeR=.3},
                 {name="十七",shadeX=0.015},
                 {name="棠棠猫",shadeX=0.013},
                 {name="关注娘",shadeX=0.013},
                 {name="铅笔略",shadeX=0.013},
-                {name="长相潦草的幽灵",shadeW=.3},
+                {name="长相潦草的幽灵",shadeR=.36},
                 {name="普通的熊猫人",shadeX=0.013},
             } do
                 t[meta.name]={
-                    base     =("$1chess/$2/base.png"    ):repD(path,meta.name),
-                    normal   =("$1chess/$2/normal.png"  ):repD(path,meta.name),
-                    forward  =("$1chess/$2/forward.png" ):repD(path,meta.name),
-                    backward =("$1chess/$2/backward.png"):repD(path,meta.name),
-                    selected =("$1chess/$2/selected.png"):repD(path,meta.name),
-                    jail     =("$1chess/$2/jail.png"    ):repD(path,meta.name),
+                    base     =path(("chess/$1/base.png"    ):repD(meta.name)),
+                    normal   =path(("chess/$1/normal.png"  ):repD(meta.name)),
+                    forward  =path(("chess/$1/forward.png" ):repD(meta.name)),
+                    backward =path(("chess/$1/backward.png"):repD(meta.name)),
+                    selected =path(("chess/$1/selected.png"):repD(meta.name)),
+                    jail     =path(("chess/$1/jail.png"    ):repD(meta.name)),
                     shadeX=meta.shadeX or 0,
                     shadeY=meta.shadeY or .1,
-                    shadeW=meta.shadeW or .2,
-                    shadeH=meta.shadeH or .06,
+                    shadeR=meta.shadeR or .26,
                 }
             end
             return t
         end)(),
-        ui=path..'ui.png',
-        doodle=path..'doodle.png',
+        ui=path('ui.png'),
+        doodle=path('doodle.png'),
         world={
-            default=path..'world_default.png',
+            default=path('world_default.png'),
         },
         menu={
-            path..'menu_anim_1.png',
-            path..'menu_anim_2.png',
-            path..'menu_anim_3.png',
-            path..'menu_anim_4.png',
-            path..'menu_anim_5.png',
-            path..'menu_anim_6.png',
+            path('menu_anim_1.png'),
+            path('menu_anim_2.png'),
+            path('menu_anim_3.png'),
+            path('menu_anim_4.png'),
+            path('menu_anim_5.png'),
+            path('menu_anim_6.png'),
         },
     },true)
 
@@ -142,10 +142,10 @@ do -- Image & Texture & Quad
                 q(0,8,2),
                 q(0,10,2),
             },
-            moveF    =q(2  ,0  ,0.5),
-            moveB    =q(2  ,0.5,0.5),
+            moveB    =q(2  ,0  ,0.5),
+            moveF    =q(2  ,0.5,0.5),
             warn     =q(2.5,0  ,0.5),
-            quetion  =q(2.5,0.5,0.5),
+            question =q(2.5,0.5,0.5),
             hospital =q(3,0),
             exit     =q(2,1),
         },
