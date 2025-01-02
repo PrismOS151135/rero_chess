@@ -8,9 +8,12 @@ function scene.load()
     game=require'assets.game'.new{
         texturePack='default',
         playerData={
-            {name='略略',skin="关注娘",startLocation='start1'},
-            {name='略',skin="一只略",startLocation='start3'},
-            {name='略略略',skin=nil,startLocation='start2'},
+            {name='略',skin="一只略",color=COLOR.lY,startLocation='start1'},
+            {name='关注',skin="关注娘",color=COLOR.lR,startLocation='start1'},
+            {name='普通',skin="普通的棋子娘",color={COLOR.HEX'A0E0F0'},startLocation='start2'},
+            {name='十七',skin="十七",color=COLOR.lO,startLocation='start2'},
+            {name='？',skin="普通的熊猫人",color=COLOR.LP,startLocation='start3'},
+            {name='鬼',skin="长相潦草的幽灵",color=COLOR.DL,startLocation='start3'},
         },
         mapData={
             {x=-3,y=-1.5,prop='label,start1'},
@@ -23,12 +26,12 @@ function scene.load()
 
             {x=-2,y=0,prop='text,t label,start2'},
             {dx=1,prop='center move,1'},
-            {dx=1},
+            {dx=1,prop='label,start3'},
             {dy=1,prop='move,-3'},
             {dy=1,prop='move,2'},
             {dx=-1,prop='teleport,start1'},
             {dx=-1,prop='!reverse'},
-            {dy=-1,prop='next,start2 label,start3'},
+            {dy=-1,prop='next,start2'},
         },
     }
 end

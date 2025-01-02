@@ -49,18 +49,18 @@ Player.__index=Player
 ---@field skin? string
 ---@field startLocation? integer|string
 ---@field startMoveDir? 'next' | 'prev'
----@field customColor? Zenitha.Color
+---@field color? Zenitha.Color
 ---@field dicePoints? integer[]
 ---@field diceWeights? number[]
 
 local defaultColor={
-    COLOR.R,
-    COLOR.Y,
-    COLOR.C,
-    COLOR.P,
-    COLOR.O,
-    COLOR.G,
-    COLOR.B,
+    COLOR.lR,
+    COLOR.lY,
+    COLOR.lC,
+    COLOR.lP,
+    COLOR.lO,
+    COLOR.lG,
+    COLOR.lB,
 }
 
 ---@param data ReroChess.PlayerData
@@ -71,7 +71,7 @@ function Player.new(id,data,game)
         name=data.name,
         skin=data.skin or '普通的棋子娘',
 
-        color=data.customColor or defaultColor[id],
+        color=data.color or defaultColor[id],
         location=data.startLocation or 1,
         moveDir=data.startMoveDir or 'next',
         dice={
@@ -80,8 +80,8 @@ function Player.new(id,data,game)
             animState='hide',
         },
 
-        x=(id-1)%2==0 and -.2 or .2,
-        y=(id-1)%4<=1 and -.2 or .2,
+        x=(id-1)%2==0 and -.26 or .26,
+        y=(id-1)%4<=1 and -.26 or .26,
     },Player)
     player._name=GC.newText(FONT.get(20),player.name)
     assert(#player.dice.points==#player.dice.weights,"Dice points and weights mismatch")
@@ -189,6 +189,7 @@ end
 local gc=love.graphics
 local gc_push,gc_pop=gc.push,gc.pop
 local gc_translate,gc_scale,gc_rotate=gc.translate,gc.scale,gc.rotate
+local gc_setShader=gc.setShader
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_rectangle,gc_circle,gc_ellipse=gc.rectangle,gc.circle,gc.ellipse
 local gc_draw=gc.draw
@@ -204,7 +205,7 @@ function Player:draw()
         do coroutine.yield()
             -- Shade
             gc_setColor(0,0,0,.2)
-            gc_ellipse('fill',self.x+TEX.chess[self.skin].shadeX,self.y+.1,.2,.08)
+            gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,skin.shadeW,skin.shadeH)
         end
 
         -- Layer 2
@@ -214,6 +215,10 @@ function Player:draw()
 
             -- Chess
             gc_setColor(1,1,1)
+            SHADER.color:send('targetColor',self.color)
+            gc_setShader(SHADER.color)
+            gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
+            gc_setShader()
             gc_draw(skin.base,0,0.1,nil,0.003,nil,128,256)
             gc_draw(skin.normal,0,0.1,nil,0.003,nil,128,256)
 
@@ -254,8 +259,6 @@ function Player:draw()
                     gc_setColor(self.color)
                     gc_setAlpha(d.alpha)
                     gc_rectangle('fill',-.5,-.5,1,1)
-                    gc_setColor(1,1,1,.42*d.alpha)
-                    gc_rectangle('fill',-.5,-.5,1,1)
                     gc_setColor(0,0,0,d.alpha)
                     gc_setLineWidth(0.042)
                     gc_rectangle('line',-.5,-.5,1,1)
@@ -274,8 +277,6 @@ function Player:draw()
                 gc_setColor(.3,.3,.3,.5)
                 gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
                 gc_setColor(self.color)
-                gc_mDraw(self._name,0,0,nil,.01)
-                gc_setColor(1,1,1,.62)
                 gc_mDraw(self._name,0,0,nil,.01)
             gc_pop()
         end

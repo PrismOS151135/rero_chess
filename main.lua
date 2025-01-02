@@ -89,13 +89,13 @@ do -- Image & Texture & Quad
         chess=(function()
             local t={}
             for _,meta in next,{
-                {name="普通的棋子娘",shadeX=0.015},
-                {name="一只略",shadeX=0},
-                {name="十七",shadeX=0.02},
+                {name="普通的棋子娘",shadeX=0.02},
+                {name="一只略"},
+                {name="十七"},
                 {name="棠棠猫",shadeX=0.013},
                 {name="关注娘",shadeX=0.013},
                 {name="铅笔略",shadeX=0.013},
-                {name="长相潦草的幽灵",shadeX=0.013},
+                {name="长相潦草的幽灵",shadeW=.3},
                 {name="普通的熊猫人",shadeX=0.013},
             } do
                 t[meta.name]={
@@ -105,7 +105,10 @@ do -- Image & Texture & Quad
                     jail     =("$1chess/$2/jail.png"    ):repD(path,meta.name),
                     normal   =("$1chess/$2/normal.png"  ):repD(path,meta.name),
                     selected =("$1chess/$2/selected.png"):repD(path,meta.name),
-                    shadeX=meta.shadeX,
+                    shadeX=meta.shadeX or 0,
+                    shadeY=meta.shadeY or .1,
+                    shadeW=meta.shadeW or .2,
+                    shadeH=meta.shadeH or .06,
                 }
             end
             return t
@@ -199,6 +202,16 @@ Texts=LANG.set('zh')
 
 CHAR=require'assets.char'
 CURSOR=require'assets.cursor'
+
+---@type table<string, love.Shader>
+SHADER={}
+for _,v in next,love.filesystem.getDirectoryItems('assets/shader') do
+    if FILE.isSafe('assets/shader/'..v) then
+        local name=v:sub(1,-6)
+        local suc,res=pcall(love.graphics.newShader,'assets/shader/'..name..'.hlsl')
+        SHADER[name]=suc and res or error("Err in compiling Shader '"..name.."': "..tostring(res))
+    end
+end
 
 for _,v in next,love.filesystem.getDirectoryItems('assets/background') do
     if FILE.isSafe('assets/background/'..v) and v:sub(-3)=='lua' then
