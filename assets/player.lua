@@ -56,16 +56,6 @@ Player.__index=Player
 ---@field dicePoints? integer[]
 ---@field diceWeights? number[]
 
-local defaultColor={
-    COLOR.lR,
-    COLOR.lY,
-    COLOR.lC,
-    COLOR.lP,
-    COLOR.lO,
-    COLOR.lG,
-    COLOR.lB,
-}
-
 ---@param data ReroChess.PlayerData
 function Player.new(id,data,game)
     local player=setmetatable({
@@ -74,7 +64,7 @@ function Player.new(id,data,game)
         name=data.name,
         skin=data.skin or '普通的棋子娘',
 
-        color=data.color or defaultColor[id],
+        color=data.color or COLOR.dL,
         size=(data.size or 0.7)/256,
         faceDir=1,
         face='normal',
