@@ -222,14 +222,14 @@ function Player:draw()
             gc_translate(self.x,self.y)
 
             -- Chess (circle)
-            gc_setColor(self.color)
-            gc_setLineWidth(0.0626)
-            gc_circle('line',0,0,.26)
+            -- gc_setColor(self.color)
+            -- gc_setLineWidth(0.0626)
+            -- gc_circle('line',0,0,.26)
 
             -- Chess
             -- gc_setColor(self.color)
             -- gc_setShader(SHADER.lighter)
-            -- gc_draw(skin.base,0-.02,0.1-.02,nil,0.003,nil,128,256)
+            -- gc_draw(skin.base,0-.02,0.1-.02,nil,self.faceDir*self.size,self.size,128,256)
             -- gc_setShader()
             gc_setColor(1,1,1)
             gc_draw(skin.base,0,0.1,nil,self.faceDir*self.size,self.size,128,256)
