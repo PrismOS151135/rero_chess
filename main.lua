@@ -47,7 +47,11 @@ function button_simp:draw()
     -- Drawable
     if self._image then
         GC.setColor(1,1,1)
+        if self.quad then
+            WIDGET._alignDrawQ(self,self._image,self.quad)
+        else
         WIDGET._alignDraw(self,self._image)
+        end
     end
     if self._text then
         GC.setColor(self.textColor)
@@ -87,6 +91,16 @@ do -- Image & Texture & Quad
 
     local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
+        bg_anim={
+            path('bg_anim/1.png'),
+            path('bg_anim/2.png'),
+            path('bg_anim/3.png'),
+            path('bg_anim/4.png'),
+            path('bg_anim/5.png'),
+            path('bg_anim/6.png'),
+        },
+        ui=path('ui.png'),
+        world={default=path('game.png')},
         chess=(function()
             local t={}
             for _,meta in next,{
@@ -113,19 +127,10 @@ do -- Image & Texture & Quad
             end
             return t
         end)(),
-        ui=path('ui.png'),
+        item=path('item.png'),
         doodle=path('doodle.png'),
-        world={
-            default=path('world_default.png'),
-        },
-        bg_anim={
-            path('bg_anim/1.png'),
-            path('bg_anim/2.png'),
-            path('bg_anim/3.png'),
-            path('bg_anim/4.png'),
-            path('bg_anim/5.png'),
-            path('bg_anim/6.png'),
-        },
+
+        crash=path('crash.png'),
     },true)
 
     NULL(TEX.world.default)
@@ -133,40 +138,106 @@ do -- Image & Texture & Quad
     -- Quad generator based on 128x128 grid
     local function q(x,y,w,h) return GC.newQuad(x*128,y*128,(w or 1)*128,(h or w or 1)*128,1536,1536) end
     QUAD={
+        ui={
+            exit=q(0,0),
+            title={
+                skin      =q(0,1),
+                doodle    =q(0,2),
+                gacha     =q(0,3),
+                sesttings =q(0,4),
+                subscribe =q(0,5),
+                lue={
+                    fumo=q(1,0),
+                    squashed=q(1,1),
+                    dead=q(1,2),
+                    rip={
+                        q(1,3.0,  1,.5),
+                        q(1,3.5,  1,.5),
+                        q(1,4.0,  1,.5),
+                        q(1,4.5,  1,.5),
+                        q(1,5.0,  1,.5),
+                        q(1,5.5,  1,.5),
+                    },
+                    ghost=q(1,6, .5),
+                }
+            },
+            gacha={
+                tile={
+                    q(2,0.0,  2,.5),
+                    q(2,0.5,  2,.5),
+                    q(2,1.0,  2,.5),
+                    q(2,1.5,  2,.5),
+                },
+                dust={
+                    q(2.0,2.0, .5),
+                    q(2.5,2.0, .5),
+                    q(2.0,2.5, .5),
+                    q(2.5,2.5, .5),
+                    q(2.0,3.0, .5, 1),
+                    q(2.5,3.0, .5, 1),
+                    q(3.0,2.0,  1),
+                },
+            },
+            doodle={
+                button   =q(4,0),
+                equipped =q(4,1,  2,2),
+            },
+        },
         world={
             tile={---@type love.Quad[]
-                q(0,0,2),
-                q(0,2,2),
-                q(0,4,2),
-                q(0,6,2),
-                q(0,8,2),
-                q(0,10,2),
+                q(0,0,  2),
+                q(0,2,  2),
+                q(0,4,  2),
+                q(0,6,  2),
+                q(0,8,  2),
+                q(0,10, 2),
             },
-            moveB    =q(2  ,0  ,0.5),
-            moveF    =q(2  ,0.5,0.5),
-            warn     =q(2.5,0  ,0.5),
-            question =q(2.5,0.5,0.5),
-            hospital =q(3,0),
-            exit     =q(2,1),
+            path     =q(2,3, .5,.25),
+
+            start    =q(2,0,  1,2),
+            finish   =q(3,0,  1,2),
+            unknown  =q(4,0,  1,2),
+
+            moveB    =q(2.0,2.0, .5),
+            moveF    =q(2.0,2.5, .5),
+            warn     =q(2.5,2.0, .5),
+            question =q(2.5,2.5, .5),
+            hospital =q(3.0,  2),
+        },
+        item={
+            firework         =q(0,0),
+            knife            =q(0,1),
+            balm             =q(0,2),
+            pants            =q(0,3),
+            combo            =q(0,4),
+            mushroom         =q(0,5),
+            cat              =q(0,6),
+            dice4            =q(0,7),
+            gameboy          =q(0,8),
+            error            =q(0,9),
+            gas_tank         =q(0,10),
+
+            wheelchair_chair =q(10,0,  2,2),
+            wheelchair_wheel =q(11,2),
+            unfreeze_ice     =q(10,2),
+            unfreeze_hua     =q(10,3),
         },
         doodle={
             smile     =q(0,0),
-            what      =q(1,0),
-            explosion =q(2,0),
-            grass     =q(3,0),
-            flower    =q(4,0),
-            otto      =q(5,0),
-            drool     =q(6,0),
-            long_tu   =q(7,0),
-            ant       =q(8,0),
-            cat       =q(9,0),
-            poop      =q(10,0),
-            cry       =q(11,0),
-            heart     =q(12,0),
-            happy     =q(13,0),
-            banana    =q(14,0),
-            -- _      =crop128(15,0),
-            -- _      =crop128(0,1),
+            what      =q(0,1),
+            explosion =q(0,2),
+            grass     =q(0,3),
+            flower    =q(0,4),
+            otto      =q(0,5),
+            drool     =q(0,6),
+            long_tu   =q(0,7),
+            ant       =q(0,8),
+            cat       =q(0,9),
+            poop      =q(0,10),
+            cry       =q(0,11),
+            heart     =q(1,0),
+            happy     =q(1,1),
+            banana    =q(1,2),
         },
     }
 end
