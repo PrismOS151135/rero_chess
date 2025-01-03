@@ -2,7 +2,7 @@
 local scene={}
 
 local btnN=WIDGET.new{type='button_simp',pos={.5,.5},x=-160,y=100,w=260,h=100,frameColor=COLOR.LD,fillColor=COLOR.dL,text=LANG'quit_back',code=WIDGET.c_pressKey'escape'}
-local btnY=WIDGET.new{type='button_simp',pos={.5,.5},x= 160,y=100,w=260,h=100,frameColor=COLOR.R, fillColor=COLOR.LR,text=LANG'quit_back',code=WIDGET.c_pressKey'escape'}
+local btnY=WIDGET.new{type='button_simp',pos={.5,.5},x= 160,y=100,w=260,h=100,frameColor=COLOR.R, fillColor=COLOR.LR,text=LANG'quit_sure',code=WIDGET.c_pressKey'return'}
 local function freshWidget(timer)
     btnN.y=100+timer*300
     btnN:resetPos()
@@ -16,7 +16,7 @@ local alpha=0
 local function setAlpha(t) alpha=(1-t)*.62 end
 local function setPos(t) freshWidget(t) end
 
-local enterMode
+local animIn
 local timer=1
 local function animTimer() return timer and timer^2 end
 
@@ -24,29 +24,37 @@ local quitText=GC.newText(FONT.get(60))
 
 function scene.load(prev)
     aboveScene=SCN.scenes[prev] or NONE
-    enterMode=true
+
+    animIn=true
     timer=1
     TWEEN.tag_kill('quit_sure')
     TWEEN.new(setAlpha):setEase('OutQuad'):setDuration(.26):setTag('quit_sure'):run(animTimer)
     TWEEN.new(setPos):setEase('OutQuad'):setDuration(.42):setTag('quit_sure'):run(animTimer)
-    quitText:set(Texts.quit_title)
+
+    quitText:set(
+        SCN.args[1]=='quit' and Texts.quit_title_quit or
+        Texts.quit_title_back
+    )
 end
 
 function scene.keyDown(key,isRep)
     if isRep then return true end
     if key=='escape' then
-        enterMode=false
+        animIn=false
         timer=timer or 0
         TWEEN.tag_kill('quit_sure')
         TWEEN.new(setAlpha):setEase('OutQuad'):setDuration(.26):setTag('quit_sure'):run(animTimer)
         TWEEN.new(setPos):setEase('OutQuad'):setDuration(.42):setTag('quit_sure'):run(animTimer)
+    elseif key=='return' then
+        SCN._pop()
+        SCN.back()
     end
     return true
 end
 
 function scene.update(dt)
     if timer then
-        if enterMode then
+        if animIn then
             if timer>0 then
                 timer=math.max(0,timer-4*dt)
             else

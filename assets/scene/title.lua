@@ -11,7 +11,7 @@ function scene.keyDown(key,isRep)
     if key=='enter' then
         SCN.go('play',nil,'newGame')
     elseif key=='escape' then
-        SCN.go('quit_sure','none')
+        SCN.go('quit_sure','none','quit')
     end
     return true
 end

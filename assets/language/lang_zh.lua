@@ -5,7 +5,8 @@ local L={
     -- menu_play="开始!",
     menu_play="演示",
 
-    quit_title="离开?",
+    quit_title_quit="退出?",
+    quit_title_back="离开?",
     quit_back="按错了 返回",
     quit_sure="嗯 我要离开",
 

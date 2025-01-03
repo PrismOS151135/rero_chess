@@ -71,7 +71,7 @@ function scene.keyDown(key,isRep)
     elseif key=='space' then
         game:step()
     elseif key=='escape' then
-        SCN.go('quit_sure','none')
+        SCN.go('quit_sure','none','back')
     end
     return true
 end
