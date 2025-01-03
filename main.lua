@@ -118,13 +118,13 @@ do -- Image & Texture & Quad
         world={
             default=path('world_default.png'),
         },
-        menu={
-            path('menu_anim/1.png'),
-            path('menu_anim/2.png'),
-            path('menu_anim/3.png'),
-            path('menu_anim/4.png'),
-            path('menu_anim/5.png'),
-            path('menu_anim/6.png'),
+        bg_anim={
+            path('bg_anim/1.png'),
+            path('bg_anim/2.png'),
+            path('bg_anim/3.png'),
+            path('bg_anim/4.png'),
+            path('bg_anim/5.png'),
+            path('bg_anim/6.png'),
         },
     },true)
 

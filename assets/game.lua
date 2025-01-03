@@ -139,7 +139,7 @@ function Game.new(data)
             -- decoSB:add(
             pathSB:add(
                 item,
-                cell.x-.3,cell.y-.3,
+                cell.x-.26,cell.y-.26,
                 nil,0.004,nil,
                 -- cell.x,cell.y,
                 -- nil,0.01,nil,
@@ -225,6 +225,7 @@ function Game.new(data)
                     addQ('deco',cell,prop,QUAD.world.warn)
                 elseif prop[1]=='reverse' then
                     addQ('text',cell,prop,"R")
+                    addQ('deco',cell,prop,QUAD.world.warn)
                 end
 
                 if Prop[prop[1]].tag then
