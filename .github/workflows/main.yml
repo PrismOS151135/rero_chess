@@ -143,13 +143,13 @@ jobs:
         with:
           app-name: ${{ needs.get-info.outputs.app-name }}
           bundle-id: ${{ steps.process-app-name.outputs.bundle-id }}
-          #   icon-specifier: "@mipmap/icon"
+          icon-specifier: "@mipmap/icon"
           keystore-alias: ${{ secrets.ANDROID_KEYSTORE_ALIAS }}
           keystore-base64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           keystore-key-password: ${{ secrets.ANDROID_KEYSTORE_KEYPASSWORD }}
           keystore-store-password: ${{ secrets.ANDROID_KEYSTORE_STOREPASSWORD }}
           love-package: ${{ env.CORE_LOVE_PACKAGE_PATH }}
-          #   resource-path: ${{ env.BUILD_ASSETS_FOLDER }}/android/${{ env.BUILD_TYPE }}/res
+          resource-path: ${{ env.BUILD_ASSETS_FOLDER }}/android/${{ env.BUILD_TYPE }}/res
           product-name: ${{ steps.process-app-name.outputs.product-name }}
           version-string: ${{ needs.get-info.outputs.version-string }}
           version-code: ${{ needs.get-info.outputs.version-code }}
@@ -198,11 +198,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.CORE_LOVE_ARTIFACT_NAME }}
-      #   - name: Add icon to love package
-      #     run: |
-      #       cp ${{ env.BUILD_ASSETS_FOLDER }}/linux/${{ env.BUILD_TYPE }}/icon.png assets/image/icon.png
-      #       zip -u ${{ env.CORE_LOVE_PACKAGE_PATH }} assets/image/icon.png
-      #       rm assets/image/icon.png
+      - name: Add icon to love package
+        run: |
+          cp ${{ env.BUILD_ASSETS_FOLDER }}/linux/${{ env.BUILD_TYPE }}/icon.png assets/image/icon.png
+          zip -u ${{ env.CORE_LOVE_PACKAGE_PATH }} assets/image/icon.png
+          rm assets/image/icon.png
       - name: Build Linux packages
         id: build-packages
         uses: love-actions/love-actions-linux@v2
@@ -211,7 +211,7 @@ jobs:
           bundle-id: ${{ steps.process-app-name.outputs.bundle-id }}
           description: 略nd is cute!
           version-string: ${{ needs.get-info.outputs.version-string }}
-          #   icon-path: ${{ env.BUILD_ASSETS_FOLDER }}/linux/${{ env.BUILD_TYPE }}/icon.png
+          icon-path: ${{ env.BUILD_ASSETS_FOLDER }}/linux/${{ env.BUILD_TYPE }}/icon.png
           love-package: ${{ env.CORE_LOVE_PACKAGE_PATH }}
           product-name: ${{ steps.process-app-name.outputs.product-name }}
           output-folder: ${{ env.OUTPUT_FOLDER }}
@@ -329,7 +329,7 @@ jobs:
         id: build-packages
         uses: love-actions/love-actions-windows@v2
         with:
-          #   icon-path: ${{ env.BUILD_ASSETS_FOLDER }}/windows/${{ env.BUILD_TYPE }}/icon.ico
+          icon-path: ${{ env.BUILD_ASSETS_FOLDER }}/windows/${{ env.BUILD_TYPE }}/icon.ico
           rc-path: ${{ env.BUILD_ASSETS_FOLDER }}/windows/${{ env.BUILD_TYPE }}/template.rc
           love-package: ${{ env.CORE_LOVE_PACKAGE_PATH }}
           product-name: ${{ steps.process-app-name.outputs.product-name }}
