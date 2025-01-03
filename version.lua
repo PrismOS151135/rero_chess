@@ -1,5 +1,5 @@
 return {
-    ["appName"]="略略自走棋",
+    ["appName"]="Rero Chess",
     ["apkCode"]=1,
     ["verCode"]=000001,
 
