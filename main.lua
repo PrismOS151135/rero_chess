@@ -85,18 +85,18 @@ WIDGET.setDefaultOption{
 
 do -- Image & Texture & Quad
 
-    local path=function(i) return 'assets/texture/'..i end
+    local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
         chess=(function()
             local t={}
             for _,meta in next,{
                 {name="普通的棋子娘",shadeX=0.02},
-                {name="一只略",shadeX=-.005,shadeR=.3},
+                {name="一只略",shadeX=-.005},
                 {name="十七",shadeX=0.015},
                 {name="棠棠猫",shadeX=0.013},
                 {name="关注娘",shadeX=0.013},
                 {name="铅笔略",shadeX=0.013},
-                {name="长相潦草的幽灵",shadeR=.36},
+                {name="长相潦草的幽灵",shadeR=.3},
                 {name="普通的熊猫人",shadeX=0.013},
             } do
                 t[meta.name]={
@@ -108,7 +108,7 @@ do -- Image & Texture & Quad
                     jail     =path(("chess/$1/jail.png"    ):repD(meta.name)),
                     shadeX=meta.shadeX or 0,
                     shadeY=meta.shadeY or .1,
-                    shadeR=meta.shadeR or .26,
+                    shadeR=meta.shadeR or .2,
                 }
             end
             return t
@@ -131,7 +131,7 @@ do -- Image & Texture & Quad
     NULL(TEX.world.default)
 
     -- Quad generator based on 128x128 grid
-    local function q(x,y,w,h) return GC.newQuad(x*128,y*128,(w or 1)*128,(h or w or 1)*128,2048,2048) end
+    local function q(x,y,w,h) return GC.newQuad(x*128,y*128,(w or 1)*128,(h or w or 1)*128,1536,1536) end
     QUAD={
         world={
             tile={---@type love.Quad[]

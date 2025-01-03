@@ -209,18 +209,22 @@ function Player:draw()
             -- gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,.3,.08)
 
             -- Shade
-            gc_push('transform')
-            gc_translate(self.x+skin.shadeX,self.y+skin.shadeY)
-            gc_scale(1,.26)
-            gc_setColor(self.color[1]*.5,self.color[2]*.5,self.color[3]*.5,.62)
-            GC.blurCircle(.26,0,0,skin.shadeR)
-            gc_pop()
+            gc_setColor(self.color)
+            gc_setAlpha(.4)
+            gc_setShader(SHADER.darker)
+            gc_ellipse('fill',self.x+skin.shadeX,self.y+skin.shadeY,skin.shadeR,skin.shadeR*.26)
+            gc_setShader()
         end
 
         -- Layer 2
         do coroutine.yield()
             gc_push('transform')
             gc_translate(self.x,self.y)
+
+            -- Chess (circle)
+            gc_setColor(self.color)
+            gc_setLineWidth(0.0626)
+            gc_circle('line',0,0,.26)
 
             -- Chess
             -- gc_setColor(self.color)
@@ -230,12 +234,6 @@ function Player:draw()
             gc_setColor(1,1,1)
             gc_draw(skin.base,0,0.1,nil,self.faceDir*self.size,self.size,128,256)
             gc_draw(skin[self.face],0,0.1,nil,self.faceDir*self.size,self.size,128,256)
-
-            -- Chess (circle)
-            -- gc_setColor(self.color)
-            -- gc_setAlpha(.5)
-            -- gc_setLineWidth(0.0626)
-            -- gc_circle('line',0,0,.26)
 
             -- Step remain
             if self.moving then

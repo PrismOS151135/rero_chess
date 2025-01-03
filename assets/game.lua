@@ -118,10 +118,19 @@ function Game.new(data)
         local _,_,w,h=quad:getViewport()
         return w/2,h/2
     end
+    local instColor,normalColor={1,.9,.9},{1,1,1}
     local function addQ(mode,cell,prop,item)
         if mode=='text' then
+            for dx=-2,2,4 do for dy=-2,2,4 do
+                textB:addf(
+                    {COLOR.lD,item},
+                    620,'center',
+                    cell.x-(310+dx)*.01,cell.y-.22+dy*.01,
+                    nil,.01
+                )
+            end end
             textB:addf(
-                {prop[0] and COLOR.LR or COLOR.lC,item},
+                {prop[0] and instColor or normalColor,item},
                 620,'center',
                 cell.x-310*.01,cell.y-.22,
                 nil,.01
@@ -130,8 +139,8 @@ function Game.new(data)
             -- decoSB:add(
             pathSB:add(
                 item,
-                cell.x+.22,cell.y-.22,
-                nil,0.006,nil,
+                cell.x-.3,cell.y-.3,
+                nil,0.004,nil,
                 -- cell.x,cell.y,
                 -- nil,0.01,nil,
                 getQuadCenter(item)
@@ -353,12 +362,6 @@ function Game:draw()
     gc_setColor(1,1,1)
     gc_draw(SB[1]) -- BG
     gc_draw(SB[2]) -- Path
-    gc_setColor(.26,.26,.26,.7)
-    gc_draw(self.textBatch,-.01,-.01)
-    gc_draw(self.textBatch,0.01,-.01)
-    gc_draw(self.textBatch,-.01,0.01)
-    gc_draw(self.textBatch,0.01,0.01)
-    gc_setColor(1,1,1)
     gc_draw(self.textBatch)
     gc_draw(SB[3]) -- FG
     gc_draw(SB[4]) -- Doodle
