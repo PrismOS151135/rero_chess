@@ -1,7 +1,5 @@
 // Original by: @bytewave from Shadertoy
 
-#pragma language glsl3
-
 uniform float smpCount; // 10
 uniform float radius; // 0.026
 
