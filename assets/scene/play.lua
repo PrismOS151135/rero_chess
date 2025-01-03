@@ -6,35 +6,37 @@ local scene={}
 
 function scene.load()
     BG.set('play')
-    game=require'assets.game'.new{
-        texturePack='default',
-        playerData={
-            {name='略',skin="一只略",color=COLOR.lY,startLocation='start1'},
-            {name='关注',skin="关注娘",color=COLOR.lR,startLocation='start1'},
-            {name='普通',skin="普通的棋子娘",color={COLOR.HEX'A0E0F0'},startLocation='start2'},
-            {name='十七',skin="十七",color=COLOR.lO,startLocation='start2'},
-            {name='？',skin="普通的熊猫人",color=COLOR.LP,startLocation='start3'},
-            {name='鬼',skin="长相潦草的幽灵",color=COLOR.DL,startLocation='start3'},
-        },
-        mapData={
-            {x=-3,y=-1.5,prop='label,start1'},
-            {dx=1,prop='reverse'},
-            {dx=1,prop='!step,2'},
-            {dx=1,prop='!stop'},
-            {dx=1,prop='move,2'},
-            {dx=1},
-            {dx=1,prop='teleport,start2'},
+    if SCN.args[1]=='newGame' then
+        game=require'assets.game'.new{
+            texturePack='default',
+            playerData={
+                {name='略',skin="一只略",color=COLOR.lY,startLocation='start1'},
+                {name='关注',skin="关注娘",color=COLOR.lR,startLocation='start1'},
+                {name='普通',skin="普通的棋子娘",color={COLOR.HEX'A0E0F0'},startLocation='start2'},
+                {name='十七',skin="十七",color=COLOR.lO,startLocation='start2'},
+                {name='？',skin="普通的熊猫人",color=COLOR.LP,startLocation='start3'},
+                {name='鬼',skin="长相潦草的幽灵",color=COLOR.DL,startLocation='start3'},
+            },
+            mapData={
+                {x=-3,y=-1.5,prop='label,start1'},
+                {dx=1,prop='reverse'},
+                {dx=1,prop='!step,2'},
+                {dx=1,prop='!stop'},
+                {dx=1,prop='move,2'},
+                {dx=1},
+                {dx=1,prop='teleport,start2'},
 
-            {x=-2,y=0,prop='text,t label,start2'},
-            {dx=1,prop='center move,1'},
-            {dx=1,prop='label,start3'},
-            {dy=1,prop='move,-3'},
-            {dy=1,prop='move,2'},
-            {dx=-1,prop='teleport,start1'},
-            {dx=-1,prop='!reverse'},
-            {dy=-1,prop='next,start2'},
-        },
-    }
+                {x=-2,y=0,prop='text,t label,start2'},
+                {dx=1,prop='center move,1'},
+                {dx=1,prop='label,start3'},
+                {dy=1,prop='move,-3'},
+                {dy=1,prop='move,2'},
+                {dx=-1,prop='teleport,start1'},
+                {dx=-1,prop='!reverse'},
+                {dy=-1,prop='next,start2'},
+            },
+        }
+    end
 end
 
 function scene.mouseDown(x,y,k)
@@ -69,7 +71,7 @@ function scene.keyDown(key,isRep)
     elseif key=='space' then
         game:step()
     elseif key=='escape' then
-        SCN.back()
+        SCN.go('quit_sure','none')
     end
     return true
 end
@@ -84,7 +86,7 @@ function scene.draw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-120,w=120,h=60,text=LANG'game_roll',code=function() game:roll() end},
-    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-50,w=120,h=60,text=LANG'game_back',code=WIDGET.c_backScn()},
+    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-80,w=120,h=120,text=LANG'game_roll',code=function() game:roll() end},
+    QuitButton,
 }
 return scene

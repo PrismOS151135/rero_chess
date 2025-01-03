@@ -6,6 +6,16 @@ function scene.load()
     BG.set('title')
 end
 
+function scene.keyDown(key,isRep)
+    if isRep then return true end
+    if key=='enter' then
+        SCN.go('play',nil,'newGame')
+    elseif key=='escape' then
+        SCN.go('quit_sure','none')
+    end
+    return true
+end
+
 function scene.draw()
     GC.replaceTransform(SCR.xOy)
     GC.setColor(COLOR.D)
@@ -16,7 +26,7 @@ function scene.draw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp',pos={.5,.5},y=160,w=160,h=80,fontSize=40,text=LANG'menu_play',code=WIDGET.c_goScn'play'},
-    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-50,w=120,h=60,text=LANG'menu_quit',code=WIDGET.c_backScn()},
+    WIDGET.new{type='button_simp',pos={.5,.5},y=160,w=160,h=80,fontSize=40,text=LANG'menu_play',code=WIDGET.c_pressKey'enter'},
+    QuitButton,
 }
 return scene

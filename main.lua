@@ -50,7 +50,7 @@ function button_simp:draw()
         if self.quad then
             WIDGET._alignDrawQ(self,self._image,self.quad)
         else
-        WIDGET._alignDraw(self,self._image)
+            WIDGET._alignDraw(self,self._image)
         end
     end
     if self._text then
@@ -241,6 +241,8 @@ do -- Image & Texture & Quad
         },
     }
 end
+
+QuitButton=WIDGET.new{type='button_simp',pos={0,0},x=40,y=40,w=60,h=60,frameColor=COLOR.X,image=TEX.ui,quad=QUAD.ui.exit,code=WIDGET.c_pressKey'escape'}
 
 FONT.load{
     norm='assets/fonts/codePixelCJK-Regular.ttf',
