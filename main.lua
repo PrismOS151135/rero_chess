@@ -190,7 +190,7 @@ SCN.addSwapStyle('swipe',{
 })
 SCN.setDefaultSwap('swipe')
 
-LANG.add{zh="assets/text_zh.lua"}
+LANG.add{zh="assets/language/lang_zh.lua"}
 LANG.setDefault('zh')
 
 
