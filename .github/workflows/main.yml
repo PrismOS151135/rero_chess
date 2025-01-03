@@ -73,8 +73,7 @@ jobs:
           path: 'rero_chess_assets'
       - name: Prepare assets
         run: |
-          mkdir -p ./assets/texture
-          mv rero_chess_assets/* ./assets/texture/
+          mv rero_chess_assets/texture/* ./assets/texture/
       - name: Build core love package
         uses: love-actions/love-actions-core@v1
         with:
@@ -209,9 +208,9 @@ jobs:
           name: ${{ env.CORE_LOVE_ARTIFACT_NAME }}
       - name: Add icon to love package
         run: |
-          cp ${{ env.BUILD_ASSETS_FOLDER }}/linux/${{ env.BUILD_TYPE }}/icon.png assets/image/icon.png
-          zip -u ${{ env.CORE_LOVE_PACKAGE_PATH }} assets/image/icon.png
-          rm assets/image/icon.png
+          cp ${{ env.BUILD_ASSETS_FOLDER }}/linux/${{ env.BUILD_TYPE }}/icon.png assets/icon.png
+          zip -u ${{ env.CORE_LOVE_PACKAGE_PATH }} assets/icon.png
+          rm assets/icon.png
       - name: Build Linux packages
         id: build-packages
         uses: love-actions/love-actions-linux@v2
