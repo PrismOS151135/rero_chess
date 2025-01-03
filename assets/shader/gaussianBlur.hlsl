@@ -1,7 +1,9 @@
 // Original by: @bytewave from Shadertoy
 
-extern float smpCount; // 10
-extern float radius; // 0.026
+#pragma language glsl3
+
+uniform float smpCount; // 10
+uniform float radius; // 0.026
 
 const float MAX_ITERATIONS = 100.0;
 
