@@ -66,6 +66,15 @@ jobs:
           import re
           with open(os.getenv('GITHUB_OUTPUT'), 'a') as f:
             f.write('product-name=' + re.sub(r'[^A-Za-z0-9]+', '_', '${{ needs.get-info.outputs.app-name }}') + '\n')
+      - name: Checkout assets
+        uses: actions/checkout@v4
+        with:
+          repository: '26F-Studio/rero_chess_assets'
+          path: 'rero_chess_assets'
+      - name: Prepare assets
+        run: |
+          mkdir -p ./assets/texture
+          mv rero_chess_assets/* ./assets/texture/
       - name: Build core love package
         uses: love-actions/love-actions-core@v1
         with:
