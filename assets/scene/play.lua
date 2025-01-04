@@ -7,7 +7,7 @@ local scene={}
 function scene.load()
     BG.set('play')
     if SCN.args[1]=='newGame' then
-        MSG('info',"【演示模式】鼠标左右走路/掷骰，键盘回车/空格，触屏随便点")
+        MSG('info',"【演示模式】只是随手做的功能测试用地图\n鼠标左键走路右键掷骰，键盘回车/空格，触屏随便点\n\n",6.26)
         game=require'assets.game'.new{
             texturePack='default',
             playerData={
@@ -29,10 +29,12 @@ function scene.load()
 
                 {x=-2,y=0,prop='text,t label,start2'},
                 {dx=1,prop='center move,1'},
+                {dx=1},
                 {dx=1,prop='label,start3'},
                 {dy=1,prop='move,-3'},
                 {dy=1,prop='move,2'},
                 {dx=-1,prop='teleport,start1'},
+                {dx=-1},
                 {dx=-1,prop='!reverse'},
                 {dy=-1,prop='next,start2'},
             },
