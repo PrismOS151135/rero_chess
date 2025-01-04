@@ -109,9 +109,10 @@ function Game.new(data)
     game.spriteBatches[3]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- FG
     game.spriteBatches[4]=GC.newSpriteBatch(TEX.doodle,  nil,'dynamic') -- Doodle
 
+    local bgSB=game.spriteBatches[1]
     local pathSB=game.spriteBatches[2]
-    local decoSB=game.spriteBatches[3]
     local textB=game.textBatch
+    local decoSB=game.spriteBatches[3]
 
     -- Tool func
     local function getQuadCenter(quad)
@@ -246,6 +247,20 @@ function Game.new(data)
         for id=1,#map-1 do
             if #map[id].next==0 and MATH.mDist2(0,map[id].x,map[id].y,map[id+1].x,map[id+1].y)<=1 then
                 table.insert(map[id].next,map[id+1].id)
+            end
+            for _,n in next,map[id].next do
+                local c1,c2=map[id],map[n]
+                if MATH.mDist2(0,c1.x,c1.y,c2.x,c2.y)<=1 then
+                    local quad=QUAD.world.path
+                    bgSB:add(
+                        quad,
+                        (c1.x+c2.x)/2,
+                        (c1.y+c2.y)/2,
+                        math.atan2(c2.y-c1.y,c2.x-c1.x)+1.5707963267948966,
+                        0.0026,nil,
+                        getQuadCenter(quad)
+                    )
+                end
             end
         end
 
