@@ -9,7 +9,7 @@ function back.draw()
     gc.translate(SCR.w/2,SCR.h/2)
     gc.setColor(1,1,1)
     gc.setShader(SHADER.gaussianBlur)
-    local tex=TEX.bg_anim[floor(love.timer.getTime()*8%6+1)]
+    local tex=TEX.bg_anim[Jump.bgFrame()]
     GC.mDraw(
         tex,0,0,0,
         min(SCR.w/tex:getWidth(),SCR.h/tex:getHeight())

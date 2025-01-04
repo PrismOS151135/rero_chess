@@ -100,7 +100,7 @@ function lib.hand.draw(x,y)
     gc_line(10,22,10,13)
     gc_line(15,20,15,13)
 end
-function lib.hand.clickFX(s)
+function lib.hand.clickFX()
     lastClickTime=love.timer.getTime()
 end
 

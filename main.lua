@@ -288,6 +288,47 @@ CHAR=require'assets.char'
 CURSOR=require'assets.cursor'
 DATA=require'assets.data'
 
+local timer=love.timer.getTime
+local abs,floor,sin,sign=math.abs,math.floor,math.sin,MATH.sign
+local bgAnimScale,timeScale,cycleLen
+Jump={
+    setBPM=function(bpm)
+        bgAnimScale=bpm/10
+        timeScale=bpm/60*math.pi
+        cycleLen=60/bpm
+    end,
+    bgFrame=function() -- 1~6 1~6 int
+        return floor(timer()*bgAnimScale%6+1)
+    end,
+    smooth=function() -- 0~1~0 float
+        return abs(sin(timer()*timeScale))
+    end,
+    discrete=function(k) -- 0~1 0~1 float
+        return (timer()*(k or 1))%cycleLen/cycleLen
+    end,
+    sudden=function(k) -- 0 1 0 1
+        return timer()*(k or 1)/cycleLen%1>.5 and 1 or 0
+    end,
+    bool=function(k) -- F T F T
+        return timer()*(k or 1)/cycleLen%1>.5
+    end,
+    sin=function(k)
+        return sin(timer()*timeScale*(k or 1))
+    end,
+    swing=function()
+        local s=sin(timer()*timeScale)
+        return sign(s)*s^2
+    end,
+    dodge=function(k)
+        local s=sin(timer()*timeScale*(k or 1))
+        return sign(s)*abs(s)^.5
+    end,
+    nametag=function(id)
+        return sin(timer()+(id or 0))
+    end,
+}
+Jump.setBPM(120)
+
 ---@type table<string, love.Shader>
 SHADER={}
 for _,v in next,love.filesystem.getDirectoryItems('assets/shader') do

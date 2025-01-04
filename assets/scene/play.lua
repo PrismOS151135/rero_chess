@@ -7,6 +7,7 @@ local scene={}
 function scene.load()
     BG.set('play')
     if SCN.args[1]=='newGame' then
+        MSG('info',"【演示模式】鼠标左右走路/掷骰，键盘回车/空格，触屏随便点")
         game=require'assets.game'.new{
             texturePack='default',
             playerData={

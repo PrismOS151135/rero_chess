@@ -26,11 +26,20 @@ function scene.update()
 end
 
 function scene.draw()
+    -- Animation curve test
+    -- FONT.set(15,'number') GC.setColor(COLOR.dR) GC.setLineWidth(2)
+    -- local y=100
+    -- for k,v in next,Jump do if k~='setBPM' and type(v())=='number' then
+    --     GC.print(k,5,y-20) GC.line(20,y,80,y)
+    --     GC.circle('fill',50,y,3) GC.circle('line',50+30*v(),y,6)
+    --     y=y+30
+    -- end end
+
     GC.replaceTransform(SCR.xOy)
     GC.setColor(COLOR.D)
     FONT.set(90) GC.mStr(Texts.menu_title,500,100)
     FONT.set(30) GC.mStr(Texts.menu_info,500,210)
-    GC.setColor(love.timer.getTime()%.6<.26 and COLOR.D or COLOR.G)
+    GC.setColor(Jump.bool() and COLOR.D or COLOR.G)
     FONT.set(25) GC.mStr(Texts.menu_desc,500,260)
 
     GC.setColor(1,1,1)

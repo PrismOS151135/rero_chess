@@ -240,7 +240,7 @@ function Player:draw()
                 gc_push('transform')
                 gc_translate(.4,-.5)
                 -- gc_translate(0,-.1*math.abs(math.sin(love.timer.getTime()*8)))
-                gc_rotate(math.sin(love.timer.getTime()*8)*.1)
+                gc_rotate(.1*Jump.sin())
                 local size=.4
                 gc_setColor(1,1,1,.9)
                 gc_mRect('fill',0,0,size,size)
@@ -281,7 +281,7 @@ function Player:draw()
             gc_translate(self.x,self.y)
 
             -- Name Tag
-            gc_translate(0,(-256+10*math.sin(love.timer.getTime()+self.id))*self.size)
+            gc_translate(0,-.626+10*Jump.nametag(self.id)*self.size)
             gc_setColor(.3,.3,.3,.5)
             gc_mRect('fill',0,0,(self._name:getWidth()+10)*.01,(self._name:getHeight()+2)*.01)
             gc_setColor(self.color)
