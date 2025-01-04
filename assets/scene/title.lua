@@ -21,6 +21,8 @@ function scene.draw()
     GC.setColor(COLOR.D)
     FONT.set(90) GC.mStr(Texts.menu_title,500,100)
     FONT.set(30) GC.mStr(Texts.menu_info,500,210)
+    GC.setColor(love.timer.getTime()%.6<.26 and COLOR.D or COLOR.G)
+    FONT.set(25) GC.mStr(Texts.menu_desc,500,260)
 
     GC.setColor(COLOR.L)
     for i=1,5 do
