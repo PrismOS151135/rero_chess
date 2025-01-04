@@ -33,23 +33,20 @@ function scene.draw()
     GC.setColor(love.timer.getTime()%.6<.26 and COLOR.D or COLOR.G)
     FONT.set(25) GC.mStr(Texts.menu_desc,500,260)
 
-    GC.setColor(COLOR.L)
-    for i=1,5 do
-        GC.mRect('fill',scene.widgetList[i]._x,scene.widgetList[i]._y,85,85,30)
-    end
-
+    GC.setColor(1,1,1)
     local q=QUAD.ui.title.lue.fumo
     local _,_,w,h=q:getViewport()
     local fumo=scene.widgetList.fumo
-    GC.draw(TEX.ui,q,fumo._x,fumo._y+fumo.h/2,nil,1+fumoAnimTimer*.4,1-fumoAnimTimer*.2,w/2,h)
+    local droppedTimer=MATH.roundUnit(fumoAnimTimer,0.35)
+    GC.draw(TEX.ui,q,fumo._x,fumo._y+fumo.h/2,nil,1+droppedTimer*.8,1-droppedTimer*.6,w/2,h)
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*0,w=85,image=TEX.ui,quad=QUAD.ui.title.skin,      code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*1,w=85,image=TEX.ui,quad=QUAD.ui.title.doodle,    code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*2,w=85,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*3,w=85,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*4,w=85,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*0,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.skin,      code=WIDGET.c_goScn'skin'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*1,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.doodle,    code=WIDGET.c_goScn'doodle'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'gacha'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'settings'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
     WIDGET.new{type='button_invis',pos={0,1},x= 80,y=-90,w=100,h=130,
         name='fumo',
         code=function()
@@ -58,7 +55,7 @@ scene.widgetList={
                 TWEEN.tag_kill('fumo_bounce')
                 TWEEN.new(function(t)
                     fumoAnimTimer=1-t
-                end):setTag('fumo_bounce'):setEase('OutElastic'):run()
+                end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62):run()
             end
         end,
     },

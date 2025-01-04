@@ -13,6 +13,11 @@ function scene.update(dt)
 end
 
 function scene.draw()
+    GC.setColor(COLOR.D)
+    FONT.set(70)
+    GC.print("其实我没懂有什么好设置的",50,130)
+    FONT.set(40)
+    GC.print("但既然略把设置按钮画好了就先放一个在这里",120,520-math.abs(40*math.sin(love.timer.getTime()*6.28)))
 end
 
 scene.widgetList={

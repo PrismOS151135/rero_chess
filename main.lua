@@ -29,20 +29,12 @@ function button_simp:draw()
     gc_push('transform')
     gc_translate(self._x,self._y)
 
-    if self._pressTime>0 then
-        gc_scale(1-self._pressTime/self._pressTimeMax*.0626)
-    end
+    gc_scale(1-self._pressTime/self._pressTimeMax*.1+self._hoverTime/self._hoverTimeMax*.062)
     local w,h=self.w,self.h
 
     -- Background
     gc_setColor(self.fillColor)
     GC.mRect('fill',0,0,w,h,self.cornerR)
-
-    -- Highlight
-    if self._hoverTime>0 then
-        gc_setColor(1,1,1,.42*self._hoverTime/self._hoverTimeMax)
-        GC.mRect('fill',0,0,w,h,self.cornerR)
-    end
 
     -- Frame
     gc_setLineWidth(self.lineWidth)
