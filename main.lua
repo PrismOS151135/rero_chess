@@ -19,34 +19,39 @@ SCR.setSize(1000,600)
 
 STRING.install()
 
+local gc=love.graphics
+local gc_push,gc_pop=gc.push,gc.pop
+local gc_translate,gc_scale=gc.translate,gc.scale
+local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
+
 local button_simp=WIDGET.newClass('button_simp','button')
 function button_simp:draw()
-    GC.push('transform')
-    GC.translate(self._x,self._y)
+    gc_push('transform')
+    gc_translate(self._x,self._y)
 
     if self._pressTime>0 then
-        GC.scale(1-self._pressTime/self._pressTimeMax*.0626)
+        gc_scale(1-self._pressTime/self._pressTimeMax*.0626)
     end
     local w,h=self.w,self.h
 
     -- Background
-    GC.setColor(self.fillColor)
+    gc_setColor(self.fillColor)
     GC.mRect('fill',0,0,w,h,self.cornerR)
 
     -- Highlight
     if self._hoverTime>0 then
-        GC.setColor(1,1,1,.42*self._hoverTime/self._hoverTimeMax)
+        gc_setColor(1,1,1,.42*self._hoverTime/self._hoverTimeMax)
         GC.mRect('fill',0,0,w,h,self.cornerR)
     end
 
     -- Frame
-    GC.setLineWidth(self.lineWidth)
-    GC.setColor(self.frameColor)
+    gc_setLineWidth(self.lineWidth)
+    gc_setColor(self.frameColor)
     GC.mRect('line',0,0,w,h,self.cornerR)
 
     -- Drawable
     if self._image then
-        GC.setColor(1,1,1)
+        gc_setColor(1,1,1)
         if self.quad then
             WIDGET._alignDrawQ(self,self._image,self.quad)
         else
@@ -54,10 +59,23 @@ function button_simp:draw()
         end
     end
     if self._text then
-        GC.setColor(self.textColor)
+        gc_setColor(self.textColor)
         WIDGET._alignDraw(self,self._text)
     end
-    GC.pop()
+    gc_pop()
+end
+local button_invis=WIDGET.newClass('button_invis','button')
+function button_invis:draw()
+    gc_push('transform')
+    gc_translate(self._x,self._y)
+    gc_scale(1-self._pressTime/self._pressTimeMax*.1+self._hoverTime/self._hoverTimeMax*.062)
+    gc_setColor(1,1,1)
+    if self.quad then
+        WIDGET._alignDrawQ(self,self._image,self.quad)
+    else
+        WIDGET._alignDraw(self,self._image)
+    end
+    gc_pop()
 end
 WIDGET.setDefaultOption{
     base={
@@ -144,7 +162,7 @@ do -- Image & Texture & Quad
                 skin      =q(0,1),
                 doodle    =q(0,2),
                 gacha     =q(0,3),
-                sesttings =q(0,4),
+                settings  =q(0,4),
                 subscribe =q(0,5),
                 lue={
                     fumo=q(1,0),
@@ -242,7 +260,7 @@ do -- Image & Texture & Quad
     }
 end
 
-QuitButton=WIDGET.new{type='button_simp',pos={0,0},x=40,y=40,w=60,h=60,frameColor=COLOR.X,image=TEX.ui,quad=QUAD.ui.exit,code=WIDGET.c_pressKey'escape'}
+QuitButton=WIDGET.new{type='button_invis',pos={0,0},x=40,y=40,w=60,image=TEX.ui,quad=QUAD.ui.exit,code=WIDGET.c_pressKey'escape'}
 
 FONT.load{
     norm='assets/fonts/codePixelCJK-Regular.ttf',
