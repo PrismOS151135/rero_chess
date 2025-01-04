@@ -286,7 +286,6 @@ SCN.setDefaultSwap('swipe')
 LANG.add{zh="assets/language/lang_zh.lua"}
 LANG.setDefault('zh')
 
-
 --------------------------------------------------------------
 --- Setup Project & Load Assets
 
@@ -295,6 +294,7 @@ Texts=LANG.set('zh')
 
 CHAR=require'assets.char'
 CURSOR=require'assets.cursor'
+DATA=require'assets.data'
 
 ---@type table<string, love.Shader>
 SHADER={}

@@ -2,7 +2,7 @@
 local L={
     menu_title="还不知道叫什么棋",
     menu_info="26F工作室 & 略nd  联合出品",
-    menu_desc="开发正在火热进行中，目前功能仅供演示",
+    menu_desc="开发火热进行中，目前功能仅供演示",
     menu_local="自己玩",
     menu_network="联机玩",
 

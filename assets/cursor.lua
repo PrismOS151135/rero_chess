@@ -1,7 +1,9 @@
 local gc=love.graphics
 local gc_translate,gc_scale,gc_rotate,gc_shear=gc.translate,gc.scale,gc.rotate,gc.shear
 local gc_setColor,gc_setLineWidth,gc_setLineJoin=gc.setColor,gc.setLineWidth,gc.setLineJoin
-local gc_rectangle,gc_circle,gc_polygon=gc.rectangle,gc.circle,gc.polygon
+local gc_line,gc_rectangle,gc_circle,gc_polygon=gc.line,gc.rectangle,gc.circle,gc.polygon
+
+
 
 local lib={}
 
@@ -66,6 +68,37 @@ function lib.move.draw(x,y)
     gc_setLineWidth(2)
     gc_polygon('line',move_poly)
 end
+
+lib.hand={}
+local hand_poly={
+    0,0,
+    0,30,
+    5,30,
+    5,23,
+    10,23,
+    10,22,
+    15,22,
+    15,20,
+    20,20,
+    20,0
+}
+function lib.hand.draw(x,y)
+    gc_translate(x,y)
+    gc_rotate(0.2)
+    gc_translate(0,-30)
+
+    gc_setColor(COLOR.L)
+    gc_polygon('fill',hand_poly)
+
+    gc_setColor(COLOR.D)
+    gc_setLineWidth(2)
+    gc_polygon('line',hand_poly)
+    gc_line( 5,23, 5,13)
+    gc_line(10,22,10,13)
+    gc_line(15,20,15,13)
+end
+
+
 
 local cursor={}
 
