@@ -101,6 +101,68 @@ WIDGET.setDefaultOption{
 
 do -- Image & Texture & Quad
 
+    local chessData={
+        {
+            name="普通的棋子娘",
+            shadeX=0.02,
+        },
+        {
+            name="一只略",
+            shadeX=-.005,
+            desc="略都让别人写了自己还不写，所以先随便填一行在这里",
+            link="https://space.bilibili.com/1344099355",
+        },
+        {
+            name="十七",
+            shadeX=0.015,
+        },
+        {
+            name="棠棠猫",
+            shadeX=0.013,
+        },
+        {
+            name="关注娘",
+            shadeX=0.013,
+            desc="关注[填入up主id]谢谢喵",
+        },
+        {
+            name="铅笔略",
+            shadeX=0.013,
+        },
+        {
+            name="长相潦草的幽灵",
+            shadeR=.3,
+            desc="似了",
+        },
+        {
+            name="普通的熊猫人",
+            shadeX=0.013,
+        },
+        {
+            name="豚豚",
+            shadeX=0.013,
+            desc="从星云中降临的豚豚!!!听说有幸运星属性哦（小声）",
+            link="https://space.bilibili.com/1758613795",
+        },
+        {
+            name="Pugwit巴哥白",
+            shadeX=0.013,
+            desc="大概就是一只因为画画穷到吃不起饭买不起衣服，被迫穿塑料袋的狗罢了",
+            link="https://space.bilibili.com/5883019",
+        },
+        {
+            name="一般路过苦米",
+            shadeX=0.013,
+            desc="似乎可以炸掉地球的可怜画画人类",
+            link="https://space.bilibili.com/343175801",
+        },
+        {
+            name="机鱼",
+            shadeX=0.013,
+            desc="略说之后补上",
+            link="https://space.bilibili.com/85881762",
+        },
+    }
     local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
         bg_anim={
@@ -115,26 +177,18 @@ do -- Image & Texture & Quad
         world={default=path('game.png')},
         chess=(function()
             local t={}
-            for _,meta in next,{
-                {name="普通的棋子娘",shadeX=0.02},
-                {name="一只略",shadeX=-.005},
-                {name="十七",shadeX=0.015},
-                {name="棠棠猫",shadeX=0.013},
-                {name="关注娘",shadeX=0.013},
-                {name="铅笔略",shadeX=0.013},
-                {name="长相潦草的幽灵",shadeR=.3},
-                {name="普通的熊猫人",shadeX=0.013},
-            } do
-                t[meta.name]={
-                    base     =path(("chess/$1/base.png"    ):repD(meta.name)),
-                    normal   =path(("chess/$1/normal.png"  ):repD(meta.name)),
-                    forward  =path(("chess/$1/forward.png" ):repD(meta.name)),
-                    backward =path(("chess/$1/backward.png"):repD(meta.name)),
-                    selected =path(("chess/$1/selected.png"):repD(meta.name)),
-                    jail     =path(("chess/$1/jail.png"    ):repD(meta.name)),
-                    shadeX=meta.shadeX or 0,
-                    shadeY=meta.shadeY or .1,
-                    shadeR=meta.shadeR or .2,
+            for i=1,#chessData do
+                local data=chessData[i]
+                t[data.name]={
+                    base     =path(("chess/$1/base.png"    ):repD(data.name)),
+                    normal   =path(("chess/$1/normal.png"  ):repD(data.name)),
+                    forward  =path(("chess/$1/forward.png" ):repD(data.name)),
+                    backward =path(("chess/$1/backward.png"):repD(data.name)),
+                    selected =path(("chess/$1/selected.png"):repD(data.name)),
+                    jail     =path(("chess/$1/jail.png"    ):repD(data.name)),
+                    shadeX=data.shadeX or 0,
+                    shadeY=data.shadeY or .1,
+                    shadeR=data.shadeR or .2,
                 }
             end
             return t
