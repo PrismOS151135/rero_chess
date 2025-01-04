@@ -322,6 +322,7 @@ function Game:step()
     local p=self.players[self.roundIndex]
     if p.moving then
         p.moveSignal=true
+        return true
     end
 end
 

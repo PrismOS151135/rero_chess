@@ -53,6 +53,12 @@ function scene.mouseUp(x,y,k)
     end
 end
 
+function scene.touchDown(x,y,id)
+    if not game:step() then
+        game:roll()
+    end
+end
+
 function scene.mouseMove(x,y,dx,dy)
     if love.mouse.isDown(1) then
         CURSOR.set('move')
@@ -86,7 +92,6 @@ function scene.draw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp',pos={1,1},x=-80,y=-80,w=120,h=120,text=LANG'game_roll',code=function() game:roll() end},
     QuitButton,
 }
 return scene
