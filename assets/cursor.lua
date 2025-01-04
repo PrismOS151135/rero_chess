@@ -82,10 +82,13 @@ local hand_poly={
     20,20,
     20,0
 }
+local lastClickTime=0
 function lib.hand.draw(x,y)
     gc_translate(x,y)
     gc_rotate(0.2)
-    gc_translate(0,-30)
+    local dt=love.timer.getTime()-lastClickTime
+    dt=MATH.roundUnit(dt,0.05)
+    gc_translate(0,-30+(1/(1+42*dt))*26)
 
     gc_setColor(COLOR.L)
     gc_polygon('fill',hand_poly)
@@ -96,6 +99,9 @@ function lib.hand.draw(x,y)
     gc_line( 5,23, 5,13)
     gc_line(10,22,10,13)
     gc_line(15,20,15,13)
+end
+function lib.hand.clickFX(s)
+    lastClickTime=love.timer.getTime()
 end
 
 
