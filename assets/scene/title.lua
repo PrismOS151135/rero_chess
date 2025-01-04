@@ -24,16 +24,16 @@ function scene.draw()
 
     GC.setColor(COLOR.L)
     for i=1,5 do
-        GC.mRect('fill',scene.widgetList[i]._x,scene.widgetList[i]._y,75,75,25)
+        GC.mRect('fill',scene.widgetList[i]._x,scene.widgetList[i]._y,85,85,30)
     end
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+85*0,w=60,image=TEX.ui,quad=QUAD.ui.title.skin,      code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+85*1,w=60,image=TEX.ui,quad=QUAD.ui.title.doodle,    code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+85*2,w=60,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+85*3,w=60,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+85*4,w=60,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
+    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*0,w=85,image=TEX.ui,quad=QUAD.ui.title.skin,      code=WIDGET.c_goScn'skin'},
+    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*1,w=85,image=TEX.ui,quad=QUAD.ui.title.doodle,    code=WIDGET.c_goScn'skin'},
+    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*2,w=85,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'skin'},
+    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*3,w=85,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'skin'},
+    WIDGET.new{type='button_invis',pos={1,0},x=-50,y=50+95*4,w=85,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
     WIDGET.new{type='button_simp',pos={.5,.5},x=-130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_local  .." "..CHAR.icon.person end,code=WIDGET.c_pressKey'enter'},
     WIDGET.new{type='button_simp',pos={.5,.5},x= 130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_network.." "..CHAR.icon.people end,code=WIDGET.c_goScn'mp_menu'},
     QuitButton,
