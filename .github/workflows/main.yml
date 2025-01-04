@@ -52,6 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: get-info
     env:
+      ASSETS_REPO: rero_chess_assets
       OUTPUT_FOLDER: ./build
       RELEASE_FOLDER: ./release
     steps:
@@ -69,11 +70,11 @@ jobs:
       - name: Checkout assets
         uses: actions/checkout@v4
         with:
-          repository: '26F-Studio/rero_chess_assets'
-          path: 'rero_chess_assets'
+          repository: '26F-Studio/${{ env.ASSETS_REPO }}'
+          path: '${{ env.ASSETS_REPO }}'
       - name: Prepare assets
         run: |
-          mv rero_chess_assets/texture/* ./assets/texture/
+          mv ${{ env.ASSETS_REPO }}/texture/* ./assets/texture/
       - name: Build core love package
         uses: love-actions/love-actions-core@v1
         with:
@@ -277,7 +278,10 @@ jobs:
           LOVEJS_API_PLAYER_BASE_URL: https://raw.githubusercontent.com/MrcSnm/Love.js-Api-Player/refs/heads/master
         run: |
           pushd ${{ env.OUTPUT_FOLDER }}
-          sed -i 's|</head>|  <script src="consolewrapper.js"></script>\n  <script src="webdb.js"></script>\n</head>|' index.html
+          sed -i 's|</head>|  <link rel="icon" type="image/x-icon" href="favicon.ico">\n  </head>|' index.html
+          sed -i 's|</head>|  <script src="consolewrapper.js"></script>\n  </head>|' index.html
+          sed -i 's|</head>|  <script src="webdb.js"></script>\n  </head>|' index.html
+          sed -i 's|32, 37, 38, 39, 40|37, 38, 39, 40|' index.html
           wget ${{ env.LOVEJS_API_PLAYER_BASE_URL }}/consolewrapper.js
           wget ${{ env.LOVEJS_API_PLAYER_BASE_URL }}/globalizeFS.js
           wget ${{ env.LOVEJS_API_PLAYER_BASE_URL }}/webdb.js
