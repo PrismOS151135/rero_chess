@@ -87,7 +87,6 @@ function lib.hand.draw(x,y)
     gc_translate(x,y)
     gc_rotate(0.2)
     local dt=love.timer.getTime()-lastClickTime
-    dt=MATH.roundUnit(dt,0.05)
     gc_translate(0,-30+(1/(1+42*dt))*26)
 
     gc_setColor(COLOR.L)

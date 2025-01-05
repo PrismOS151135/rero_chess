@@ -46,8 +46,7 @@ function scene.draw()
     local q=QUAD.ui.title.lue.fumo
     local _,_,w,h=q:getViewport()
     local fumo=scene.widgetList.fumo
-    local droppedTimer=MATH.roundUnit(fumoAnimTimer,0.35)
-    GC.draw(TEX.ui,q,fumo._x,fumo._y+fumo.h/2,nil,1+droppedTimer*.8,1-droppedTimer*.6,w/2,h)
+    GC.draw(TEX.ui,q,fumo._x,fumo._y+fumo.h/2,nil,1+fumoAnimTimer*.8,1-fumoAnimTimer*.6,w/2,h)
 end
 
 scene.widgetList={
