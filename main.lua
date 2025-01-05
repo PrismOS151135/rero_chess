@@ -171,7 +171,7 @@ do -- Image & Texture & Quad
     }
     local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
-        bg_anim={
+        bg_anim={ -- 798x532
             path('bg_anim/1.png'),
             path('bg_anim/2.png'),
             path('bg_anim/3.png'),

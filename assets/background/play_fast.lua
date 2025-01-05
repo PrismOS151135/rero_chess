@@ -19,7 +19,7 @@ function back.draw()
     gc_clear(.89,.89,.89)
     gc_origin()
     gc_translate(w/2,h/2)
-    gc_setColor(1,1,1)
+    gc_setColor(1,1,1,.26)
     gc_draw(TEX.bg_anim[Jump.bgFrame()],nil,nil,nil,min(w/798,h/532),nil,798*.5,532*.5)
 end
 

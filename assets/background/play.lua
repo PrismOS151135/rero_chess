@@ -1,20 +1,28 @@
 local back={}
 
-local gc=love.graphics
-local floor=math.floor
+local w,h
+
+function back.init()
+    back.resize()
+end
+
+function back.resize()
+    w,h=SCR.w,SCR.h
+end
+
 local min=math.min
+local gc=love.graphics
+local gc_clear,gc_origin,gc_translate=gc.clear,gc.origin,gc.translate
+local gc_setColor,gc_setShader,gc_draw=gc.setColor,gc.setShader,gc.draw
+
 function back.draw()
-    gc.clear(.89,.89,.89)
-    gc.replaceTransform(SCR.origin)
-    gc.translate(SCR.w/2,SCR.h/2)
-    gc.setColor(1,1,1)
-    gc.setShader(SHADER.gaussianBlur)
-    local tex=TEX.bg_anim[Jump.bgFrame()]
-    GC.mDraw(
-        tex,0,0,0,
-        min(SCR.w/tex:getWidth(),SCR.h/tex:getHeight())
-    )
-    gc.setShader()
+    gc_clear(.89,.89,.89)
+    gc_origin()
+    gc_translate(w/2,h/2)
+    gc_setColor(1,1,1)
+    gc_setShader(SHADER.gaussianBlur)
+    gc_draw(TEX.bg_anim[Jump.bgFrame()],nil,nil,nil,min(w/798,h/532),nil,798*.5,532*.5)
+    gc_setShader()
 end
 
 return back
