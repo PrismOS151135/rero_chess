@@ -293,6 +293,8 @@ function Game.new(data)
         game.players[i]=p
     end
 
+    game.cam.minK=10
+    game.cam.maxK=200
     game.cam:scale(100)
     return game
 end
