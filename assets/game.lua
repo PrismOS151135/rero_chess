@@ -119,12 +119,13 @@ function Game.new(data)
         local _,_,w,h=quad:getViewport()
         return w/2,h/2
     end
-    local instColor,normalColor={1,.9,.9},{1,1,1}
+    local strokeColor={.9,.9,.9,.42}
+    local instColor,normalColor={.26,0,0},{.05,.05,.05}
     local function addQ(mode,cell,prop,item)
         if mode=='text' then
             for dx=-2,2,4 do for dy=-2,2,4 do
                 textB:addf(
-                    {COLOR.lD,item},
+                    {strokeColor,item},
                     620,'center',
                     cell.x-(310+dx)*.01,cell.y-.22+dy*.01,
                     nil,.01
