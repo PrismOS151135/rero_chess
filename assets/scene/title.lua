@@ -58,7 +58,7 @@ scene.widgetList={
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
     WIDGET.new{type='button_invis',pos={0,1},x= 80,y=-90,w=100,h=130,
         name='fumo',
-        code=function()
+        onPress=function()
             if fumoAnimTimer<.626 then
                 fumoAnimTimer=1
                 TWEEN.tag_kill('fumo_bounce')

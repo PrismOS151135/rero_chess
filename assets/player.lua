@@ -135,6 +135,7 @@ end
 
 function Player:move(stepCount)
     self.moving=true
+    self.moveSignal=false
     self.stepRemain=stepCount
     self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
 

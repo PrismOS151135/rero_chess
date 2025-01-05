@@ -7,7 +7,7 @@ local scene={}
 function scene.load()
     BG.set('play')
     if SCN.args[1]=='newGame' then
-        MSG('warn',"只是随手做的功能测试用地图\n鼠标左键走路右键掷骰，键盘回车/空格，触屏随便点\n\n",6.26)
+        MSG('warn',"只是随手做的功能测试用地图\n鼠标左键走路右键掷骰，键盘回车/空格，触屏随便点\n\n",5)
         game=require'assets.game'.new{
             texturePack='default',
             playerData={
