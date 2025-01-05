@@ -326,12 +326,17 @@ function Game:roll()
 end
 
 ---@param a {p:ReroChess.Player}
----@param b {p:ReroChess.Player}
 local function coSorter(a,b)
     return a.p.y<b.p.y
 end
 function Game:sortPlayerLayer()
-    table.sort(self.drawCoroutine,coSorter)
+    local drawCo=self.drawCoroutine
+    table.sort(drawCo,coSorter)
+    -- for i=1,#drawCo-1 do
+    --     if drawCo[i].p.id==self.roundIndex then
+    --         drawCo[i],drawCo[i+1]=drawCo[i+1],drawCo[i]
+    --     end
+    -- end
 end
 function Game:step()
     local p=self.players[self.roundIndex]

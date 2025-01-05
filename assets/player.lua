@@ -90,11 +90,23 @@ function Player:roll()
     local d=self.dice
     if d.animState=='hide' then
         d.animState='roll'
+
+        -- Size
+        TWEEN.new(function(t) d.size=.4+.6*t end):setDuration(0.26):run()
+
+        -- Position
+        local sx,sy=self.x,self.y
+        local dist=MATH.rand(.62,1.26)
+        local angle=MATH.rand(0,-math.pi)
+        local ex,ey=self.x+dist*math.cos(angle),self.y+dist*math.sin(angle)*.5
+        TWEEN.new(function(t)
+            d.x=MATH.lerp(sx,ex,t)
+            d.y=MATH.lerp(sy,ey,t)+t*(t-1)*2.6
+        end):setEase('Linear'):setDuration(0.62):run()
+
+        -- Value
         d.alpha=1
-        d.size=1
         d.clipTime=0
-        d.x=self.x+.7
-        d.y=self.y-.9
         TWEEN.new(function(t)
             if t>d.clipTime then
                 d.clipTime=t+1/64
