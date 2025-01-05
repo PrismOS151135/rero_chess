@@ -3,6 +3,7 @@ local Player=require'assets.player'
 
 ---@class ReroChess.Game
 ---@field map ReroChess.Cell[]
+---@field deco table
 ---@field players ReroChess.Player[]
 ---@field textBatch love.Text
 ---@field spriteBatches love.SpriteBatch[]
@@ -79,18 +80,21 @@ end
 ---@field prop? string
 
 ---@class ReroChess.MapData
----@field texturePack string
+---@field texturePack? string
 ---@field playerData ReroChess.PlayerData[]
+---@field decoData table
 ---@field mapData ReroChess.CellData[]
 --
 ---@param data ReroChess.MapData
 function Game.new(data)
-    assert(data.playerData,"Missing field 'playerData'")
     assert(data.mapData,"Missing field 'mapData'")
+    assert(data.playerData,"Missing field 'playerData'")
+    assert(data.decoData==nil or type(data.decoData)=='table',"Invalid field 'decoData'")
 
     ---@type ReroChess.Game
     local game=setmetatable({
         map={},
+        deco=data.decoData or {},
         players={},
 
         spriteBatches={},
@@ -101,6 +105,10 @@ function Game.new(data)
         text=TEXT.new(),
         roundIndex=1,
     },Game)
+
+    for i=1,#game.deco do
+        -- TODO
+    end
 
     local worldTexture=TEX.world[data.texturePack==nil and 'default' or data.texturePack] or error("Invalid texture pack: "..tostring(data.texturePack))
     game.spriteBatches[1]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- BG
@@ -386,6 +394,9 @@ local resume=coroutine.resume
 
 function Game:draw()
     self.cam:apply()
+
+    gc_setColor(1,1,1)
+    GC.execute(self.deco)
 
     local SB=self.spriteBatches
     gc_setColor(1,1,1)
