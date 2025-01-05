@@ -72,16 +72,27 @@ function Player.new(id,data,game)
         location=data.startLocation or 1,
         moveDir=data.startMoveDir or 'next',
         dice={
-            points=data.dicePoints or {1,2,3,4,5,6,7},
-            weights=data.diceWeights or {1,1,1,1,1,1,.01},
+            points={1,2,3,4,5,6,7},
+            weights={1,1,1,1,1,1,.01},
             animState='hide',
         },
 
         x=(id-1)%2==0 and -.26 or .26,
         y=(id-1)%4<=1 and -.26 or .26,
     },Player)
+    if data.dicePoints and data.diceWeights then
+        player.dice.points=data.dicePoints
+        player.dice.weights=data.diceWeights
+    elseif data.dicePoints then
+        player.dice.points=data.dicePoints
+        player.dice.weights=TABLE.new(1,#data.dicePoints)
+    elseif data.diceWeights then
+        player.dice.weights=data.diceWeights
+        player.dice.points={}
+        for i=1,#data.diceWeights do player.dice.points[i]=i end
+    end
+    assertf(#player.dice.points==#player.dice.weights,"Dice points and weights mismatch (%d vs %d)",#player.dice.points,#player.dice.weights)
     player._name=GC.newText(FONT.get(20),player.name)
-    assert(#player.dice.points==#player.dice.weights,"Dice points and weights mismatch")
     return player
 end
 
