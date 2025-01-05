@@ -168,8 +168,11 @@ function Game.new(data)
         local centered
         for i=1,#data.mapData do
             local d=data.mapData[i]
-            x=d.x or d.dx and x+d.dx or x
-            y=d.y or d.dy and y+d.dy or y
+            if not not d[1]~=not not d[2] then
+                errorf('Incomplete delta position for cell %d',i)
+            end
+            x=d.x or x+(d.dx or d[1] or 0)
+            y=d.y or y+(d.dy or d[2] or 0)
             ---@type ReroChess.Cell
             map[i]={
                 id=i,x=x,y=y,
