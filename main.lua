@@ -162,6 +162,12 @@ do -- Image & Texture & Quad
             desc="略说之后补上",
             link="https://space.bilibili.com/85881762",
         },
+        {
+            name="Mos",
+            shadeX=0.013,
+            desc="她似乎在寻找一个合适的话题",
+            link="https://space.bilibili.com/481182075",
+        },
     }
     local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
