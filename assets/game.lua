@@ -85,7 +85,6 @@ end
 --
 ---@param data ReroChess.MapData
 function Game.new(data)
-    assert(data.texturePack,"Missing field 'texturePack' (string)")
     assert(data.playerData,"Missing field 'playerData'")
     assert(data.mapData,"Missing field 'mapData'")
 
@@ -103,7 +102,7 @@ function Game.new(data)
         roundIndex=1,
     },Game)
 
-    local worldTexture=TEX.world[data.texturePack] or error("Invalid texture pack: "..data.texturePack)
+    local worldTexture=TEX.world[data.texturePack==nil and 'default' or data.texturePack] or error("Invalid texture pack: "..tostring(data.texturePack))
     game.spriteBatches[1]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- BG
     game.spriteBatches[2]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- Path
     game.spriteBatches[3]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- FG
@@ -249,6 +248,8 @@ function Game.new(data)
             if #map[id].next==0 and MATH.mDist2(0,map[id].x,map[id].y,map[id+1].x,map[id+1].y)<=1 then
                 table.insert(map[id].next,map[id+1].id)
             end
+        end
+        for id=1,#map do
             for _,n in next,map[id].next do
                 local c1,c2=map[id],map[n]
                 if MATH.mDist2(0,c1.x,c1.y,c2.x,c2.y)<=1 then
@@ -257,8 +258,8 @@ function Game.new(data)
                         quad,
                         (c1.x+c2.x)/2,
                         (c1.y+c2.y)/2,
-                        math.atan2(c2.y-c1.y,c2.x-c1.x)+1.5707963267948966,
-                        0.0026,nil,
+                        MATH.roundUnit(math.atan2(c2.y-c1.y,c2.x-c1.x)+math.pi/2,math.pi/2),
+                        0.0035,nil,
                         getQuadCenter(quad)
                     )
                 end
