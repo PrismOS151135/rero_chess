@@ -140,33 +140,39 @@ do -- Image & Texture & Quad
         },
         {
             name="豚豚",
-            shadeX=0.013,
             desc="从星云中降临的豚豚!!!听说有幸运星属性哦（小声）",
             link="https://space.bilibili.com/1758613795",
+            shadeX=0.013,
         },
         {
             name="Pugwit巴哥白",
-            shadeX=0.013,
             desc="大概就是一只因为画画穷到吃不起饭买不起衣服，被迫穿塑料袋的狗罢了",
             link="https://space.bilibili.com/5883019",
+            shadeX=0.013,
         },
         {
             name="一般路过苦米",
-            shadeX=0.013,
             desc="似乎可以炸掉地球的可怜画画人类",
             link="https://space.bilibili.com/343175801",
+            shadeX=0.013,
         },
         {
             name="机鱼",
-            shadeX=0.013,
             desc="略说之后补上",
             link="https://space.bilibili.com/85881762",
+            shadeX=0.013,
         },
         {
             name="Mos",
-            shadeX=0.013,
             desc="她似乎在寻找一个合适的话题",
             link="https://space.bilibili.com/481182075",
+            shadeX=0.013,
+        },
+        {
+            name="纸鸽",
+            desc="芝士鸽子 时不时去码头整点薯条",
+            link="https://space.bilibili.com/1233810672",
+            shadeX=0.013,
         },
     }
     local function path(i) return 'assets/texture/'..i end
@@ -218,8 +224,8 @@ do -- Image & Texture & Quad
                 gacha     =q(0,3),
                 settings  =q(0,4),
                 subscribe =q(0,5),
-                lue={
-                    fumo=q(1,0),
+                fumo={
+                    normal=q(1,0),
                     squashed=q(1,1),
                     dead=q(1,2),
                     rip={
