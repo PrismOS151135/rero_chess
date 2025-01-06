@@ -35,6 +35,7 @@ function scene.draw()
     --     y=y+30
     -- end end
 
+    -- Title texts
     GC.replaceTransform(SCR.xOy)
     GC.setColor(COLOR.D)
     FONT.set(90) GC.mStr(Texts.menu_title,500,100)

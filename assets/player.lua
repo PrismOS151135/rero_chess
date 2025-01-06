@@ -108,8 +108,8 @@ function Player:roll()
         -- Position
         local sx,sy=self.x,self.y
         local dist=MATH.rand(.62,1.26)
-        local angle=MATH.rand(0,-math.pi)
-        local ex,ey=self.x+dist*math.cos(angle),self.y+dist*math.sin(angle)*.5
+        local rot=MATH.rand(0,-math.pi)
+        local ex,ey=self.x+dist*math.cos(rot),self.y+dist*math.sin(rot)*.5
         TWEEN.new(function(t)
             d.x=MATH.lerp(sx,ex,t)
             d.y=MATH.lerp(sy,ey,t)+t*(t-1)*2.6
