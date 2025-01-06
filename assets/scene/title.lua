@@ -43,11 +43,38 @@ function scene.draw()
     GC.setColor(Jump.bool() and COLOR.D or COLOR.G)
     FONT.set(25) GC.mStr(Texts.menu_desc,500,260)
 
+    -- Fumo
     GC.setColor(1,1,1)
-    local q=QUAD.ui.title.lue.fumo
+    local q,rot,kx,ky
+    if DATA.fumoDmg<20 then
+        kx,ky=1+fumoAnimTimer*.8,1-fumoAnimTimer*.6
+        q=QUAD.ui.title.fumo.normal
+    elseif DATA.fumoDmg<40 then
+        kx,ky=1+fumoAnimTimer*.1,1-fumoAnimTimer*.1
+        q=QUAD.ui.title.fumo.squashed
+    elseif DATA.fumoDmg<60 then
+        kx,ky=1-fumoAnimTimer*.1,1-fumoAnimTimer*.1
+        q=QUAD.ui.title.fumo.dead
+    elseif DATA.fumoDmg<80 then
+        rot=fumoAnimTimer*.1
+        q=QUAD.ui.title.fumo.rip[1]
+    elseif DATA.fumoDmg<110 then
+        rot=fumoAnimTimer*.1
+        q=QUAD.ui.title.fumo.rip[2]
+    elseif DATA.fumoDmg<150 then
+        rot=fumoAnimTimer*.1
+        q=QUAD.ui.title.fumo.rip[3]
+    elseif DATA.fumoDmg<200 then
+        rot=fumoAnimTimer*.1
+        q=QUAD.ui.title.fumo.rip[4]
+    elseif DATA.fumoDmg<202 then
+        GC.draw(TEX.ui,QUAD.ui.title.fumo.ghost,60,495+10*Jump.sin(.26))
+        q=QUAD.ui.title.fumo.rip[5]
+    else
+        q=QUAD.ui.title.fumo.rip[6]
+    end
     local _,_,w,h=q:getViewport()
-    local fumo=scene.widgetList.fumo
-    GC.draw(TEX.ui,q,fumo._x,fumo._y+fumo.h/2,nil,1+fumoAnimTimer*.8,1-fumoAnimTimer*.6,w/2,h)
+    GC.draw(TEX.ui,q,80,600,rot,kx,ky,w/2,h)
 end
 
 scene.widgetList={
@@ -56,7 +83,7 @@ scene.widgetList={
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'gacha'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'settings'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
-    WIDGET.new{type='button_invis',pos={0,1},x= 80,y=-90,w=100,h=130,
+    WIDGET.new{type='button_invis',x=80,y=510,w=100,h=130,
         name='fumo',
         onPress=function()
             if fumoAnimTimer<.626 then
