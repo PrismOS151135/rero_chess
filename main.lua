@@ -100,8 +100,7 @@ WIDGET.setDefaultOption{
 }
 
 do -- Image & Texture & Quad
-
-    local chessData={
+    ChessData={
         {
             name="普通的棋子娘",
             shadeX=0.02,
@@ -174,7 +173,7 @@ do -- Image & Texture & Quad
             link="https://space.bilibili.com/1233810672",
             shadeX=0.013,
         },
-    }
+    } for i=1,#ChessData do ChessData[ChessData[i].name]=ChessData[i] end
     local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
         bg_anim={ -- 798x532
@@ -189,8 +188,8 @@ do -- Image & Texture & Quad
         world={default=path('game.png')},
         chess=(function()
             local t={}
-            for i=1,#chessData do
-                local data=chessData[i]
+            for i=1,#ChessData do
+                local data=ChessData[i]
                 t[data.name]={
                     base     =path(("chess/$1/base.png"    ):repD(data.name)),
                     normal   =path(("chess/$1/normal.png"  ):repD(data.name)),
@@ -353,6 +352,7 @@ Texts=LANG.set('zh')
 CHAR=require'assets.char'
 CURSOR=require'assets.cursor'
 DATA=require'assets.data'
+DATA:load()
 
 local timer=love.timer.getTime
 local abs,floor,sin,sign=math.abs,math.floor,math.sin,MATH.sign
@@ -408,10 +408,10 @@ end
 for k,v in next,{
     gaussianBlur={
         {'smpCount',10}, -- min(400 * radius, 40)
-        {'radius',0.026},
+        {'radius',.026},
     },
-    darker={{'k',0.4}},
-    lighter={{'k',0.2}},
+    darker={{'k',.4}},
+    lighter={{'k',.2}},
 } do for i=1,#v do SHADER[k]:send(unpack(v[i])) end end
 
 for _,v in next,love.filesystem.getDirectoryItems('assets/background') do

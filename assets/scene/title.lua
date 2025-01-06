@@ -83,16 +83,23 @@ scene.widgetList={
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'gacha'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'settings'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
-    WIDGET.new{type='button_invis',x=80,y=510,w=100,h=130,
+    WIDGET.new{type='button_invis',x=80,y=530,w=100,h=130,
         name='fumo',
         onPress=function()
             if fumoAnimTimer<.626 then
+                DATA.fumoDmg=DATA.fumoDmg+1
                 fumoAnimTimer=1
                 TWEEN.tag_kill('fumo_bounce')
-                TWEEN.new(function(t)
-                    fumoAnimTimer=1-t
-                end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62):run()
+                TWEEN.new(function(t) fumoAnimTimer=1-t end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62):run()
+                if DATA.fumoDmg==200 then
+                    DATA:getSkin('长相潦草的幽灵')
+                elseif DATA.fumoDmg==202 then
+                    scene.widgetList.fumo:reset()
+                end
             end
+        end,
+        visibleFunc=function()
+            return DATA.fumoDmg<202
         end,
     },
     WIDGET.new{type='button_simp',pos={.5,.5},x=-130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_local  .." "..CHAR.icon.person end,code=WIDGET.c_pressKey'enter'},

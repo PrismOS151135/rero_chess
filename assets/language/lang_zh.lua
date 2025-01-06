@@ -10,5 +10,7 @@ local L={
     quit_title_back="离开?",
     quit_back="按错了 返回",
     quit_sure="嗯 我要离开",
+
+    new_skin="获得新棋子皮肤",
 }
 return L

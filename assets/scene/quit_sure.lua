@@ -17,8 +17,8 @@ local function setAlpha(t) alpha=(1-t)*.62 end
 local function setPos(t) freshWidget(t) end
 
 local animIn
-local timer=1
-local function animTimer() return timer and timer^2 end
+local timer
+local function animTimer() return timer^2 end
 
 local quitText=GC.newText(FONT.get(60))
 
@@ -37,11 +37,14 @@ function scene.load(prev)
     )
 end
 
+function scene.unload()
+    TWEEN.tag_kill('quit_sure')
+end
+
 function scene.keyDown(key,isRep)
     if isRep then return true end
     if key=='escape' then
         animIn=false
-        timer=timer or 0
         TWEEN.tag_kill('quit_sure')
         TWEEN.new(setAlpha):setEase('OutQuad'):setDuration(.26):setTag('quit_sure'):run(animTimer)
         TWEEN.new(setPos):setEase('OutQuad'):setDuration(.42):setTag('quit_sure'):run(animTimer)
@@ -53,20 +56,12 @@ function scene.keyDown(key,isRep)
 end
 
 function scene.update(dt)
-    if timer then
-        if animIn then
-            if timer>0 then
-                timer=math.max(0,timer-4*dt)
-            else
-                timer=nil
-            end
-        else
-            if timer<1 then
-                timer=math.min(1,timer+4*dt)
-            else
-                SCN.back('none')
-            end
-        end
+    if animIn then
+        timer=math.max(0,timer-4*dt)
+    elseif timer<1 then
+        timer=math.min(1,timer+4*dt)
+    else
+        SCN.back('none')
     end
 end
 
@@ -79,15 +74,17 @@ function scene.draw()
         WIDGET.draw(aboveScene.widgetList)
     end
 
-    GC.replaceTransform(SCR.origin)
+    -- Back
+    GC.origin()
     GC.setColor(0,0,0,alpha)
     GC.rectangle('fill',0,0,SCR.w,SCR.h)
 
+    -- Texts
     GC.replaceTransform(SCR.xOy_m)
     GC.setColor(COLOR.L)
-    GC.strokeDraw('corner',6,quitText,0,-100-(animTimer() or 0)*300,0,2,2,quitText:getWidth()/2,quitText:getHeight()/2)
+    GC.strokeDraw('corner',6,quitText,0,-100-animTimer()*300,0,2,2,quitText:getWidth()/2,quitText:getHeight()/2)
     GC.setColor(COLOR.D)
-    GC.mDraw(quitText,0,-100-(animTimer() or 0)*300,0,2)
+    GC.mDraw(quitText,0,-100-animTimer()*300,0,2)
 end
 
 scene.widgetList={

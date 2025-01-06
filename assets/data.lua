@@ -1,22 +1,21 @@
+local _DATA={}
+function _DATA:load()
+    TABLE.update(self,FILE.load('data','-canskip') or NONE)
+end
+function _DATA:save()
+    FILE.save(self,'data')
+end
+function _DATA:getSkin(name)
+    if not TABLE.find(self.skin,name) then
+        table.insert(self.skin,name)
+        SCN.go('get_new_skin','none',name)
+        self:save()
+    end
+end
+
 local DATA={
-    fumoHealth=100,
+    fumoDmg=0,
+    skin={},
 }
 
-local function _load(t)
-    TABLE.update(t,FILE.load('data','-canskip') or NONE)
-end
-local function _save(t)
-    FILE.save(t,'data')
-end
-
-return setmetatable(DATA,{
-    __index=function(t,k)
-        if k=='_load' then
-            return _load
-        elseif k=='_save' then
-            return _save
-        else
-            error("Attempt to access invalid data key '"..tostring(k).."'",2)
-        end
-    end
-})
+return setmetatable(DATA,{__index=_DATA})
