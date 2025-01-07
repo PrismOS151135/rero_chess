@@ -392,8 +392,7 @@ Jump={
     nametag=function(id)
         return sin(timer()+(id or 0))
     end,
-}
-Jump.setBPM(120)
+} Jump.setBPM(120)
 
 ---@type table<string, love.Shader>
 SHADER={}
@@ -427,3 +426,34 @@ for _,v in next,love.filesystem.getDirectoryItems('assets/scene') do
         SCN.add(sceneName,FILE.load('assets/scene/'..v,'-lua'))
     end
 end
+
+-- Fumo Manager
+TASK.new(function()
+    local yield=TASK.yieldT
+    local reviveCooldown=60
+    local lastDmg=DATA.fumoDmg
+    while true do
+        yield(1)
+        if DATA.fumoDieTime then
+            if os.time()-DATA.fumoDieTime>86400 then
+                DATA.fumoDieTime=false
+                DATA.fumoDmg=0
+                DATA:save()
+            end
+        elseif DATA.fumoDmg==0 then
+            -- Do nothing
+        elseif DATA.fumoDmg~=lastDmg then
+            lastDmg=DATA.fumoDmg
+            reviveCooldown=60
+        else
+            reviveCooldown=reviveCooldown-1
+            if reviveCooldown==55 then
+                DATA:save()
+            elseif reviveCooldown==0 then
+                DATA.fumoDmg=0
+                DATA:save()
+                reviveCooldown=60
+            end
+        end
+    end
+end)

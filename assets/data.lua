@@ -15,6 +15,7 @@ end
 
 local DATA={
     fumoDmg=0,
+    fumoDieTime=false,
     skin={},
 }
 
