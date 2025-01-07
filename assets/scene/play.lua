@@ -12,26 +12,6 @@ function scene.load()
     end
 end
 
-function scene.mouseDown(x,y,k)
-    if k==1 then
-        game:step()
-    elseif k==2 then
-        game:roll()
-    end
-end
-
-function scene.mouseUp(x,y,k)
-    if k==1 then
-        CURSOR.set('pointer')
-    end
-end
-
-function scene.touchDown(x,y,id)
-    if not game:step() then
-        game:roll()
-    end
-end
-
 function scene.mouseMove(x,y,dx,dy)
     if love.mouse.isDown(1) then
         CURSOR.set('move')
@@ -41,6 +21,33 @@ end
 
 function scene.wheelMove(dx,dy)
     game.cam:scale(1+dy*.1)
+end
+
+function scene.mouseUp(x,y,k)
+    if k==1 then
+        CURSOR.set('pointer')
+    end
+end
+
+function scene.mouseClick(x,y,k)
+    if k==1 then
+        game:step()
+    elseif k==2 then
+        game:roll()
+    end
+end
+
+function scene.touchMove(x,y,dx,dy,id)
+    local touches=love.touch.getTouches()
+    if #touches<=1 then
+        game.cam:move(dx,dy)
+    end
+end
+
+function scene.touchClick(x,y,id)
+    if not game:step() then
+        game:roll()
+    end
 end
 
 function scene.keyDown(key,isRep)
