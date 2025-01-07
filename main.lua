@@ -436,20 +436,27 @@ TASK.new(function()
         yield(1)
         if DATA.fumoDieTime then
             if os.time()-DATA.fumoDieTime>86400 then
+                -- Revive after 24h
                 DATA.fumoDieTime=false
                 DATA.fumoDmg=0
+                DATA:save()
+            elseif DATA.fumoDmg~=lastDmg then
+                -- Save damage
+                lastDmg=DATA.fumoDmg
+                reviveCooldown=5
                 DATA:save()
             end
         elseif DATA.fumoDmg==0 then
             -- Do nothing
         elseif DATA.fumoDmg~=lastDmg then
+            -- Save damage
             lastDmg=DATA.fumoDmg
             reviveCooldown=60
+            DATA:save()
         else
+            -- Regen health
             reviveCooldown=reviveCooldown-1
-            if reviveCooldown==55 then
-                DATA:save()
-            elseif reviveCooldown==0 then
+            if reviveCooldown==0 then
                 DATA.fumoDmg=0
                 DATA:save()
                 reviveCooldown=60

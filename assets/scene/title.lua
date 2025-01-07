@@ -88,6 +88,7 @@ scene.widgetList={
         onPress=function()
             if fumoAnimTimer<.626 then
                 DATA.fumoDmg=DATA.fumoDmg+1
+                DATA:save()
                 fumoAnimTimer=1
                 TWEEN.tag_kill('fumo_bounce')
                 TWEEN.new(function(t) fumoAnimTimer=1-t end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62):run()
