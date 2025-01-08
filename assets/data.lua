@@ -5,23 +5,24 @@ local DATA={
 }
 
 local _DATA={}
-function _DATA:load()
-    TABLE.update(self,FILE.load('data','-canskip') or NONE)
+function _DATA.load()
+    TABLE.update(DATA,FILE.load('data','-canskip') or NONE)
 end
-local function saver() DATA:save() end
-function _DATA:save()
+local function saver() DATA.save() end
+function _DATA.save()
+    if not TASK.lock('data_save_fastLock',.0626) then return end
     TWEEN.tag_kill('tag_data_save')
     if TASK.lock('data_save',5) then
-        FILE.save(self,'data')
+        FILE.save(DATA,'data')
     else
         TWEEN.new():setOnFinish(saver):setTag('tag_data_save'):run()
     end
 end
-function _DATA:getSkin(name)
-    if not TABLE.find(self.skin,name) then
-        table.insert(self.skin,name)
+function _DATA.getSkin(name)
+    if not TABLE.find(DATA.skin,name) then
+        table.insert(DATA.skin,name)
         SCN.go('get_new_skin','none',name)
-        self:save()
+        DATA.save()
     end
 end
 

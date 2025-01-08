@@ -88,18 +88,22 @@ scene.widgetList={
         onPress=function()
             if fumoAnimTimer<.626 then
                 DATA.fumoDmg=DATA.fumoDmg+1
-                DATA:save()
                 fumoAnimTimer=1
                 TWEEN.tag_kill('fumo_bounce')
                 TWEEN.new(function(t) fumoAnimTimer=1-t end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62):run()
                 if DATA.fumoDmg>=40 then
-                    DATA.fumoDieTime=os.time()
+                    if not DATA.fumoDieTime then
+                        DATA.fumoDieTime=os.time()
+                    else
+                        DATA.fumoDieTime=math.max(DATA.fumoDieTime,os.time()+60-86400)
+                    end
                 end
                 if DATA.fumoDmg==200 then
-                    DATA:getSkin('长相潦草的幽灵')
+                    DATA.getSkin('长相潦草的幽灵')
                 elseif DATA.fumoDmg==202 then
                     scene.widgetList.fumo:reset()
                 end
+                DATA.save()
             end
         end,
         visibleFunc=function()

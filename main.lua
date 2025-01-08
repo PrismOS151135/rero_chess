@@ -352,7 +352,7 @@ Texts=LANG.set('zh')
 CHAR=require'assets.char'
 CURSOR=require'assets.cursor'
 DATA=require'assets.data'
-DATA:load()
+DATA.load()
 
 local timer=love.timer.getTime
 local abs,floor,sin,sign=math.abs,math.floor,math.sin,MATH.sign
@@ -439,12 +439,12 @@ TASK.new(function()
                 -- Revive after 24h
                 DATA.fumoDieTime=false
                 DATA.fumoDmg=0
-                DATA:save()
+                DATA.save()
             elseif DATA.fumoDmg~=lastDmg then
                 -- Save damage
                 lastDmg=DATA.fumoDmg
                 reviveCooldown=5
-                DATA:save()
+                DATA.save()
             end
         elseif DATA.fumoDmg==0 then
             -- Do nothing
@@ -452,13 +452,13 @@ TASK.new(function()
             -- Save damage
             lastDmg=DATA.fumoDmg
             reviveCooldown=60
-            DATA:save()
+            DATA.save()
         else
             -- Regen health
             reviveCooldown=reviveCooldown-1
             if reviveCooldown==0 then
                 DATA.fumoDmg=0
-                DATA:save()
+                DATA.save()
                 reviveCooldown=60
             end
         end
