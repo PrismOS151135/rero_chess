@@ -50,6 +50,10 @@ function scene.keyDown(_,isRep)
 end
 
 function scene.update(dt)
+    if aboveScene.update then
+        aboveScene.update(dt)
+    end
+
     if animIn then
         timer=math.max(0,timer-1.26*dt)
     elseif timer<1 then
