@@ -107,9 +107,9 @@ do -- Image & Texture & Quad
         },
         {
             name="一只略",
-            shadeX=-.005,
             desc="略都让别人写了自己还不写，所以先随便填一行在这里",
             link="https://space.bilibili.com/1344099355",
+            shadeX=-.005,
         },
         {
             name="十七",
@@ -117,61 +117,62 @@ do -- Image & Texture & Quad
         },
         {
             name="棠棠猫",
-            shadeX=0.013,
         },
         {
             name="关注娘",
-            shadeX=0.013,
             desc="关注[填入up主id]谢谢喵",
         },
         {
             name="铅笔略",
-            shadeX=0.013,
         },
         {
             name="长相潦草的幽灵",
             shadeR=.3,
             desc="似了",
+            shadeX=0,
         },
         {
             name="普通的熊猫人",
-            shadeX=0.013,
         },
         {
             name="豚豚",
             desc="从星云中降临的豚豚!!!听说有幸运星属性哦（小声）",
             link="https://space.bilibili.com/1758613795",
-            shadeX=0.013,
         },
         {
             name="Pugwit巴哥白",
             desc="大概就是一只因为画画穷到吃不起饭买不起衣服，被迫穿塑料袋的狗罢了",
             link="https://space.bilibili.com/5883019",
-            shadeX=0.013,
         },
         {
             name="一般路过苦米",
             desc="似乎可以炸掉地球的可怜画画人类",
             link="https://space.bilibili.com/343175801",
-            shadeX=0.013,
         },
         {
-            name="机鱼",
-            desc="略说之后补上",
+            name="机鱼吐司",
+            desc="能创开你的防线的机鱼",
             link="https://space.bilibili.com/85881762",
-            shadeX=0.013,
         },
         {
             name="Mos",
             desc="她似乎在寻找一个合适的话题",
             link="https://space.bilibili.com/481182075",
-            shadeX=0.013,
         },
         {
             name="纸鸽",
             desc="芝士鸽子 时不时去码头整点薯条",
             link="https://space.bilibili.com/1233810672",
-            shadeX=0.013,
+        },
+        {
+            name="valera",
+            desc="“就填是个破写歌的”",
+            link="https://space.bilibili.com/3546821743872630",
+        },
+        {
+            name="蓝飘飘",
+            desc="能爆出肥料的火红莲",
+            link="https://space.bilibili.com/3546619314178489",
         },
     } for i=1,#ChessData do ChessData[ChessData[i].name]=ChessData[i] end
     local function path(i) return 'assets/texture/'..i end
@@ -197,7 +198,7 @@ do -- Image & Texture & Quad
                     backward =path(("chess/$1/backward.png"):repD(data.name)),
                     selected =path(("chess/$1/selected.png"):repD(data.name)),
                     jail     =path(("chess/$1/jail.png"    ):repD(data.name)),
-                    shadeX=data.shadeX or 0,
+                    shadeX=data.shadeX or 0.013,
                     shadeY=data.shadeY or .1,
                     shadeR=data.shadeR or .2,
                 }
