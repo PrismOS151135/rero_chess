@@ -1,9 +1,11 @@
 ---@type Zenitha.Scene
 local scene={}
 
+local subButtonClick
 local fumoAnimTimer=0
 
 function scene.load()
+    subButtonClick=0
     CURSOR.set('pointer')
     BG.set('title')
 end
@@ -36,7 +38,6 @@ function scene.draw()
     -- end end
 
     -- Title texts
-    GC.replaceTransform(SCR.xOy)
     GC.setColor(COLOR.D)
     FONT.set(90) GC.mStr(Texts.menu_title,500,100)
     FONT.set(30) GC.mStr(Texts.menu_info,500,210)
@@ -77,12 +78,28 @@ function scene.draw()
     GC.draw(TEX.ui,q,80,600,rot,kx,ky,w/2,h)
 end
 
+function scene.overDraw()
+    GC.origin()
+    GC.setColor(0,0,0,TASK.getLock('subscribe_lock') or 0)
+    GC.rectangle('fill',0,0,SCR.w,SCR.h)
+end
+
 scene.widgetList={
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*0,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.skin,      code=WIDGET.c_goScn'skin'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*1,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.doodle,    code=WIDGET.c_goScn'doodle'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'gacha'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'settings'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe, code=NULL},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe,
+        onPress=function ()
+            if TASK.lock('subscribe_lock',.42) then
+                love.timer.sleep(0.26)
+                subButtonClick=subButtonClick+1
+                if subButtonClick==1 then
+                    SCN.go('crash','none')
+                end
+            end
+        end,
+    },
     WIDGET.new{type='button_invis',x=80,y=530,w=100,h=130,
         name='fumo',
         onPress=function()
