@@ -88,7 +88,7 @@ end
 ---@class ReroChess.MapData
 ---@field texturePack? string
 ---@field playerData ReroChess.PlayerData[]
----@field decoData table
+---@field decoData Zenitha.drawingCommand[]
 ---@field mapData ReroChess.CellData[]
 --
 ---@param data ReroChess.MapData
@@ -137,7 +137,7 @@ function Game.new(data)
     local function addQ(mode,cell,prop,item)
         if mode=='text' then
             local w,h=getTextSize(item)
-            local k=0.8/math.max(w,h)
+            local k=0.65/math.max(w,h)
             for dx=-2,2,4 do for dy=-2,2,4 do
                 textB:addf(
                     {strokeColor,item},
@@ -190,7 +190,7 @@ function Game.new(data)
             x=d.x or x+(d.dx or d[1] or 0)
             y=d.y or y+(d.dy or d[2] or 0)
             ---@type ReroChess.Cell
-            map[i]={
+            local cell={
                 id=i,x=x,y=y,
                 next={},prev={},
                 propList=parseProp(d.prop),
@@ -204,9 +204,9 @@ function Game.new(data)
                 0.0038,nil,
                 getQuadCenter(quad)
             )
-            for _,prop in next,map[i].propList do
+            for _,prop in next,cell.propList do
                 if prop[1]=='label' then
-                    map[prop[2]]=map[i]
+                    map[prop[2]]=cell
                 elseif prop[1]=='center' then
                     assert(not centered,"Multiple map center")
                     centered=true
@@ -214,10 +214,11 @@ function Game.new(data)
                     game.cam:update(1)
                 elseif prop[1]=='next' then
                     for j=2,#prop do
-                        table.insert(map[i].next,prop[j])
+                        table.insert(cell.next,prop[j])
                     end
                 end
             end
+            map[i]=cell
         end
 
         -- Process props
@@ -239,7 +240,7 @@ function Game.new(data)
                     if type(prop[2])=='string' then
                         prop[2]=assertf(map[prop[2]],'Invalid teleport target: %s',prop[2]).id
                     end
-                    addQ('DECO',cell,prop,QUAD.world.question)
+                        prop[2]=assertf(map[prop[2]],'Invalid teleport target: %s',prop[2]).id
                 elseif prop[1]=='stop' then
                     addQ('text',cell,prop,"X")
                     addQ('deco',cell,prop,QUAD.world.warn)
@@ -435,13 +436,11 @@ function Game:draw()
         gc_setLineWidth(0.026)
         for i=1,#map do
             local cell=map[i]
-            if cell.propList~='invis' then
                 local x,y=cell.x,cell.y
                 gc_setColor(1,1,1,.2)
                 gc_rectangle('fill',x-.45,y-.45,.9,.9)
                 gc_setColor(0,0,0,.2)
                 gc_rectangle('line',x-.45,y-.45,.9,.9)
-            end
         end
     end
 
