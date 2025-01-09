@@ -264,14 +264,16 @@ function Game.new(data)
 
         -- Auto next
         for id=1,#map-1 do
-            if #map[id].next==0 and MATH.mDist2(0,map[id].x,map[id].y,map[id+1].x,map[id+1].y)<=1 then
+            if #map[id].next==0 and MATH.mDist2(0,map[id].x,map[id].y,map[id+1].x,map[id+1].y)<=1.026 then
                 table.insert(map[id].next,map[id+1].id)
             end
         end
+
+        -- Generate Path
         for id=1,#map do
             for _,n in next,map[id].next do
                 local c1,c2=map[id],map[n]
-                if MATH.mDist2(0,c1.x,c1.y,c2.x,c2.y)<=1 then
+                if MATH.mDist2(0,c1.x,c1.y,c2.x,c2.y)<=1.026 then
                     local quad=QUAD.world.path
                     bgSB:add(
                         quad,
