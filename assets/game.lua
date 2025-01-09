@@ -71,6 +71,12 @@ local function parseProp(data)
     return data
 end
 
+local _tempText=GC.newText(FONT.get(40))
+local function getTextSize(str)
+    _tempText:set(str)
+    return _tempText:getDimensions()
+end
+
 ---@class ReroChess.CellData: ReroChess.Cell
 ---@field id nil
 ---@field x? number
@@ -106,9 +112,9 @@ function Game.new(data)
         roundIndex=1,
     },Game)
 
-    for i=1,#game.deco do
-        -- TODO
-    end
+    -- for i=1,#game.deco do
+    --     -- TODO
+    -- end
 
     local worldTexture=TEX.world[data.texturePack==nil and 'default' or data.texturePack] or error("Invalid texture pack: "..tostring(data.texturePack))
     game.spriteBatches[1]=GC.newSpriteBatch(worldTexture,nil,'dynamic') -- BG
@@ -130,19 +136,21 @@ function Game.new(data)
     local instColor,normalColor={.26,0,0},{.05,.05,.05}
     local function addQ(mode,cell,prop,item)
         if mode=='text' then
+            local w,h=getTextSize(item)
+            local k=0.8/math.max(w,h)
             for dx=-2,2,4 do for dy=-2,2,4 do
                 textB:addf(
                     {strokeColor,item},
                     620,'center',
-                    cell.x-(310+dx)*.01,cell.y-.22+dy*.01,
-                    nil,.01
+                    cell.x+(-310+dx)*k,cell.y-h/2*k+dy*k,
+                    nil,k
                 )
             end end
             textB:addf(
                 {prop[0] and instColor or normalColor,item},
                 620,'center',
-                cell.x-310*.01,cell.y-.22,
-                nil,.01
+                cell.x+(-310)*k,cell.y-h/2*k,
+                nil,k
             )
         elseif mode=='deco' then
             -- decoSB:add(
@@ -222,10 +230,10 @@ function Game.new(data)
                 if prop[1]=='text' then
                     addQ('text',cell,prop,prop[2])
                 elseif prop[1]=='step' then
-                    addQ('text',cell,prop,("+%d"):format(prop[2]))
+                    addQ('text',cell,prop,("+%d步"):format(prop[2]))
                     addQ('deco',cell,prop,QUAD.world.moveF)
                 elseif prop[1]=='move' then
-                    addQ('text',cell,prop,("%d"):format(math.abs(prop[2]))..(prop[2]>0 and '+' or '-'))
+                    addQ('text',cell,prop,("%s%d格"):format(prop[2]>0 and '进' or '退',math.abs(prop[2])))
                     addQ('deco',cell,prop,prop[2]>0 and QUAD.world.moveF or QUAD.world.moveB)
                 elseif prop[1]=='teleport' then
                     if type(prop[2])=='string' then
