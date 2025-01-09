@@ -103,36 +103,41 @@ do -- Image & Texture & Quad
     ChessData={
         {
             name="普通的棋子娘",
+            desc="其实她是骰子变的",
             shadeX=0.02,
         },
         {
-            name="一只略",
-            desc="略都让别人写了自己还不写，所以先随便填一行在这里",
-            link="https://space.bilibili.com/1344099355",
-            shadeX=-.005,
-        },
-        {
-            name="十七",
-            shadeX=0.015,
-        },
-        {
-            name="棠棠猫",
-        },
-        {
             name="关注娘",
-            desc="关注[填入up主id]谢谢喵",
+            desc="我们需要更多的关注…",
         },
         {
-            name="铅笔略",
+            name="普通的熊猫人",
+            desc="普通的熊猫人",
         },
         {
             name="长相潦草的幽灵",
             shadeR=.3,
-            desc="似了",
+            desc="其实是气球变的",
             shadeX=0,
         },
         {
-            name="普通的熊猫人",
+            name="棠棠猫",
+            desc="害怕人类",
+        },
+        {
+            name="十七",
+            desc="很可爱",
+            shadeX=0.015,
+        },
+        {
+            name="一只略",
+            desc="略",
+            link="https://space.bilibili.com/1344099355",
+            shadeX=-.005,
+        },
+        {
+            name="铅笔略",
+            desc="掉色了",
         },
         {
             name="豚豚",
