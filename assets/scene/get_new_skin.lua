@@ -43,6 +43,9 @@ function scene.unload()
     TWEEN.tag_kill('quit_sure')
 end
 
+function scene.mouseClick() scene.keyDown('space') end
+function scene.touchClick() scene.keyDown('space') end
+
 function scene.keyDown(_,isRep)
     if isRep then return true end
     quit()

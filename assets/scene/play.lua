@@ -20,7 +20,7 @@ function scene.mouseMove(x,y,dx,dy)
 end
 
 function scene.wheelMove(dx,dy)
-    game.cam:scale(1+dy*.1)
+    game.cam:scale(1+MATH.sign(dy)*.1)
 end
 
 function scene.mouseUp(x,y,k)
