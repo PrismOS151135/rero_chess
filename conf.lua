@@ -7,20 +7,7 @@ if love._os=='Web' then
 end
 
 function love.conf(t)
-    local identity='rero_chess'
     local mobile=love._os=='Android' or love._os=='iOS'
-    local msaa=4
-    local portrait=false
-
-    local fs=love.filesystem
-    fs.setIdentity(identity)
-    do -- Load grapgic settings from conf/settings
-        local fileData=fs.read('conf/settings')
-        if fileData then
-            msaa=tonumber(fileData:match('"msaa":(%d+)')) or 0
-            portrait=mobile and fileData:find('"portrait":true') and true
-        end
-    end
 
     t.identity='rero_chess' -- Saving folder
     t.externalstorage=true -- Use external storage on Android
@@ -43,7 +30,7 @@ function love.conf(t)
 
     local W=t.window
     W.vsync=0 -- Unlimited FPS
-    W.msaa=msaa -- Multi-sampled antialiasing
+    W.msaa=4 -- Multi-sampled antialiasing
     W.depth=0 -- Bits/samp of depth buffer
     W.stencil=1 -- Bits/samp of stencil buffer
     W.display=1 -- Monitor ID
@@ -54,13 +41,9 @@ function love.conf(t)
     W.fullscreentype=mobile and 'exclusive' or 'desktop' -- Fullscreen type
     W.width,W.height=1280,800
     W.minwidth,W.minheight=160,100
-    if portrait then
-        W.width,W.height=W.height,W.width
-        W.minwidth,W.minheight=W.minheight,W.minwidth
-    end
     W.title=require'version'.appName..'  '..require'version'.appVer
 
-    if love._os=='Linux' and fs.getInfo('assets/image/icon.png') then
+    if love._os=='Linux' and love.filesystem.getInfo('assets/image/icon.png') then
         W.icon='assets/image/icon.png'
     end
 end
