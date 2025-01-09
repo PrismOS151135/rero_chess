@@ -13,6 +13,7 @@ function _DATA.save()
     if not TASK.lock('data_save_fastLock',.0626) then return end
     TWEEN.tag_kill('tag_data_save')
     if TASK.lock('data_save',5) then
+        TEXT:add{text=CHAR.icon.save,x=SCR.w0-10,y=SCR.h0+5,color='D',align='bottomright',a=.0626,duration=.62}
         FILE.save(DATA,'data')
     else
         TWEEN.new():setOnFinish(saver):setTag('tag_data_save'):run()
