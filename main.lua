@@ -192,6 +192,11 @@ do -- Image & Texture & Quad
             desc="-“對不起。”\n-“沒關係，人之常情。”",
             link="https://space.bilibili.com/548994291",
         },
+        {
+            name="CJY_e",
+            desc="一个棋子",
+            link="https://space.bilibili.com/678336655",
+        },
         -- {
         --     name="",
         --     desc="",
