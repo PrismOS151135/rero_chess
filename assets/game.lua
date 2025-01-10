@@ -240,7 +240,7 @@ function Game.new(data)
                     if type(prop[2])=='string' then
                         prop[2]=assertf(map[prop[2]],'Invalid teleport target: %s',prop[2]).id
                     end
-                        prop[2]=assertf(map[prop[2]],'Invalid teleport target: %s',prop[2]).id
+                    addQ('deco',cell,prop,QUAD.world.warn)
                 elseif prop[1]=='stop' then
                     addQ('text',cell,prop,"X")
                     addQ('deco',cell,prop,QUAD.world.warn)

@@ -130,6 +130,14 @@ do -- Image & Texture & Quad
             shadeX=0.015,
         },
         {
+            name="饭勺",
+            desc="普通的死宅",
+        },
+        {
+            name="璃子",
+            desc="绝对不会生病的人类",
+        },
+        {
             name="一只略",
             desc="略",
             link="https://space.bilibili.com/1344099355",
@@ -179,6 +187,16 @@ do -- Image & Texture & Quad
             desc="能爆出肥料的火红莲",
             link="https://space.bilibili.com/3546619314178489",
         },
+        {
+            name="本子魔法使",
+            desc="-“對不起。”\n-“沒關係，人之常情。”",
+            link="https://space.bilibili.com/548994291",
+        },
+        -- {
+        --     name="",
+        --     desc="",
+        --     link="https://space.bilibili.com/",
+        -- },
     } for i=1,#ChessData do ChessData[ChessData[i].name]=ChessData[i] end
     local function path(i) return 'assets/texture/'..i end
     TEX=IMG.init({
