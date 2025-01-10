@@ -5,12 +5,23 @@ local aboveScene
 
 local subscribed
 
+local alpha
+local showWindow
+
 function scene.load(prev)
     if SCN.stackChange>0 then
         aboveScene=SCN.scenes[prev] or NONE
+        alpha=0
+        showWindow=false
+        TASK.new(function()
+            repeat alpha=alpha+coroutine.yield() until alpha>=.8
+            alpha=.8
+            TASK.yieldT(1.2)
+            showWindow=true
+        end)
+        subscribed=TABLE.find(DATA.skin,'关注娘')
+        scene.widgetList.sub:setVisible(not subscribed)
     end
-    subscribed=TABLE.find(DATA.skin,'关注娘')
-    scene.widgetList.sub:setVisible(not subscribed)
 end
 
 local function subscribe()
@@ -55,23 +66,25 @@ function scene.draw()
 
     -- Back
     GC.origin()
-    GC.setColor(.2,.5,1,.8)
+    GC.setColor(.95,.95,.95,alpha)
     GC.rectangle('fill',0,0,SCR.w,SCR.h)
 
-    GC.replaceTransform(SCR.xOy)
-    GC.setColor(1,1,1)
-    GC.mDraw(TEX.crash,500,300,nil,2)
-
-    if subscribed then
-        GC.polygon('fill',
-            263,306,
-            533,299,
-            453,521,
-            262,513
-        )
-        GC.setColor(COLOR.D)
-        FONT.set(60)
-        GC.print(Texts.crash_thanks,300,384-Jump.smooth()*20)
+    -- Window
+    if showWindow then
+        GC.replaceTransform(SCR.xOy)
+        GC.setColor(1,1,1)
+        GC.mDraw(TEX.crash,500,300,nil,2)
+        if subscribed then
+            GC.polygon('fill',
+                263,306,
+                533,299,
+                453,521,
+                262,513
+            )
+            GC.setColor(COLOR.D)
+            FONT.set(60)
+            GC.print(Texts.crash_thanks,300,384-Jump.smooth()*20)
+        end
     end
 end
 
