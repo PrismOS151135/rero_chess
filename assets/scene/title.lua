@@ -94,7 +94,7 @@ scene.widgetList={
             if TASK.lock('subscribe_lock',.42) then
                 love.timer.sleep(0.26)
                 subButtonClick=subButtonClick+1
-                if subButtonClick==1 then
+                if subButtonClick==3 then
                     SCN.go('crash','none')
                 end
             end
