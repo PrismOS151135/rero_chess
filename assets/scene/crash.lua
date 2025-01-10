@@ -3,37 +3,34 @@ local scene={}
 
 local aboveScene
 
-local textProgress
-local finished
+local subscribed
 
 function scene.load(prev)
-    aboveScene=SCN.scenes[prev] or NONE
-    textProgress=1
-    finished=TABLE.find(DATA.skin,'关注娘')
-    scene.widgetList.sub:setVisible(not finished)
+    if SCN.stackChange>0 then
+        aboveScene=SCN.scenes[prev] or NONE
+    end
+    subscribed=TABLE.find(DATA.skin,'关注娘')
+    scene.widgetList.sub:setVisible(not subscribed)
 end
 
 local function subscribe()
-    if not finished and TASK.lock('sub',2.6) then
+    if not subscribed and TASK.lock('subscribe_go',2.6) then
         love.system.openURL(ChessData['一只略'].link)
         TASK.new(function()
             TASK.yieldT(1.26)
-            finished=true
+            subscribed=true
             scene.widgetList.sub:setVisible(false)
+            DATA.getSkin('关注娘')
         end)
     end
 end
 local function leave()
-    if finished then
+    if subscribed then
         SCN.back('none')
-    elseif TASK.lock('subscribe_lock',2.6) then
-        MSG('info',Texts.crash_texts[textProgress],6.2)
-        textProgress=textProgress+1
-        if not Texts.crash_texts[textProgress] then
-            DATA.getSkin('关注娘')
-            finished=true
-            scene.widgetList.sub:setVisible(false)
-        end
+    elseif TASK.lock('subscribe_lock',6.2) then
+        MSG('info',Texts.crash_sure,6.2)
+    else
+        SCN.back('none')
     end
 end
 
@@ -65,7 +62,7 @@ function scene.draw()
     GC.setColor(1,1,1)
     GC.mDraw(TEX.crash,500,300,nil,2)
 
-    if finished then
+    if subscribed then
         GC.polygon('fill',
             263,306,
             533,299,
@@ -74,7 +71,7 @@ function scene.draw()
         )
         GC.setColor(COLOR.D)
         FONT.set(60)
-        GC.print("感谢！",300,384-Jump.smooth()*20)
+        GC.print(Texts.crash_thanks,300,384-Jump.smooth()*20)
     end
 end
 

@@ -1,4 +1,5 @@
 local DATA={
+    regTime=os.time(),
     fumoDmg=0,
     fumoDieTime=false,
     skin={},

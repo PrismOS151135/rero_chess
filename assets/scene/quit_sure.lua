@@ -23,7 +23,9 @@ local function animTimer() return timer^2 end
 local quitText=GC.newText(FONT.get(60))
 
 function scene.load(prev)
-    aboveScene=SCN.scenes[prev] or NONE
+    if SCN.stackChange>0 then
+        aboveScene=SCN.scenes[prev] or NONE
+    end
 
     animIn=true
     timer=1

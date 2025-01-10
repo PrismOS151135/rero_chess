@@ -80,7 +80,7 @@ end
 
 function scene.overDraw()
     GC.origin()
-    GC.setColor(0,0,0,TASK.getLock('subscribe_lock') or 0)
+    GC.setColor(0,0,0,TASK.getLock('title_subscribePress') or 0)
     GC.rectangle('fill',0,0,SCR.w,SCR.h)
 end
 
@@ -91,7 +91,7 @@ scene.widgetList={
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'settings'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe,
         onPress=function ()
-            if TASK.lock('subscribe_lock',.42) then
+            if TASK.lock('title_subscribePress',.42) then
                 love.timer.sleep(0.26)
                 subButtonClick=subButtonClick+1
                 if subButtonClick==3 then
