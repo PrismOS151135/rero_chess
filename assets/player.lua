@@ -148,9 +148,13 @@ function Player:roll()
                     d.value=d.value/mod[2]
                 elseif mod[1]=='^' then
                     d.value=d.value^mod[2]
-                elseif mod[1]=='&' then
-                    d.value=d.value^(1/mod[2])
                 end
+                self:popText{
+                    text=mod[1]..mod[2],
+                    duration=1,
+                    x=self.dice.x-self.x,
+                    y=self.dice.y-self.y+0.2,
+                }
                 d.value=math.floor(d.value+.001)
             end
             d.animState='bounce'

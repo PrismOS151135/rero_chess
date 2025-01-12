@@ -138,7 +138,6 @@ local modifiers={
     ['*']=true,
     ['/']=true,
     ['^']=true,
-    ['&']=true,
 }
 Prop.diceMod={
     parse=function(prop)
@@ -152,7 +151,7 @@ Prop.diceMod={
     ---@param P ReroChess.Player
     code=function(P,op,num)
         P:popText{
-            text=("下一次点数%s%d"):format(op,num),
+            text=("下次点数%s%d"):format(op,num),
             duration=2,
         }
         table.insert(P.diceMod,{op,num})
