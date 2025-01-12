@@ -16,6 +16,10 @@ local Prop=require'assets.prop'
 ---@field moveDir 'next' | 'prev' | false
 ---@field dice ReroChess.Dice
 ---
+---Variables between rounds
+---@field extraTurn integer
+---@field diceMod table[]
+---
 ---Variables for moving in round
 ---@field moving boolean
 ---@field moveSignal boolean
@@ -77,6 +81,9 @@ function Player.new(id,data,game)
             animState='hide',
         },
 
+        extraTurn=0,
+        diceMod={},
+
         x=(id-1)%2==0 and -.26 or .26,
         y=(id-1)%4<=1 and -.26 or .26,
     },Player)
@@ -129,6 +136,23 @@ function Player:roll()
                 d.value=d.points[r]
             end
         end):setEase('OutCirc'):setDuration(2.6):setOnFinish(function()
+            if #self.diceMod>0 then
+                local mod=table.remove(self.diceMod,1)
+                if mod[1]=='+' then
+                    d.value=d.value+mod[2]
+                elseif mod[1]=='-' then
+                    d.value=d.value-mod[2]
+                elseif mod[1]=='*' then
+                    d.value=d.value*mod[2]
+                elseif mod[1]=='/' then
+                    d.value=d.value/mod[2]
+                elseif mod[1]=='^' then
+                    d.value=d.value^mod[2]
+                elseif mod[1]=='&' then
+                    d.value=d.value^(1/mod[2])
+                end
+                d.value=math.floor(d.value+.001)
+            end
             d.animState='bounce'
             TWEEN.new(function(t)
                 d.size=1+math.sin(t*26)/(1+62*t)

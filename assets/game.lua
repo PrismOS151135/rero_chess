@@ -242,10 +242,16 @@ function Game.new(data)
                     end
                     addQ('deco',cell,prop,QUAD.world.warn)
                 elseif prop[1]=='stop' then
-                    addQ('text',cell,prop,"X")
+                    addQ('text',cell,prop,"停止")
                     addQ('deco',cell,prop,QUAD.world.warn)
                 elseif prop[1]=='reverse' then
-                    addQ('text',cell,prop,"R")
+                    addQ('text',cell,prop,"反转")
+                    addQ('deco',cell,prop,QUAD.world.warn)
+                elseif prop[1]=='diceMod' then
+                    addQ('text',cell,prop,"下次点数"..prop[2]..prop[3]) -- TODO
+                    addQ('deco',cell,prop,QUAD.world.warn)
+                elseif prop[1]=='exTurn' then
+                    addQ('text',cell,prop,(prop[2]>0 and "再骰%d次" or "跳过%d回合"):format(math.abs(prop[2])))
                     addQ('deco',cell,prop,QUAD.world.warn)
                 end
 
@@ -330,24 +336,24 @@ function Game:roll()
             repeat coroutine.yield() until p.dice.animState=='bounce'
             p:move(p.dice.value)
             repeat coroutine.yield() until not p.moving
-            self.roundIndex=self.roundIndex%#self.players+1
-            TEXT:add{
-                text="Player "..self.roundIndex.." turn",
-                r=1,g=1,b=1,a=.4,
-                duration=1.4,
-                x=500-4,y=300-4,k=1.5,
-                fontSize=40,
-                style='zoomout',
-            }
-            TEXT:add{
-                text="Player "..self.roundIndex.." turn",
-                color=self.players[self.roundIndex].color,
-                duration=1.6,
-                x=500,y=300,k=1.5,
-                fontSize=40,
-                style='zoomout',
-            }
+            self:updateTurn()
         end)
+    end
+end
+
+function Game:updateTurn()
+    local p=self.players[self.roundIndex]
+    if p.extraTurn>0 then
+        p.extraTurn=p.extraTurn-1
+        MSG('other',"玩家"..self.roundIndex.."的额外回合")
+    else
+        while true do
+            self.roundIndex=self.roundIndex%#self.players+1
+            p=self.players[self.roundIndex]
+            if p.extraTurn>=0 then break end
+            p.extraTurn=p.extraTurn+1
+        end
+        MSG('other',"玩家"..self.roundIndex.."的回合")
     end
 end
 

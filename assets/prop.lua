@@ -132,4 +132,50 @@ Prop.reverse={
     end,
 }
 
+local modifiers={
+    ['+']=true,
+    ['-']=true,
+    ['*']=true,
+    ['/']=true,
+    ['^']=true,
+    ['&']=true,
+}
+Prop.diceMod={
+    parse=function(prop)
+        prop[3]=tonumber(prop[3])
+        assert(
+            modifiers[prop[2]] and
+            type(prop[3])=='number',
+            'diceMod[1] must be operator and diceMod[2] must be number'
+        )
+    end,
+    ---@param P ReroChess.Player
+    code=function(P,op,num)
+        P:popText{
+            text=("下一次点数%s%d"):format(op,num),
+            duration=2,
+        }
+        table.insert(P.diceMod,{op,num})
+    end,
+}
+
+Prop.exTurn={
+    parse=function(prop)
+        if prop[2]==nil then prop[2]=1 end
+        prop[2]=tonumber(prop[2])
+        assert(
+            type(prop[2])=='number' and prop[2]%1==0 and prop[2]~=0,
+            'exTurn[1] must be non-zero integer'
+        )
+    end,
+    ---@param P ReroChess.Player
+    code=function(P,cnt)
+        P:popText{
+            text=cnt>0 and "额外回合!" or "跳过回合!",
+            duration=2,
+        }
+        P.extraTurn=P.extraTurn+cnt
+    end,
+}
+
 return Prop
