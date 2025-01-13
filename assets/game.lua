@@ -334,8 +334,10 @@ function Game:roll()
         TASK.new(function()
             p:roll()
             repeat coroutine.yield() until p.dice.animState=='bounce'
-            p:move(p.dice.value)
-            repeat coroutine.yield() until not p.moving
+            if math.abs(p.dice.value)>=1 then
+                p:move(p.dice.value)
+                repeat coroutine.yield() until not p.moving
+            end
             self:updateTurn()
         end)
     end

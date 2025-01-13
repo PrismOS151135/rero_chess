@@ -155,7 +155,7 @@ function Player:roll()
                     x=self.dice.x-self.x,
                     y=self.dice.y-self.y+0.2,
                 }
-                d.value=math.floor(d.value+.001)
+                d.value=MATH.sign(d.value)*math.floor(math.abs(d.value)+.00001)
             end
             d.animState='bounce'
             TWEEN.new(function(t)
@@ -176,10 +176,10 @@ function Player:move(stepCount)
     self.moving=true
     self.moveSignal=false
     self.stepRemain=stepCount
-    self.nextLocation,self.curDir=self.game:getNext(self.location,self.moveDir)
+    self.nextLocation,self.curDir=self.game:getNext(self.location,stepCount>0 and self.moveDir or self.moveDir=='next' and 'prev' or 'next')
 
     TASK.new(function()
-        while self.stepRemain>0 do
+        while math.abs(self.stepRemain)>=1 do
             local sx,sy=self.x,self.y
             local ex,ey=self.game.map[self.nextLocation].x+MATH.rand(-.15,.15),self.game.map[self.nextLocation].y+MATH.rand(-.15,.15)
             local animLock=true
@@ -204,7 +204,7 @@ function Player:move(stepCount)
             -- Wait until animation end
             repeat coroutine.yield() until not animLock
 
-            self.stepRemain=self.stepRemain-1
+            self.stepRemain=MATH.linearApproach(self.stepRemain,0,1)
 
             -- Trigger cell property
             self:triggerCell()
