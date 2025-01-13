@@ -30,13 +30,13 @@ return {
         {0,1,prop='diceMod,-,1'},{0,1},{0,1,prop='move,-3'},{0,1,prop='move,-1'},{0,1,prop='move,-1'},{0,1},{0,1,prop='move,-2'},{0,1,prop='move,-1'},{0,1,prop='move,-1'},{0,1},
         {-1,0,prop='move,-2'},{-1,0,prop='teleport,start text,回到起点'},{-1,0,prop='text,终点'},
 
-        {x=8.5,y=1.5+1/6,prop='label,医院 text,医院'},
+        {x=8.5,y=1.5+1/6,prop='teleport,医院出口 label,医院 text,医院'},
         {1,0},{1,0},
         {0,1},{0,1},
         {-1,0},{-1,0},
         {0,-1,prop='next,医院'},
 
-        {x=8.5,y=5.5-1/6,prop='label,监狱 text,监狱'},
+        {x=8.5,y=5.5-1/6,prop='teleport,监狱出口 label,监狱 text,监狱'},
         {1,0},{1,0},
         {0,1},{0,1},{0,1},
         {-1,0},{-1,0},
