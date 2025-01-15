@@ -12,6 +12,7 @@ local Player=require'assets.player'
 ---@field text Zenitha.Text
 ---
 ---@field roundIndex integer
+---@field selectedPlayer false | ReroChess.Player
 local Game={}
 Game.__index=Game
 
@@ -234,7 +235,7 @@ function Game.new(data)
                     addQ('text',cell,prop,("+%d步"):format(prop[2]))
                     addQ('deco',cell,prop,QUAD.world.moveF)
                 elseif prop[1]=='move' then
-                    addQ('text',cell,prop,("%s%d格"):format(prop[2]>0 and '进' or '退',math.abs(prop[2])))
+                    addQ('text',cell,prop,("%s%s%d格"):format(PlayerRef[prop[3]],prop[2]>0 and '进' or '退',math.abs(prop[2])))
                     addQ('deco',cell,prop,prop[2]>0 and QUAD.world.moveF or QUAD.world.moveB)
                 elseif prop[1]=='teleport' then
                     if type(prop[2])=='string' then
@@ -252,6 +253,11 @@ function Game.new(data)
                     addQ('deco',cell,prop,QUAD.world.warn)
                 elseif prop[1]=='exTurn' then
                     addQ('text',cell,prop,(prop[2]>0 and "再骰%d次" or "跳过%d回合"):format(math.abs(prop[2])))
+                    addQ('deco',cell,prop,QUAD.world.warn)
+                elseif prop[1]=='swap' then
+                    addQ('text',cell,prop,"指定别人换位")
+                    addQ('deco',cell,prop,QUAD.world.warn)
+                elseif prop[1]=='exit' then
                     addQ('deco',cell,prop,QUAD.world.warn)
                 end
 
@@ -333,13 +339,79 @@ function Game:roll()
     if p.dice.animState=='hide' and not p.moving then
         TASK.new(function()
             p:roll()
-            repeat coroutine.yield() until p.dice.animState=='bounce'
+            repeat TASK.yieldN(6) until p.dice.animState=='bounce'
             if math.abs(p.dice.value)>=1 then
                 p:move(p.dice.value)
-                repeat coroutine.yield() until not p.moving
+                repeat TASK.yieldN(6) until not p.moving
             end
+            local pList=self.players
+            repeat
+                TASK.yieldN(6)
+                local allStop=true
+                for i=1,#pList do
+                    if pList[i].moving then
+                        allStop=false
+                        break
+                    end
+                end
+            until allStop
             self:updateTurn()
         end)
+    end
+end
+
+---@param P ReroChess.Player
+---@param str ReroChess.PlayerRef
+---@return ReroChess.Player
+function Game:parsePlayer(P,str)
+    self.selectedPlayer=false
+    local list=self.players
+    for i=1,#list do list[i].canBeSelected=false end
+    if str=='@self' then
+        return P
+    elseif str:sub(1,5)=='@spec' then
+        if str=='@spec' then
+            for i=1,#list do list[i].canBeSelected=true end
+        elseif str=='@spec_ex' then
+            for i=1,#list do list[i].canBeSelected=list[i]~=P end
+        elseif str=='@spec_free' then
+            -- TODO
+        elseif str=='@spec_free_ex' then
+            -- TODO
+        elseif str=='@spec_trap' then
+            -- TODO
+        elseif str=='@spec_trap_ex' then
+            -- TODO
+        end
+        repeat TASK.yieldN(10) until self.selectedPlayer
+        self.selectedPlayer.face='selected'
+        TASK.yieldT(1)
+        self.selectedPlayer.face='normal'
+        return self.selectedPlayer
+    elseif str=='@random' then
+        return list[math.random(#list)]
+    elseif str=='@random_ex' then
+        local r=math.random(#list-1)
+        if r>=P.id then r=r+1 end
+        return list[r]
+    elseif str=='@nearest' then
+        -- TODO
+    elseif str=='@farthest' then
+        -- TODO
+    elseif str=='@front' then
+        -- TODO
+    elseif str=='@behind' then
+        -- TODO
+    elseif str=='@next' then
+        return list[P.id%#list+1]
+    elseif str=='@prev' then
+        return list[P.id==1 and #list or P.id-1]
+    elseif str=='@first' then
+        -- TODO
+    elseif str=='@last' then
+        -- TODO
+    else
+        error('Invalid player reference: '..str)
     end
 end
 
@@ -360,6 +432,7 @@ function Game:updateTurn()
 end
 
 ---@param a {p:ReroChess.Player}
+---@param b {p:ReroChess.Player}
 local function coSorter(a,b)
     return a.p.y<b.p.y
 end

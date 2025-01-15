@@ -68,6 +68,11 @@ Prop.move={
             type(prop[2])=='number' and prop[2]%1==0,
             'move[1] must be integer'
         )
+        if prop[3]==nil then prop[3]='@self' end
+        assert(
+            PlayerRef[prop[3]],
+            'move[3] must be @str'
+        )
     end,
     ---@param P ReroChess.Player
     code=function(P,dist)
@@ -90,6 +95,11 @@ Prop.teleport={
             type(prop[2])=='string' or
             type(prop[2])=='number' and prop[2]%1==0,
             'teleport[1] must be integer or string'
+        )
+        if prop[3]==nil then prop[3]='@self' end
+        assert(
+            PlayerRef[prop[3]],
+            'teleport[3] must be @str'
         )
     end,
     ---@param P ReroChess.Player
@@ -174,6 +184,50 @@ Prop.exTurn={
             duration=2,
         }
         P.extraTurn=P.extraTurn+cnt
+    end,
+}
+
+Prop.swap={
+    parse=function(prop)
+        assert(
+            PlayerRef[prop[2]],
+            'swap[2] must be @str'
+        )
+        if prop[3]==nil then prop[3]='@self' end
+        assert(
+            PlayerRef[prop[3]],
+            'swap[3] must be @str'
+        )
+    end,
+    ---@param P1 ReroChess.Player
+    ---@param P2 ReroChess.Player
+    code=function(P1,P2)
+        P1.x,P2.x=P2.x,P1.x
+        P1.y,P2.y=P2.y,P1.y
+        P1.location,P2.location=P2.location,P1.location
+        P1.moveDir,P2.moveDir=P2.moveDir,P1.moveDir
+        P1.faceDir,P2.faceDir=P2.faceDir,P1.faceDir
+    end,
+}
+
+Prop.exit={
+    parse=function(prop)
+        assert(
+            PlayerRef[prop[2]],
+            'exit[1] must be @str'
+        )
+        assert(
+            type(prop[3])=='string',
+            'exit[2] must be integer'
+        )
+        assert(
+            type(prop[4])=='string',
+            'exit[3] must be @str'
+        )
+    end,
+    ---@param P ReroChess.Player
+    code=function(P,player,exitId,target)
+        -- TODO
     end,
 }
 

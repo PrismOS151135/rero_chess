@@ -375,6 +375,27 @@ LANG.setDefault('zh')
 --------------------------------------------------------------
 --- Setup Project & Load Assets
 
+---@enum (key) ReroChess.PlayerRef
+PlayerRef={
+    ['@self']="", -- Self
+    ['@spec']="指定玩家", -- Specify
+    ['@spec_ex']="指定其他玩家", -- Specify (exclude self)
+    ['@spec_free']="指定自由玩家", -- Specify (free)
+    ['@spec_free_ex']="指定其他自由玩家", -- Specify (free, exclude self)
+    ['@spec_trap']="指定受困玩家", -- Specify (trapped)
+    ['@spec_trap_ex']="指定其他受困玩家", -- Specify (trapped, exclude self)
+    ['@random']="随机玩家", -- Random
+    ['@random_ex']="随机其他玩家", -- Random (exclude self)
+    ['@nearest']="最近玩家", -- Nearest
+    ['@farthest']="最远玩家", -- Farthest
+    ['@front']="前方玩家", -- Front
+    ['@behind']="后方玩家", -- Behind
+    ['@next']="下一个玩家",  -- Next One
+    ['@prev']="上一个玩家", -- Previous One
+    ['@first']="第一名", -- First One
+    ['@last']="最后一名", -- Last One
+}
+
 ---@type ReroChess.I18N
 Texts=LANG.set('zh')
 

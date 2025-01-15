@@ -27,6 +27,8 @@ local Prop=require'assets.prop'
 ---@field nextLocation integer
 ---@field curDir 'next' | 'prev' | false
 ---
+---@field canBeSelected boolean
+---
 ---@field x number
 ---@field y number
 ---
@@ -218,7 +220,13 @@ end
 function Player:triggerCell()
     for _,prop in next,self.game.map[self.location].propList do
         if prop[0] or self.stepRemain==0 then
-            Prop[prop[1]].code(self,unpack(prop,2))
+            local args=TABLE.sub(prop,2)
+            for i=1,#args do
+                if tostring(args[i]):sub(1,1)=='@' then
+                    args[i]=self.game:parsePlayer(self,args[i])
+                end
+            end
+            Prop[prop[1]].code(self,unpack(args))
         end
     end
 end
@@ -243,7 +251,7 @@ local gc_push,gc_pop=gc.push,gc.pop
 local gc_translate,gc_scale,gc_rotate=gc.translate,gc.scale,gc.rotate
 local gc_setShader=gc.setShader
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
-local gc_rectangle,gc_circle,gc_ellipse=gc.rectangle,gc.circle,gc.ellipse
+local gc_line,gc_rectangle,gc_circle,gc_ellipse=gc.line,gc.rectangle,gc.circle,gc.ellipse
 local gc_draw=gc.draw
 local gc_setAlpha=GC.setAlpha
 local gc_mRect,gc_mDraw=GC.mRect,GC.mDraw
@@ -331,6 +339,21 @@ function Player:draw()
         do coroutine.yield()
             gc_push('transform')
             gc_translate(self.x,self.y)
+
+            -- Target Mark
+            if self.canBeSelected then
+                gc_push('transform')
+                gc_translate(0,-0.2)
+                gc_rotate(love.timer.getTime()*(1+self.id/10))
+                gc_setColor(1,.26,.26)
+                gc_setLineWidth(0.12)
+                gc_circle('line',0,0,0.62)
+                for _=0,3 do
+                    gc_rotate(MATH.tau/4)
+                    gc_line(0.4,0,0.942,0)
+                end
+                gc_pop()
+            end
 
             -- Name Tag
             gc_translate(0,-.626+10*Jump.nametag(self.id)*self.size)
