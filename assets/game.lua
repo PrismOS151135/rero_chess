@@ -111,6 +111,7 @@ function Game.new(data)
         cam=GC.newCamera(),
         text=TEXT.new(),
         roundIndex=1,
+        selectedPlayer=nil,
     },Game)
 
     -- for i=1,#game.deco do
@@ -364,9 +365,7 @@ end
 ---@param str ReroChess.PlayerRef
 ---@return ReroChess.Player
 function Game:parsePlayer(P,str)
-    self.selectedPlayer=false
     local list=self.players
-    for i=1,#list do list[i].canBeSelected=false end
     if str=='@self' then
         return P
     elseif str:sub(1,5)=='@spec' then
@@ -383,11 +382,15 @@ function Game:parsePlayer(P,str)
         elseif str=='@spec_trap_ex' then
             -- TODO
         end
+        self.selectedPlayer=false
         repeat TASK.yieldN(10) until self.selectedPlayer
         self.selectedPlayer.face='selected'
-        TASK.yieldT(1)
+        for i=1,#list do list[i].canBeSelected=false end
+        TASK.yieldT(0.62)
         self.selectedPlayer.face='normal'
-        return self.selectedPlayer
+        local res=self.selectedPlayer
+        self.selectedPlayer=nil
+        return res
     elseif str=='@random' then
         return list[math.random(#list)]
     elseif str=='@random_ex' then

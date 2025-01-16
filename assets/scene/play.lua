@@ -30,10 +30,35 @@ function scene.mouseUp(x,y,k)
 end
 
 function scene.mouseClick(x,y,k)
-    if k==1 then
-        game:step()
-    elseif k==2 then
-        game:roll()
+    if game.selectedPlayer==false then
+        -- Select player
+        x,y=SCR.xOy:transformPoint(x,y)
+        x,y=SCR.xOy_m:inverseTransformPoint(x,y)
+        x,y=game.cam.transform:inverseTransformPoint(x,y)
+        local pList=TABLE.copy(game.players,0)
+        local closest
+        for i=#pList,1,-1 do
+            local p=pList[i]
+            if p.canBeSelected and MATH.distance(p.x,p.y,x,y)<.42 then
+                if closest then
+                    game.cam.x0,game.cam.y0=p.x,p.y
+                    game.cam:scale(2)
+                    return
+                else
+                    closest=p
+                end
+            end
+        end
+        if closest then
+            game.selectedPlayer=closest
+        end
+    else
+        -- Normal
+        if k==1 then
+            game:step()
+        elseif k==2 then
+            game:roll()
+        end
     end
 end
 
