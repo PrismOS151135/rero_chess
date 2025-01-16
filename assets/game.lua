@@ -482,12 +482,20 @@ function Game:update(dt)
 end
 
 local gc=love.graphics
+local gc_replaceTransform=gc.replaceTransform
 local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_draw,gc_line=gc.draw,gc.line
 local gc_rectangle=gc.rectangle
 local resume=coroutine.resume
 
 function Game:draw()
+    if self.selectedPlayer==false then
+        gc_replaceTransform(SCR.xOy_u)
+        FONT.set(60)
+        GC.strokePrint('full',4,COLOR.L,COLOR.D,Texts.play_choosePlayer,0,40,'center')
+    end
+
+    gc_replaceTransform(SCR.xOy_m)
     self.cam:apply()
 
     gc_setColor(1,1,1)

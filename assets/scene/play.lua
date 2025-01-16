@@ -92,7 +92,6 @@ function scene.update(dt)
 end
 
 function scene.draw()
-    GC.replaceTransform(SCR.xOy_m)
     game:draw()
 end
 

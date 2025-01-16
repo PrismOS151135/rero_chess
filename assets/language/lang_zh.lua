@@ -15,5 +15,7 @@ local L={
     quit_sure="嗯 我要离开",
 
     new_skin="获得新棋子皮肤",
+
+    play_choosePlayer="选择一个玩家",
 }
 return L
