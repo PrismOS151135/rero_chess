@@ -405,7 +405,7 @@ end
 
 ---@param P ReroChess.Player
 ---@param str ReroChess.PlayerRef
----@return ReroChess.Player
+---@return false | ReroChess.Player
 function Game:parsePlayer(P,str)
     local pList=self.players
     if str=='@self' then
@@ -424,6 +424,9 @@ function Game:parsePlayer(P,str)
         elseif str=='@spec_trap_ex' then
             -- TODO
         end
+        local cnt=0
+        TABLE.foreach(pList,function(p) if p.canBeSelected then cnt=cnt+1 end end)
+        if cnt==0 then return false end
         self.selectedPlayer=false
         repeat TASK.yieldT(.1) until self.selectedPlayer
         self.selectedPlayer.face='selected'
