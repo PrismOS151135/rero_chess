@@ -11,10 +11,15 @@ local Player=require'assets.player'
 ---@field cam Zenitha.Camera
 ---@field text Zenitha.Text
 ---
----@field roundIndex integer
+---@field roundInfo ReroChess.RoundInfo
 ---@field selectedPlayer false | ReroChess.Player
 local Game={}
 Game.__index=Game
+
+---@class ReroChess.RoundInfo
+---@field lock boolean
+---@field step boolean
+---@field player integer
 
 ---@class ReroChess.CellProp (string|any)[]
 ---@field [0]? true Trigger Instant?
@@ -110,7 +115,11 @@ function Game.new(data)
 
         cam=GC.newCamera(),
         text=TEXT.new(),
-        roundIndex=1,
+        roundInfo={
+            lock=false,
+            step=false,
+            player=1,
+        },
         selectedPlayer=nil,
     },Game)
 
@@ -335,44 +344,77 @@ function Game.new(data)
     return game
 end
 
-function Game:roll()
-    local p=self.players[self.roundIndex]
-    if p.dice.animState=='hide' and not p.moving then
-        TASK.new(function()
-            p:roll()
-            repeat TASK.yieldN(6) until p.dice.animState=='bounce'
-            if math.abs(p.dice.value)>=1 then
-                p:move(p.dice.value)
-                repeat TASK.yieldN(6) until not p.moving
+---@param self ReroChess.Game
+local function roundThread(self)
+    local pList=self.players
+    self.roundInfo.lock=true
+
+    -- Roll dice
+    local p=pList[self.roundInfo.player]
+    p:roll()
+    repeat TASK.yieldT(.1) until p.dice.animState=='bounce'
+
+    -- Player move
+    if math.abs(p.dice.value)>=1 then p:move(p.dice.value,true) end
+    while true do
+        TASK.yieldT(.1)
+        local allStop=true
+        for i=1,#pList do
+            if pList[i].moving then
+                allStop=false
+                break
             end
-            local pList=self.players
-            repeat
-                TASK.yieldN(6)
-                local allStop=true
-                for i=1,#pList do
-                    if pList[i].moving then
-                        allStop=false
-                        break
-                    end
-                end
-            until allStop
-            self:updateTurn()
-        end)
+        end
+        if allStop then break end
     end
+
+    -- Next round
+    local rd=self.roundInfo
+    if p.extraTurn>0 then
+        p.extraTurn=p.extraTurn-1
+        MSG('other',"玩家"..rd.player.."的额外回合")
+    else
+        while true do
+            rd.player=rd.player%#pList+1
+            p=pList[rd.player]
+            if p.extraTurn>=0 then break end
+            p.extraTurn=p.extraTurn+1
+        end
+        MSG('other',"玩家"..rd.player.."的回合")
+    end
+
+    self.roundInfo.lock=false
+end
+
+function Game:startRound()
+    if self.roundInfo.lock then return end
+    TASK.new(roundThread,self)
+end
+
+local function checkStep(self)
+    TASK.forceLock('game_step',.26)
+    repeat TASK.yieldT(.026) until not self.roundInfo.step or not TASK.getLock('game_step')
+end
+function Game:step()
+    if self.roundInfo.step then return end
+    self.roundInfo.step=true
+    TASK.removeTask_code(checkStep)
+    TASK.new(checkStep,self)
+    return true
 end
 
 ---@param P ReroChess.Player
 ---@param str ReroChess.PlayerRef
 ---@return ReroChess.Player
 function Game:parsePlayer(P,str)
-    local list=self.players
+    local pList=self.players
     if str=='@self' then
         return P
     elseif str:sub(1,5)=='@spec' then
         if str=='@spec' then
-            for i=1,#list do list[i].canBeSelected=true end
+            for i=1,#pList do pList[i].canBeSelected=true end
         elseif str=='@spec_ex' then
-            for i=1,#list do list[i].canBeSelected=list[i]~=P end
+            for i=1,#pList do pList[i].canBeSelected=pList[i]~=P end
         elseif str=='@spec_free' then
             -- TODO
         elseif str=='@spec_free_ex' then
@@ -383,20 +425,20 @@ function Game:parsePlayer(P,str)
             -- TODO
         end
         self.selectedPlayer=false
-        repeat TASK.yieldN(10) until self.selectedPlayer
+        repeat TASK.yieldT(.1) until self.selectedPlayer
         self.selectedPlayer.face='selected'
-        for i=1,#list do list[i].canBeSelected=false end
-        TASK.yieldT(0.62)
+        for i=1,#pList do pList[i].canBeSelected=false end
+        TASK.yieldT(.62)
         self.selectedPlayer.face='normal'
         local res=self.selectedPlayer
         self.selectedPlayer=nil
         return res
     elseif str=='@random' then
-        return list[math.random(#list)]
+        return pList[math.random(#pList)]
     elseif str=='@random_ex' then
-        local r=math.random(#list-1)
+        local r=math.random(#pList-1)
         if r>=P.id then r=r+1 end
-        return list[r]
+        return pList[r]
     elseif str=='@nearest' then
         -- TODO
     elseif str=='@farthest' then
@@ -406,31 +448,15 @@ function Game:parsePlayer(P,str)
     elseif str=='@behind' then
         -- TODO
     elseif str=='@next' then
-        return list[P.id%#list+1]
+        return pList[P.id%#pList+1]
     elseif str=='@prev' then
-        return list[P.id==1 and #list or P.id-1]
+        return pList[P.id==1 and #pList or P.id-1]
     elseif str=='@first' then
         -- TODO
     elseif str=='@last' then
         -- TODO
     else
         error('Invalid player reference: '..str)
-    end
-end
-
-function Game:updateTurn()
-    local p=self.players[self.roundIndex]
-    if p.extraTurn>0 then
-        p.extraTurn=p.extraTurn-1
-        MSG('other',"玩家"..self.roundIndex.."的额外回合")
-    else
-        while true do
-            self.roundIndex=self.roundIndex%#self.players+1
-            p=self.players[self.roundIndex]
-            if p.extraTurn>=0 then break end
-            p.extraTurn=p.extraTurn+1
-        end
-        MSG('other',"玩家"..self.roundIndex.."的回合")
     end
 end
 
@@ -443,17 +469,10 @@ function Game:sortPlayerLayer()
     local drawCo=self.drawCoroutine
     table.sort(drawCo,coSorter)
     -- for i=1,#drawCo-1 do
-    --     if drawCo[i].p.id==self.roundIndex then
+    --     if drawCo[i].p.id==self.roundInfo.player then
     --         drawCo[i],drawCo[i+1]=drawCo[i+1],drawCo[i]
     --     end
     -- end
-end
-function Game:step()
-    local p=self.players[self.roundIndex]
-    if p.moving then
-        p.moveSignal=true
-        return true
-    end
 end
 
 ---@param id integer Cell id
@@ -545,6 +564,12 @@ function Game:draw()
     for i=1,#pList do resume(co[i].th) end
 
     self.text:draw()
+
+    -- gc_replaceTransform(SCR.xOy_m)
+    -- gc_setColor(COLOR.R)
+    -- gc_setLineWidth(10)
+    -- gc_line(self.cam.x0-26,self.cam.y0,self.cam.x0+26,self.cam.y0)
+    -- gc_line(self.cam.x0,self.cam.y0-26,self.cam.x0,self.cam.y0+26)
 end
 
 return Game

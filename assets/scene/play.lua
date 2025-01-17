@@ -39,9 +39,9 @@ function scene.mouseClick(x,y,k)
         local closest
         for i=#pList,1,-1 do
             local p=pList[i]
-            if p.canBeSelected and MATH.distance(p.x,p.y,x,y)<.42 then
+            if p.canBeSelected and MATH.distance(p.x,p.y,x,y)<40/game.cam.k then
                 if closest then
-                    game.cam.x0,game.cam.y0=p.x,p.y
+                    game.cam.x0,game.cam.y0=(p.x+closest.x)/2*-100,(p.y+closest.y)/2*-100
                     game.cam:scale(2)
                     return
                 else
@@ -57,7 +57,7 @@ function scene.mouseClick(x,y,k)
         if k==1 then
             game:step()
         elseif k==2 then
-            game:roll()
+            game:startRound()
         end
     end
 end
@@ -71,14 +71,14 @@ end
 
 function scene.touchClick(x,y,id)
     if not game:step() then
-        game:roll()
+        game:startRound()
     end
 end
 
 function scene.keyDown(key,isRep)
     if isRep then return true end
     if key=='return' then
-        game:roll()
+        game:startRound()
     elseif key=='space' then
         game:step()
     elseif key=='escape' then

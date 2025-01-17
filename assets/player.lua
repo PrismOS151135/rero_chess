@@ -22,7 +22,6 @@ local Prop=require'assets.prop'
 ---
 ---Variables for moving in round
 ---@field moving boolean
----@field moveSignal boolean
 ---@field stepRemain integer
 ---@field nextLocation integer
 ---@field curDir 'next' | 'prev' | false
@@ -174,47 +173,61 @@ function Player:roll()
     end
 end
 
-function Player:move(stepCount)
+---@param self ReroChess.Player
+---@param stepCount integer
+---@param manual boolean
+local function moveThread(self,stepCount,manual)
     self.moving=true
-    self.moveSignal=false
-    self.stepRemain=stepCount
+    self.game.roundInfo.step=false
     self.nextLocation,self.curDir=self.game:getNext(self.location,stepCount>0 and self.moveDir or self.moveDir=='next' and 'prev' or 'next')
 
-    TASK.new(function()
-        while math.abs(self.stepRemain)>=1 do
-            local sx,sy=self.x,self.y
-            local ex,ey=self.game.map[self.nextLocation].x+MATH.rand(-.15,.15),self.game.map[self.nextLocation].y+MATH.rand(-.15,.15)
-            local animLock=true
-            self.faceDir=sx<=ex and 1 or -1
+    while math.abs(self.stepRemain)>=1 do
+        local sx,sy=self.x,self.y
+        local ex,ey=self.game.map[self.nextLocation].x+MATH.rand(-.15,.15),self.game.map[self.nextLocation].y+MATH.rand(-.15,.15)
+        local animLock=true
+        self.faceDir=sx<=ex and 1 or -1
 
-            -- Wait signal
-            repeat coroutine.yield() until self.moveSignal
-            self.moveSignal=false
-
-            -- Move chess
-            TWEEN.new(function(t)
-                self.x=MATH.lerp(sx,ex,t)
-                self.y=MATH.lerp(sy,ey,t)+t*(t-1)*1.5
-                if t==1 then
-                    self.location=self.nextLocation
-                    self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
-                end
-            end):setEase('Linear'):setDuration(0.26):setOnFinish(function()
-                animLock=false
-            end):run()
-
-            -- Wait until animation end
-            repeat coroutine.yield() until not animLock
-
-            self.stepRemain=MATH.linearApproach(self.stepRemain,0,1)
-
-            -- Trigger cell property
-            self:triggerCell()
-            self.game:sortPlayerLayer()
+        -- Wait signal
+        if manual then
+            repeat TASK.yieldT(.1) until self.game.roundInfo.step
+            self.game.roundInfo.step=false
         end
-        self.moving=false
-        self.face='normal'
-    end)
+
+        -- Move chess
+        TWEEN.new(function(t)
+            self.x=MATH.lerp(sx,ex,t)
+            self.y=MATH.lerp(sy,ey,t)+t*(t-1)*1.5
+            if t==1 then
+                self.location=self.nextLocation
+                self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
+            end
+        end):setEase('Linear'):setDuration(0.26):setOnFinish(function()
+            animLock=false
+        end):run()
+
+        -- Wait until animation end
+        repeat coroutine.yield() until not animLock
+
+        self.stepRemain=MATH.linearApproach(self.stepRemain,0,1)
+
+        -- Trigger cell property
+        self:triggerCell()
+        self.game:sortPlayerLayer()
+    end
+
+    self.moving=false
+    self.face='normal'
+end
+
+function Player:move(stepCount,manual)
+    self.stepRemain=stepCount
+    if self.moving then
+        self.curDir=stepCount>0 and 'next' or 'prev'
+        self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
+        self.face=self.curDir==self.moveDir and 'forward' or 'backward'
+    else
+        TASK.new(moveThread,self,stepCount,manual)
+    end
 end
 
 function Player:triggerCell()

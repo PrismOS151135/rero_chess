@@ -75,16 +75,13 @@ Prop.move={
         )
     end,
     ---@param P ReroChess.Player
-    code=function(P,dist)
+    code=function(_,dist,P)
         P:popText{
             text=("%+d"):format(dist),
             duration=2,
             x=0.4,
         }
-        P.stepRemain=math.abs(dist)
-        P.curDir=dist>0 and 'next' or 'prev'
-        P.nextLocation,P.curDir=P.game:getNext(P.location,P.curDir)
-        P.face=P.curDir==P.moveDir and 'forward' or 'backward'
+        P:move(dist)
     end,
 }
 
