@@ -308,7 +308,10 @@ do -- Image & Texture & Quad
             moveF    =q(2.0,2.5, .5),
             warn     =q(2.5,2.0, .5),
             question =q(2.5,2.5, .5),
-            hospital =q(3.0,  2),
+            hospital =q(3.0,2.0),
+            jail     =q(3.0,3.0),
+
+            target   =q(2.0,4.0,  2),
         },
         item={
             firework         =q(0,0),
