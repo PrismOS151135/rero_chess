@@ -120,6 +120,7 @@ scene.widgetList={
                 elseif DATA.fumoDmg==202 then
                     scene.widgetList.fumo:reset()
                 end
+                TASK.lock('data_save',5)
                 DATA.save()
             end
         end,
