@@ -245,6 +245,10 @@ local function teleportThread(self,target)
     local jumpDist=MATH.distance(sx,sy,ex,ey)
     local jumpHeight=jumpDist^.5*2
 
+    -- Change face
+    self.face=self.nextLocation>self.location and 'forward' or 'backward'
+    TASK.yieldT(0.26)
+
     -- Move chess
     TWEEN.new(function(t)
         self.x=MATH.lerp(sx,ex,t)
@@ -260,6 +264,7 @@ local function teleportThread(self,target)
 
     -- Wait until animation end
     repeat coroutine.yield() until not animLock
+    self.face='normal'
 end
 
 function Player:teleport(target)
