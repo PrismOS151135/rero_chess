@@ -177,6 +177,8 @@ end
 ---@param stepCount integer
 ---@param manual boolean
 local function moveThread(self,stepCount,manual)
+    if self.moving then return MSG('error',"错误：尝试移动正在移动中的棋子") end
+
     self.moving=true
     self.game.roundInfo.step=false
     self.nextLocation,self.curDir=self.game:getNext(self.location,stepCount>0 and self.moveDir or self.moveDir=='next' and 'prev' or 'next')
@@ -228,6 +230,40 @@ function Player:move(stepCount,manual)
     else
         TASK.new(moveThread,self,stepCount,manual)
     end
+end
+
+---@param self ReroChess.Player
+---@param target number
+local function teleportThread(self,target)
+    -- if self.moving then return MSG('error',"错误：尝试传送移动中的棋子") end
+    self.moving=true
+    local animLock=true
+
+    self.nextLocation=target
+    local sx,sy=self.x,self.y
+    local ex,ey=self.game.map[self.nextLocation].x+MATH.rand(-.15,.15),self.game.map[self.nextLocation].y+MATH.rand(-.15,.15)
+    local jumpDist=MATH.distance(sx,sy,ex,ey)
+    local jumpHeight=jumpDist^.5*2
+
+    -- Move chess
+    TWEEN.new(function(t)
+        self.x=MATH.lerp(sx,ex,t)
+        self.y=MATH.lerp(sy,ey,t)+t*(t-1)*jumpHeight
+        if t==1 then
+            self.location=self.nextLocation
+            self.nextLocation,self.curDir=self.game:getNext(self.location,self.curDir)
+        end
+    end):setEase('Linear'):setDuration(jumpDist^.6/10):setOnFinish(function()
+        self.moving=false
+        animLock=false
+    end):run()
+
+    -- Wait until animation end
+    repeat coroutine.yield() until not animLock
+end
+
+function Player:teleport(target)
+    TASK.new(teleportThread,self,target)
 end
 
 function Player:triggerCell()

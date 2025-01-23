@@ -105,10 +105,7 @@ Prop.teleport={
             text="传送!",
             duration=2,
         }
-        P.location=target
-        P.x,P.y=P.game.map[P.location].x,P.game.map[P.location].y
-        P.nextLocation,P.curDir=P.game:getNext(P.location,P.moveDir)
-        P.face='jail'
+        P:teleport(target)
     end,
 }
 
