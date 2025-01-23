@@ -234,15 +234,18 @@ function Player:triggerCell()
     for _,prop in next,self.game.map[self.location].propList do
         if prop[0] or self.stepRemain==0 then
             local args=TABLE.sub(prop,2)
-            local suc
+            local noTarget
             for i=1,#args do
                 if tostring(args[i]):sub(1,1)=='@' then
                     args[i]=self.game:parsePlayer(self,args[i])
-                    if args[i]==false then suc=true end
+                    if args[i]==false then
+                        noTarget=true
+                    end
                 end
             end
-            if suc then
+            if noTarget then
                 self:popText{text='没有目标!'}
+            else
                 Prop[prop[1]].code(self,unpack(args))
             end
         end
