@@ -272,7 +272,7 @@ local gc_setColor,gc_setLineWidth=gc.setColor,gc.setLineWidth
 local gc_line,gc_rectangle,gc_circle,gc_ellipse=gc.line,gc.rectangle,gc.circle,gc.ellipse
 local gc_draw=gc.draw
 local gc_setAlpha=GC.setAlpha
-local gc_mRect,gc_mDraw=GC.mRect,GC.mDraw
+local gc_mRect,gc_mDraw,gc_mDrawQ=GC.mRect,GC.mDraw,GC.mDrawQ
 local text=GC.newText(assert(FONT.get(60)))
 
 function Player:draw()
@@ -360,17 +360,11 @@ function Player:draw()
 
             -- Target Mark
             if self.canBeSelected then
-                gc_push('transform')
-                gc_translate(0,-0.2)
-                gc_rotate(love.timer.getTime()*(1+self.id/10))
-                gc_setColor(1,.26,.26)
-                gc_setLineWidth(0.12)
-                gc_circle('line',0,0,0.62)
-                for _=0,3 do
-                    gc_rotate(MATH.tau/4)
-                    gc_line(0.4,0,0.942,0)
-                end
-                gc_pop()
+                gc_setColor(1,1,1)
+                gc_mDrawQ(TEX.world.default,QUAD.world.target,0,-0.3,love.timer.getTime()+self.id,math.max(.005,((.5/self.game.cam.k)/.005)^.8*.005)*(1+.26*math.sin(love.timer.getTime()*6.26)))
+                -- gc_setColor(0,0,1)
+                -- gc_setLineWidth(1/self.game.cam.k)
+                -- gc_circle('line',0,-0.3,100*(math.max(.005,((.5/self.game.cam.k)/.005)^.8*.005)))
             end
 
             -- Name Tag
