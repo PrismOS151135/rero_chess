@@ -354,7 +354,7 @@ end
 QuitButton=WIDGET.new{type='button_invis',pos={0,0},x=40,y=40,w=60,image=TEX.ui,quad=QUAD.ui.exit,code=WIDGET.c_pressKey'escape'}
 
 FONT.load{
-    norm='assets/fonts/codePixelCJK-Regular.ttf',
+    norm='assets/fonts/XiaolaiSC-Regular.ttf',
     symbol='assets/fonts/symbols.otf',
 }
 FONT.setDefaultFont('norm')

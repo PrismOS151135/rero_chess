@@ -84,7 +84,7 @@ function scene.draw()
     -- Texts
     GC.replaceTransform(SCR.xOy_m)
     GC.setColor(COLOR.L)
-    GC.strokeDraw('corner',6,quitText,0,-100-animTimer()*300,0,2,2,quitText:getWidth()/2,quitText:getHeight()/2)
+    GC.strokeDraw('full',6,quitText,0,-100-animTimer()*300,0,2,2,quitText:getWidth()/2,quitText:getHeight()/2)
     GC.setColor(COLOR.D)
     GC.mDraw(quitText,0,-100-animTimer()*300,0,2)
 end
