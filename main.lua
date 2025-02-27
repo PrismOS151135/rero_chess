@@ -351,7 +351,7 @@ do -- Image & Texture & Quad
     }
 end
 
-QuitButton=WIDGET.new{type='button_invis',pos={0,0},x=40,y=40,w=60,image=TEX.ui,quad=QUAD.ui.exit,code=WIDGET.c_pressKey'escape'}
+QuitButton=WIDGET.new{type='button_invis',pos={0,0},x=40,y=40,w=60,image=TEX.ui,quad=QUAD.ui.exit,onClick=WIDGET.c_pressKey'escape'}
 
 FONT.load{
     norm='assets/fonts/XiaolaiSC-Regular.ttf',
@@ -361,9 +361,8 @@ FONT.setDefaultFont('norm')
 FONT.setDefaultFallback('symbol')
 
 SCN.addSwapStyle('swipe',{
-    duration=.5,timeChange=.25,
+    duration=.5,
     draw=function(t)
-        t=t*2
         GC.setColor(.6,.6,.6)
         GC.setAlpha(1-math.abs(t-.5))
         t=t*t*(2*t-3)*2+1

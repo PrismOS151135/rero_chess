@@ -85,10 +85,10 @@ function scene.overDraw()
 end
 
 scene.widgetList={
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*0,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.skin,      code=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*1,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.doodle,    code=WIDGET.c_goScn'doodle'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     code=WIDGET.c_goScn'gacha'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  code=WIDGET.c_goScn'settings'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*0,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.skin,      onClick=WIDGET.c_goScn'skin'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*1,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.doodle,    onClick=WIDGET.c_goScn'doodle'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     onClick=WIDGET.c_goScn'gacha'},
+    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  onClick=WIDGET.c_goScn'settings'},
     WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe,
         onPress=function ()
             if TASK.lock('title_subscribePress',.42) then
@@ -128,8 +128,8 @@ scene.widgetList={
             return DATA.fumoDmg<202
         end,
     },
-    WIDGET.new{type='button_simp',pos={.5,.5},x=-130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_local  .." "..CHAR.icon.person end,code=WIDGET.c_pressKey'enter'},
-    WIDGET.new{type='button_simp',pos={.5,.5},x= 130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_network.." "..CHAR.icon.people end,code=WIDGET.c_goScn'mp_menu'},
+    WIDGET.new{type='button_simp',pos={.5,.5},x=-130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_local  .." "..CHAR.icon.person end,onClick=WIDGET.c_pressKey'enter'},
+    WIDGET.new{type='button_simp',pos={.5,.5},x= 130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_network.." "..CHAR.icon.people end,onClick=WIDGET.c_goScn'mp_menu'},
     QuitButton,
 }
 return scene
