@@ -93,6 +93,13 @@ end
 
 function scene.draw()
     game:draw()
+    GC.replaceTransform(SCR.xOy)
+    GC.setColor(COLOR.D)
+    FONT.set(20)
+    GC.print("P " .. game.roundInfo.player, 20, 100)
+    GC.print("step " .. tostring(game.roundInfo.step), 20, 120)
+    GC.print("lock " .. tostring(game.roundInfo.lock), 20, 140)
+    GC.print("dice state: " .. tostring(game.players[1].dice.animState), 20, 160)
 end
 
 scene.widgetList = {

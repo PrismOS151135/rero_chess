@@ -128,11 +128,11 @@ function Game.new(data)
     -- end
 
     local worldTexture = TEX.world[data.texturePack == nil and 'default' or data.texturePack] or
-    error("Invalid texture pack: " .. tostring(data.texturePack))
+        error("Invalid texture pack: " .. tostring(data.texturePack))
     game.spriteBatches[1] = GC.newSpriteBatch(worldTexture, nil, 'dynamic') -- BG
     game.spriteBatches[2] = GC.newSpriteBatch(worldTexture, nil, 'dynamic') -- Path
     game.spriteBatches[3] = GC.newSpriteBatch(worldTexture, nil, 'dynamic') -- FG
-    game.spriteBatches[4] = GC.newSpriteBatch(TEX.doodle, nil, 'dynamic') -- Doodle
+    game.spriteBatches[4] = GC.newSpriteBatch(TEX.doodle, nil, 'dynamic')   -- Doodle
 
     local bgSB = game.spriteBatches[1]
     local pathSB = game.spriteBatches[2]
@@ -389,6 +389,8 @@ local function roundThread(self)
         end
         MSG('other', "玩家" .. rd.player .. "的回合")
     end
+
+    repeat TASK.yieldT(.1) until p.dice.animState == 'hide'
 
     self.roundInfo.lock = false
 end
