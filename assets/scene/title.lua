@@ -1,30 +1,31 @@
 ---@type Zenitha.Scene
-local scene={}
+local scene = {}
 
 local subButtonClick
-local fumoAnimTimer=0
+local fumoAnimTimer = 0
 
 function scene.load()
-    subButtonClick=0
+    subButtonClick = 0
     CURSOR.set('pointer')
     BG.set('title')
 end
+
 function scene.unload()
     CURSOR.set('pointer')
 end
 
-function scene.keyDown(key,isRep)
+function scene.keyDown(key, isRep)
     if isRep then return true end
-    if key=='enter' then
-        SCN.go('play',nil,'newGame')
-    elseif key=='escape' then
-        SCN.go('quit_sure','none','quit')
+    if key == 'enter' then
+        SCN.go('play', nil, 'newGame')
+    elseif key == 'escape' then
+        SCN.go('quit_sure', 'none', 'quit')
     end
     return true
 end
 
 function scene.update()
-    CURSOR.set(WIDGET.sel==scene.widgetList.fumo and 'hand' or 'pointer')
+    CURSOR.set(WIDGET.sel == scene.widgetList.fumo and 'hand' or 'pointer')
 end
 
 function scene.draw()
@@ -39,97 +40,103 @@ function scene.draw()
 
     -- Title texts
     GC.setColor(COLOR.D)
-    FONT.set(90) GC.mStr(Texts.menu_title,500,100)
-    FONT.set(30) GC.mStr(Texts.menu_info,500,210)
+    FONT.set(90)
+    GC.mStr(Texts.menu_title, 500, 100)
+    FONT.set(30)
+    GC.mStr(Texts.menu_info, 500, 210)
     GC.setColor(Jump.bool() and COLOR.D or COLOR.G)
-    FONT.set(25) GC.mStr(Texts.menu_desc,500,260)
+    FONT.set(25)
+    GC.mStr(Texts.menu_desc, 500, 260)
 
     -- Fumo
-    GC.setColor(1,1,1)
-    local q,rot,kx,ky
-    if DATA.fumoDmg<20 then
-        kx,ky=1+fumoAnimTimer*.8,1-fumoAnimTimer*.6
-        q=QUAD.ui.title.fumo.normal
-    elseif DATA.fumoDmg<40 then
-        kx,ky=1+fumoAnimTimer*.1,1-fumoAnimTimer*.1
-        q=QUAD.ui.title.fumo.squashed
-    elseif DATA.fumoDmg<60 then
-        kx,ky=1-fumoAnimTimer*.1,1-fumoAnimTimer*.1
-        q=QUAD.ui.title.fumo.dead
-    elseif DATA.fumoDmg<80 then
-        rot=fumoAnimTimer*.1
-        q=QUAD.ui.title.fumo.rip[1]
-    elseif DATA.fumoDmg<110 then
-        rot=fumoAnimTimer*.1
-        q=QUAD.ui.title.fumo.rip[2]
-    elseif DATA.fumoDmg<150 then
-        rot=fumoAnimTimer*.1
-        q=QUAD.ui.title.fumo.rip[3]
-    elseif DATA.fumoDmg<200 then
-        rot=fumoAnimTimer*.1
-        q=QUAD.ui.title.fumo.rip[4]
-    elseif DATA.fumoDmg<202 then
-        GC.draw(TEX.ui,QUAD.ui.title.fumo.ghost,60,495+10*Jump.sin(.26))
-        q=QUAD.ui.title.fumo.rip[5]
+    GC.setColor(1, 1, 1)
+    local q, rot, kx, ky
+    if DATA.fumoDmg < 20 then
+        kx, ky = 1 + fumoAnimTimer * .8, 1 - fumoAnimTimer * .6
+        q = QUAD.ui.title.fumo.normal
+    elseif DATA.fumoDmg < 40 then
+        kx, ky = 1 + fumoAnimTimer * .1, 1 - fumoAnimTimer * .1
+        q = QUAD.ui.title.fumo.squashed
+    elseif DATA.fumoDmg < 60 then
+        kx, ky = 1 - fumoAnimTimer * .1, 1 - fumoAnimTimer * .1
+        q = QUAD.ui.title.fumo.dead
+    elseif DATA.fumoDmg < 80 then
+        rot = fumoAnimTimer * .1
+        q = QUAD.ui.title.fumo.rip[1]
+    elseif DATA.fumoDmg < 110 then
+        rot = fumoAnimTimer * .1
+        q = QUAD.ui.title.fumo.rip[2]
+    elseif DATA.fumoDmg < 150 then
+        rot = fumoAnimTimer * .1
+        q = QUAD.ui.title.fumo.rip[3]
+    elseif DATA.fumoDmg < 200 then
+        rot = fumoAnimTimer * .1
+        q = QUAD.ui.title.fumo.rip[4]
+    elseif DATA.fumoDmg < 202 then
+        GC.draw(TEX.ui, QUAD.ui.title.fumo.ghost, 60, 495 + 10 * Jump.sin(.26))
+        q = QUAD.ui.title.fumo.rip[5]
     else
-        q=QUAD.ui.title.fumo.rip[6]
+        q = QUAD.ui.title.fumo.rip[6]
     end
-    local _,_,w,h=q:getViewport()
-    GC.draw(TEX.ui,q,80,600,rot,kx,ky,w/2,h)
+    local _, _, w, h = q:getViewport()
+    GC.draw(TEX.ui, q, 80, 600, rot, kx, ky, w / 2, h)
 end
 
 function scene.overDraw()
     GC.origin()
-    GC.setColor(0,0,0,TASK.getLock('title_subscribePress') or 0)
-    GC.rectangle('fill',0,0,SCR.w,SCR.h)
+    GC.setColor(0, 0, 0, TASK.getLock('title_subscribePress') or 0)
+    GC.rectangle('fill', 0, 0, SCR.w, SCR.h)
 end
 
-scene.widgetList={
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*0,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.skin,      onClick=WIDGET.c_goScn'skin'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*1,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.doodle,    onClick=WIDGET.c_goScn'doodle'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*2,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.gacha,     onClick=WIDGET.c_goScn'gacha'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*3,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.settings,  onClick=WIDGET.c_goScn'settings'},
-    WIDGET.new{type='button_simp', pos={1,0},x=-50,y=50+95*4,w=85,frameColor='X',fillColor='L',cornerR=30,image=TEX.ui,quad=QUAD.ui.title.subscribe,
-        onPress=function ()
-            if TASK.lock('title_subscribePress',.42) then
+scene.widgetList = {
+    WIDGET.new { type = 'button_simp', pos = { 1, 0 }, x = -50, y = 50 + 95 * 0, w = 85, frameColor = 'X', fillColor = 'L', cornerR = 30, image = TEX.ui, quad = QUAD.ui.title.skin, onClick = WIDGET.c_goScn 'skin' },
+    WIDGET.new { type = 'button_simp', pos = { 1, 0 }, x = -50, y = 50 + 95 * 1, w = 85, frameColor = 'X', fillColor = 'L', cornerR = 30, image = TEX.ui, quad = QUAD.ui.title.doodle, onClick = WIDGET.c_goScn 'doodle' },
+    WIDGET.new { type = 'button_simp', pos = { 1, 0 }, x = -50, y = 50 + 95 * 2, w = 85, frameColor = 'X', fillColor = 'L', cornerR = 30, image = TEX.ui, quad = QUAD.ui.title.gacha, onClick = WIDGET.c_goScn 'gacha' },
+    WIDGET.new { type = 'button_simp', pos = { 1, 0 }, x = -50, y = 50 + 95 * 3, w = 85, frameColor = 'X', fillColor = 'L', cornerR = 30, image = TEX.ui, quad = QUAD.ui.title.settings, onClick = WIDGET.c_goScn 'settings' },
+    WIDGET.new { type = 'button_simp', pos = { 1, 0 }, x = -50, y = 50 + 95 * 4, w = 85, frameColor = 'X', fillColor = 'L', cornerR = 30, image = TEX.ui, quad = QUAD.ui.title.subscribe,
+        onPress = function()
+            if TASK.lock('title_subscribePress', .42) then
                 love.timer.sleep(0.26)
-                subButtonClick=subButtonClick+1
-                if subButtonClick==3 then
-                    SCN.go('crash','none')
+                subButtonClick = subButtonClick + 1
+                if subButtonClick == 3 then
+                    SCN.go('crash', 'none')
                 end
             end
         end,
     },
-    WIDGET.new{type='button_invis',x=80,y=530,w=100,h=130,
-        name='fumo',
-        onPress=function()
-            if fumoAnimTimer<.626 then
-                DATA.fumoDmg=DATA.fumoDmg+1
-                fumoAnimTimer=1
+    WIDGET.new { type = 'button_invis', x = 80, y = 530, w = 100, h = 130,
+        name = 'fumo',
+        onPress = function()
+            if fumoAnimTimer < .626 then
+                DATA.fumoDmg = DATA.fumoDmg + 1
+                fumoAnimTimer = 1
                 TWEEN.tag_kill('fumo_bounce')
-                TWEEN.new(function(t) fumoAnimTimer=1-t end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62):run()
-                if DATA.fumoDmg>=40 then
+                TWEEN.new(function(t) fumoAnimTimer = 1 - t end):setTag('fumo_bounce'):setEase('OutElastic'):setDuration(.62)
+                    :run()
+                if DATA.fumoDmg >= 40 then
                     if not DATA.fumoDieTime then
-                        DATA.fumoDieTime=os.time()
+                        DATA.fumoDieTime = os.time()
                     else
-                        DATA.fumoDieTime=math.max(DATA.fumoDieTime,os.time()+60-86400)
+                        DATA.fumoDieTime = math.max(DATA.fumoDieTime, os.time() + 60 - 86400)
                     end
                 end
-                if DATA.fumoDmg==200 then
+                if DATA.fumoDmg == 200 then
                     DATA.getSkin('长相潦草的幽灵')
-                elseif DATA.fumoDmg==202 then
+                elseif DATA.fumoDmg == 202 then
                     scene.widgetList.fumo:reset()
                 end
-                TASK.lock('data_save',5)
+                TASK.lock('data_save', 5)
                 DATA.save()
             end
         end,
-        visibleFunc=function()
-            return DATA.fumoDmg<202
+        visibleFunc = function()
+            return DATA.fumoDmg < 202
         end,
     },
-    WIDGET.new{type='button_simp',pos={.5,.5},x=-130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_local  .." "..CHAR.icon.person end,onClick=WIDGET.c_pressKey'enter'},
-    WIDGET.new{type='button_simp',pos={.5,.5},x= 130,y=180,w=180,h=80,fillColor='dL',fontSize=35,fontType='norm',text=function() return Texts.menu_network.." "..CHAR.icon.people end,onClick=WIDGET.c_goScn'mp_menu'},
+    WIDGET.new { type = 'button_simp', pos = { .5, .5 }, x = -130, y = 180, w = 180, h = 80, fillColor = 'dL', fontSize = 35, fontType = 'norm', text = function() return
+        Texts.menu_local .. " " .. CHAR.icon.person end, onClick = WIDGET.c_pressKey 'enter' },
+    WIDGET.new { type = 'button_simp', pos = { .5, .5 }, x = 130, y = 180, w = 180, h = 80, fillColor = 'dL', fontSize = 35, fontType = 'norm', text = function() return
+        Texts.menu_network .. " " .. CHAR.icon.people end, onClick = WIDGET.c_goScn 'mp_menu' },
     QuitButton,
 }
 return scene
