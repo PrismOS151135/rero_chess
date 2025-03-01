@@ -7,18 +7,21 @@ local rnd = {
 }
 local page ---@type number
 local maxPage ---@type number
-local skinSel ---@type table
+local selected ---@type ReroChess.Skin.Select
 local skinFace
 
 local function selectOne(name)
-    skinSel = {
+    ---@class ReroChess.Skin.Select
+    selected = {
         name = name,
         texture = TEX.chess[name],
         nameText = GC.newText(FONT.get(25), ChessData[name].name),
         descText = GC.newText(FONT.get(25)),
     }
-    skinSel.descText:setf(ChessData[name].desc, 340, 'left')
+    selected.descText:setf(ChessData[name].desc, 340, 'left')
     skinFace = 'normal'
+    scene.widgetList.equip:setVisible(name ~= DATA.skinuse)
+    scene.widgetList.equipped:setVisible(name == DATA.skinuse)
 end
 
 local cacheData = {}
@@ -78,21 +81,21 @@ function scene.draw()
 
     -- Skin preview
     GC.ucs_move('m', 750, 200)
-    GC.mDraw(skinSel.texture.base)
-    GC.mDraw(skinSel.texture[skinFace])
+    GC.mDraw(selected.texture.base)
+    GC.mDraw(selected.texture[skinFace])
     GC.ucs_back()
 
     -- Name & Desc
     GC.ucs_move('m', 560, 360)
     gc_rectangle('fill', 10, 10, 360, 160)
     GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
-    GC.strokeDraw('full', 2, skinSel.nameText, 25, 15)
-    GC.strokeDraw('full', 2, skinSel.descText, 25, 55)
+    GC.strokeDraw('full', 2, selected.nameText, 25, 15)
+    GC.strokeDraw('full', 2, selected.descText, 25, 55)
     gc_setLineWidth(6)
     gc_line(25 - 2, 50, 355 + 2, 50)
     gc_setColor(COLOR.D)
-    gc_draw(skinSel.nameText, 25, 15)
-    gc_draw(skinSel.descText, 25, 55)
+    gc_draw(selected.nameText, 25, 15)
+    gc_draw(selected.descText, 25, 55)
     gc_setLineWidth(2)
     gc_line(25, 50, 355, 50)
     GC.ucs_back()
@@ -123,7 +126,7 @@ for y = -1.5, 1.5 do
         table.insert(scene.widgetList, WIDGET.new {
             type = 'button_skin',
             name = tostring(cid),
-            x = 300 + x * 110, y = 300 + y * 115, w = 100, h = 105,
+            x = 300 + x * 110, y = 300 + y * 120, w = 100, h = 110,
             onClick = function()
                 selectOne(cacheData[cid].name)
             end,
@@ -138,6 +141,23 @@ table.insert(scene.widgetList, WIDGET.new {
     onPress = function()
         skinFace = TABLE.next(faceSlide, skinFace, true)
     end
+})
+table.insert(scene.widgetList, WIDGET.new {
+    type = 'button_simp', name = 'equip',
+    x = 560 + 360 - 50, y = 360 + 160 - 15, w = 90, h = 50,
+    text = "选择",
+    cornerR = 5,
+    lineWidth = 2,
+    onClick = function()
+        DATA.skinuse = selected.name
+        DATA.save()
+        selectOne(selected.name)
+    end
+})
+table.insert(scene.widgetList, WIDGET.new {
+    type = 'text', name = 'equipped',
+    x = 560 + 360 - 50, y = 360 + 160 - 15,
+    text = "使用中",
 })
 table.insert(scene.widgetList, QuitButton)
 
