@@ -2,7 +2,8 @@ local DATA = {
     regTime = os.time(),
     fumoDmg = 0,
     fumoDieTime = false,
-    skin = {},
+    skin = { '普通的棋子娘', '普通的熊猫人' },
+    skinuse = '普通的棋子娘',
 }
 
 local _DATA = {}

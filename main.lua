@@ -58,16 +58,15 @@ function button_simp:draw()
 end
 local button_invis=WIDGET.newClass('button_invis','button')
 function button_invis:draw()
+    if not self._image then return end
     gc_push('transform')
     gc_translate(self._x,self._y)
     gc_scale(1-self._pressTime/self._pressTimeMax*.1+self._hoverTime/self._hoverTimeMax*.062)
     gc_setColor(1,1,1)
-    if self._image then
         if self.quad then
             WIDGET._alignDrawQ(self,self._image,self.quad)
         else
             WIDGET._alignDraw(self,self._image)
-        end
     end
     gc_pop()
 end
