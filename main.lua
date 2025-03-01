@@ -331,23 +331,34 @@ do -- Image & Texture & Quad
             unfreeze_hua     =q(10,3),
         },
         doodle={
-            smile     =q(0,0),
-            what      =q(0,1),
-            explosion =q(0,2),
-            grass     =q(0,3),
-            flower    =q(0,4),
-            otto      =q(0,5),
-            drool     =q(0,6),
-            long_tu   =q(0,7),
-            ant       =q(0,8),
-            cat       =q(0,9),
-            poop      =q(0,10),
-            cry       =q(0,11),
-            heart     =q(1,0),
-            happy     =q(1,1),
-            banana    =q(1,2),
+            微笑=q(0,0),
+            哇噻=q(0,1),
+            爆炸=q(0,2),
+            小草=q(0,3),
+            小花=q(0,4),
+            棍哥=q(0,5),
+            口水=q(0,6),
+            龙图=q(0,7),
+            蚂蚁=q(0,8),
+            猫猫=q(0,9),
+            便便=q(0,10),
+            哭哭=q(0,11),
+            爱心=q(1,0),
+            开心=q(1,1),
+            香蕉=q(1,2),
         },
     }
+    DoodleData={
+        小草={name="草",desc="www"},
+        爆炸={name="爆炸",desc="真男人不回头看"},
+        棍哥={name="棍哥",desc="冲刺！冲刺！冲！"},
+        蚂蚁={name="蚂蚁",desc="我们设计了真正的蚂蚁"},
+    }
+    for k in next,QUAD.doodle do
+        if not DoodleData[k] then
+            DoodleData[k]={name=k,desc="普通的"..k}
+        end
+    end
 end
 
 QuitButton=WIDGET.new{type='button_invis',pos={0,0},x=40,y=40,w=60,image=TEX.ui,quad=QUAD.ui.exit,onClick=WIDGET.c_pressKey'escape'}

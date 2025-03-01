@@ -9,6 +9,7 @@ local skinFace
 
 local function selectOne(name)
     skinSel = {
+        name = name,
         texture = TEX.chess[name],
         nameText = GC.newText(FONT.get(25), ChessData[name].name),
         descText = GC.newText(FONT.get(25)),
@@ -84,11 +85,15 @@ function scene.draw()
     gc_translate(560, 360)
     gc_rectangle('fill', 10, 10, 360, 160)
     gc_draw(TEX.world.default, rq2, 0, 0, 0, 380 / 256, 180 / 256)
-    GC.draw(skinSel.nameText, 30 - 2, 15 - 1)
+    GC.strokeDraw('full', 2, skinSel.nameText, 25, 15)
+    GC.strokeDraw('full', 2, skinSel.descText, 25, 55)
+    gc_setLineWidth(6)
+    gc_line(25 - 2, 50, 355 + 2, 50)
     gc_setColor(COLOR.D)
-    GC.draw(skinSel.nameText, 30, 15)
-    gc_line(30, 50, 350, 50)
-    GC.draw(skinSel.descText, 30, 55)
+    GC.draw(skinSel.nameText, 25, 15)
+    GC.draw(skinSel.descText, 25, 55)
+    gc_setLineWidth(2)
+    gc_line(25, 50, 355, 50)
     gc_pop()
 end
 
@@ -119,8 +124,7 @@ for y = -1.5, 1.5 do
             name = tostring(cid),
             x = 300 + x * 110, y = 300 + y * 115, w = 100, h = 105,
             onClick = function()
-                DATA.skinuse = cacheData[cid].name
-                selectOne(DATA.skinuse)
+                selectOne(cacheData[cid].name)
             end,
         })
     end

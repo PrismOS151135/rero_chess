@@ -4,6 +4,8 @@ local DATA = {
     fumoDieTime = false,
     skin = { '普通的棋子娘', '普通的熊猫人' },
     skinuse = '普通的棋子娘',
+    doodle = { '微笑', '小草' },
+    doodleEquip = { '微笑', '小草', false, false, false },
 }
 
 local _DATA = {}
