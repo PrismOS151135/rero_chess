@@ -1,7 +1,10 @@
 ---@type Zenitha.Scene
 local scene = {}
 
-local rq1, rq2
+local rnd = {
+    rq1 = nil,
+    rq2 = nil,
+}
 local page ---@type number
 local maxPage ---@type number
 local skinSel ---@type table
@@ -44,8 +47,8 @@ local function refreshPage()
 end
 
 function scene.load()
-    rq1 = TABLE.getRandom(QUAD.world.tile)
-    rq2 = TABLE.getRandom(QUAD.world.tile)
+    rnd.rq1 = TABLE.getRandom(QUAD.world.tile)
+    rnd.rq2 = TABLE.getRandom(QUAD.world.tile)
     page = 1
     maxPage = math.ceil(#DATA.skin / 12)
     selectOne(DATA.skinuse)
@@ -67,34 +70,32 @@ function scene.draw()
     gc_print("棋子皮肤 ——查看棋子说明或使用，戳戳预览表情", 110, -5)
 
     gc_setColor(1, 1, 1)
+
     -- Big panel
-    gc_translate(110, 30)
-    -- gc_rectangle('fill', 10, 10, 360, 520)
-    gc_draw(TEX.world.default, rq1, 0, 0, 0, 380 / 256, 540 / 256)
-    gc_translate(-110, -30)
+    GC.ucs_move('m', 110, 30)
+    GC.rDrawQ(TEX.world.default, rnd.rq1, 0, 0, 380, 540)
+    GC.ucs_back()
 
     -- Skin preview
-    gc_push('transform')
-    gc_translate(750, 200)
+    GC.ucs_move('m', 750, 200)
     GC.mDraw(skinSel.texture.base)
     GC.mDraw(skinSel.texture[skinFace])
-    gc_pop()
+    GC.ucs_back()
 
     -- Name & Desc
-    gc_push('transform')
-    gc_translate(560, 360)
+    GC.ucs_move('m', 560, 360)
     gc_rectangle('fill', 10, 10, 360, 160)
-    gc_draw(TEX.world.default, rq2, 0, 0, 0, 380 / 256, 180 / 256)
+    GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
     GC.strokeDraw('full', 2, skinSel.nameText, 25, 15)
     GC.strokeDraw('full', 2, skinSel.descText, 25, 55)
     gc_setLineWidth(6)
     gc_line(25 - 2, 50, 355 + 2, 50)
     gc_setColor(COLOR.D)
-    GC.draw(skinSel.nameText, 25, 15)
-    GC.draw(skinSel.descText, 25, 55)
+    gc_draw(skinSel.nameText, 25, 15)
+    gc_draw(skinSel.descText, 25, 55)
     gc_setLineWidth(2)
     gc_line(25, 50, 355, 50)
-    gc_pop()
+    GC.ucs_back()
 end
 
 scene.widgetList = {}

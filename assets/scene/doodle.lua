@@ -1,7 +1,10 @@
 ---@type Zenitha.Scene
 local scene = {}
 
-local rq1, rq2
+local rnd = {
+    rq1 = nil,
+    rq2 = nil,
+}
 local page ---@type number
 local maxPage ---@type number
 local doodleSel ---@type false | table
@@ -41,8 +44,8 @@ local function refreshPage()
 end
 
 function scene.load()
-    rq1 = TABLE.getRandom(QUAD.world.tile)
-    rq2 = TABLE.getRandom(QUAD.world.tile)
+    rnd.rq1 = TABLE.getRandom(QUAD.world.tile)
+    rnd.rq2 = TABLE.getRandom(QUAD.world.tile)
     page = 1
     maxPage = math.ceil(#DATA.doodle / 12)
     selectOne()
@@ -64,27 +67,28 @@ function scene.draw()
     gc_print("涂鸦装备 ——查看涂鸦说明或装备", 110, -5)
 
     gc_setColor(1, 1, 1)
+
     -- Big panel
-    GC.mDrawQ(TEX.world.default, rq1, 300, 300, 0, 1.5, 2.1)
+    GC.ucs_move('m', 110, 30)
+    GC.rDrawQ(TEX.world.default, rnd.rq1, 0, 0, 380, 540)
+    GC.ucs_back()
 
     -- Skin preview
-    gc_push('transform')
-    gc_translate(750, 180)
+    GC.ucs_move('m', 750, 180)
     GC.mDrawQ(TEX.ui, QUAD.ui.doodle.equipped, 0, 0, 0, 1.3)
     for i = 1, 5 do
         local D = DATA.doodleEquip[i]
         if D then
-            local a = -1.57 + MATH.tau / 5 * (i - 1)
+            local a = -1.62 + MATH.tau / 5 * (i - 1)
             GC.mDrawQ(TEX.doodle, QUAD.doodle[D], 100 * math.cos(a), 100 * math.sin(a), 0, .5)
         end
     end
-    gc_pop()
+    GC.ucs_back()
 
     -- Name & Desc
-    gc_push('transform')
-    gc_translate(560, 360)
+    GC.ucs_move('m', 560, 360)
     gc_rectangle('fill', 10, 10, 360, 160)
-    gc_draw(TEX.world.default, rq2, 0, 0, 0, 380 / 256, 180 / 256)
+    GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
     if doodleSel then
         gc_setLineWidth(6)
         gc_line(25 - 2, 50, 355 + 2, 50)
@@ -96,7 +100,7 @@ function scene.draw()
         gc_setLineWidth(2)
         gc_line(25, 50, 355, 50)
     end
-    gc_pop()
+    GC.ucs_back()
 end
 
 scene.widgetList = {}
