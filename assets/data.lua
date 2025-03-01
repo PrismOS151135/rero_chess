@@ -2,10 +2,10 @@ local DATA = {
     regTime = os.time(),
     fumoDmg = 0,
     fumoDieTime = false,
-    skin = { '普通的棋子娘', '普通的熊猫人' },
+    skin = { '普通的棋子娘', '一只略' },
     skinuse = '普通的棋子娘',
-    doodle = { '微笑', '小草' },
-    doodleEquip = { '微笑', '小草', false, false, false },
+    doodle = { '微笑', '哇噻', '小草', '小花', '流泪', '爱心', '开心' },
+    doodleEquip = { '微笑', '开心', '小草', '小花', '流泪' },
 }
 
 local _DATA = {}
