@@ -9,6 +9,14 @@ local page ---@type number
 local maxPage ---@type number
 local selected ---@type ReroChess.Skin.Select
 local skinFace
+local showFaceName
+local showFaceNameList = {
+    normal = "普通",
+    forward = "前进",
+    backward = "后退",
+    selected = "被选中",
+    jail = "坐牢",
+}
 
 local function selectOne(name)
     ---@class ReroChess.Skin.Select
@@ -20,6 +28,7 @@ local function selectOne(name)
     }
     selected.descText:setf(ChessData[name].desc, 340, 'left')
     skinFace = 'normal'
+    showFaceName = false
     scene.widgetList.equip:setVisible(name ~= DATA.skinuse)
     scene.widgetList.equipped:setVisible(name == DATA.skinuse)
 end
@@ -83,10 +92,15 @@ function scene.draw()
     GC.ucs_move('m', 750, 200)
     GC.mDraw(selected.texture.base)
     GC.mDraw(selected.texture[skinFace])
+    if showFaceName then
+        gc_setColor(COLOR.lD)
+        gc_print(showFaceNameList[skinFace], 110, -110)
+    end
     GC.ucs_back()
 
     -- Name & Desc
     GC.ucs_move('m', 560, 360)
+    gc_setColor(1, 1, 1)
     gc_rectangle('fill', 10, 10, 360, 160)
     GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
     GC.strokeDraw('full', 2, selected.nameText, 25, 15)
@@ -140,6 +154,7 @@ table.insert(scene.widgetList, WIDGET.new {
     x = 750, y = 200, w = 200, h = 260,
     onPress = function()
         skinFace = TABLE.next(faceSlide, skinFace, true)
+        showFaceName = true
     end
 })
 table.insert(scene.widgetList, WIDGET.new {
