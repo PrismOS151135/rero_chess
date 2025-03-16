@@ -133,10 +133,19 @@ scene.widgetList = {
             return DATA.fumoDmg < 202
         end,
     },
-    WIDGET.new { type = 'button_simp', pos = { .5, .5 }, x = -130, y = 180, w = 180, h = 80, fillColor = 'dL', fontSize = 35, fontType = 'norm', text = function() return
-        Texts.menu_local .. " " .. CHAR.icon.person end, onClick = WIDGET.c_pressKey 'enter' },
-    WIDGET.new { type = 'button_simp', pos = { .5, .5 }, x = 130, y = 180, w = 180, h = 80, fillColor = 'dL', fontSize = 35, fontType = 'norm', text = function() return
-        Texts.menu_network .. " " .. CHAR.icon.people end, onClick = WIDGET.c_goScn 'mp_menu' },
+    WIDGET.new {
+        type = 'button_simp', pos = { .5, .5 },
+        x = -130, y = 180, w = 180, h = 80, fillColor = 'dL',
+        fontSize = 35, fontType = 'norm', text = function() return Texts.menu_local .. " " .. CHAR.icon.person end,
+        onClick = WIDGET.c_pressKey 'enter'
+    },
+    WIDGET.new {
+        type = 'button_simp', pos = { .5, .5 },
+        x = 130, y = 180, w = 180, h = 80,
+        fillColor = 'dL',
+        fontSize = 35, fontType = 'norm', text = function() return Texts.menu_network .. " " .. CHAR.icon.people end,
+        onClick = WIDGET.c_goScn 'mp_menu'
+    },
     QuitButton,
 }
 return scene

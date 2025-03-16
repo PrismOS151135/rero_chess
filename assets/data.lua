@@ -30,6 +30,9 @@ end
 function _DATA.getSkin(name)
     if not TABLE.find(DATA.skin, name) then
         table.insert(DATA.skin, name)
+        table.sort(DATA.skin, function(a, b)
+            return ChessData[a].id < ChessData[b].id
+        end)
         SCN.go('get_new_skin', 'none', name)
         DATA.save()
     end
