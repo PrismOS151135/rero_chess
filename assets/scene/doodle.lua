@@ -41,6 +41,8 @@ local function refreshPage()
             B:setVisible(false)
         end
     end
+    scene.widgetList.prevPage:setVisible(page > 1)
+    scene.widgetList.nextPage:setVisible(page < maxPage)
 end
 
 function scene.load()
@@ -70,7 +72,7 @@ function scene.draw()
 
     -- Big panel
     GC.ucs_move('m', 110, 30)
-    GC.rDrawQ(TEX.world.default, rnd.rq1, 0, 0, 380, 540)
+    GC.rDrawQ(TEX.world.default, rnd.rq1, 0, 10, 390, 560)
     GC.ucs_back()
 
     -- Skin preview
@@ -134,6 +136,27 @@ for y = -1.5, 1.5 do
         })
     end
 end
+
+table.insert(scene.widgetList, WIDGET.new {
+    type = 'button_tile', name = 'prevPage',
+    x = 300 - 110, y = 560,
+    w = 70, h = 40, lineWidth = 2,
+    text = "←",
+    onClick = function()
+        page = page - 1
+        refreshPage()
+    end,
+})
+table.insert(scene.widgetList, WIDGET.new {
+    type = 'button_tile', name = 'nextPage',
+    x = 300 + 110, y = 560,
+    w = 70, h = 40, lineWidth = 2,
+    text = "→",
+    onClick = function()
+        page = page + 1
+        refreshPage()
+    end,
+})
 
 table.insert(scene.widgetList, QuitButton)
 

@@ -72,6 +72,29 @@ function button_invis:draw()
     gc_pop()
 end
 
+local button_tile = WIDGET.newClass('button_tile', 'button')
+function button_tile:draw()
+    gc_push('transform')
+    gc_translate(self._x, self._y)
+    gc_scale(1 - self._pressTime / self._pressTimeMax * .05 + self._hoverTime / self._hoverTimeMax * .05)
+    gc_setColor(1, 1, 1)
+    GC.mDrawQ(TEX.world.default, QUAD.world.tile[self._x % #QUAD.world.tile + 1], 0, 0, 0, self.w / 256, self.h / 256)
+    -- Drawable
+    if self._image then
+        gc_setColor(1, 1, 1)
+        if self.quad then
+            WIDGET._alignDrawQ(self, self._image, self.quad)
+        else
+            WIDGET._alignDraw(self, self._image)
+        end
+    end
+    if self._text then
+        gc_setColor(self.textColor)
+        WIDGET._alignDraw(self, self._text)
+    end
+    gc_pop()
+end
+
 WIDGET.setDefaultOption {
     base = {
         color = 'D',
