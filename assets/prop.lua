@@ -212,16 +212,21 @@ Prop.exit = {
         )
         assert(
             type(prop[3]) == 'string',
-            'exit[2] must be integer'
+            'exit[2] must be string'
         )
         assert(
             type(prop[4]) == 'string',
-            'exit[3] must be @str'
+            'exit[3] must be string'
         )
     end,
     ---@param P ReroChess.Player
-    code = function(P, player, exitId, target)
-        -- TODO
+    ---@param player ReroChess.Player
+    code = function(P, player, trapId, target)
+        player:popText {
+            text = "被救出!",
+            duration = 2,
+        }
+        P:teleport(target)
     end,
 }
 

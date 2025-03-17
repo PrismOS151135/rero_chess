@@ -275,6 +275,7 @@ function Game.new(data)
                     addQ('text', cell, prop, "指定别人换位")
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'exit' then
+                    addQ('text', cell, prop, "救人出狱")
                     addQ('deco', cell, prop, QUAD.world.warn)
                 end
 
