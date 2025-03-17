@@ -3,7 +3,7 @@ local DATA = {
     fumoDmg = 0,
     fumoDieTime = false,
     skin = { '普通的棋子娘', '一只略' },
-    skinuse = '普通的棋子娘',
+    skinEquip = '普通的棋子娘',
     doodle = { '微笑', '哇噻', '小草', '小花', '流泪', '爱心', '开心' },
     doodleEquip = { '微笑', '开心', '小草', '小花', '流泪' },
 }

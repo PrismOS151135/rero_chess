@@ -266,7 +266,7 @@ function Game.new(data)
                     addQ('text', cell, prop, "反转")
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'diceMod' then
-                    addQ('text', cell, prop, "下次点数" .. prop[2] .. prop[3]) -- TODO
+                    addQ('text', cell, prop, "下次点数" .. prop[2] .. prop[3])
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'exTurn' then
                     addQ('text', cell, prop, (prop[2] > 0 and "再骰%d次" or "跳过%d回合"):format(math.abs(prop[2])))

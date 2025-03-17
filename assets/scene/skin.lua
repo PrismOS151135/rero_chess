@@ -29,8 +29,8 @@ local function selectOne(name)
     selected.descText:setf(ChessData[name].desc, 340, 'left')
     skinFace = 'normal'
     showFaceName = false
-    scene.widgetList.equip:setVisible(name ~= DATA.skinuse)
-    scene.widgetList.equipped:setVisible(name == DATA.skinuse)
+    scene.widgetList.equip:setVisible(name ~= DATA.skinEquip)
+    scene.widgetList.equipped:setVisible(name == DATA.skinEquip)
 end
 
 local cacheData = {}
@@ -63,7 +63,7 @@ function scene.load()
     rnd.rq2 = TABLE.getRandom(QUAD.world.tile)
     page = 1
     maxPage = math.ceil(#DATA.skin / 12)
-    selectOne(DATA.skinuse)
+    selectOne(DATA.skinEquip)
     refreshPage()
 end
 
@@ -164,7 +164,7 @@ table.insert(scene.widgetList, WIDGET.new {
     cornerR = 5,
     lineWidth = 2,
     onClick = function()
-        DATA.skinuse = selected.name
+        DATA.skinEquip = selected.name
         DATA.save()
         selectOne(selected.name)
     end
