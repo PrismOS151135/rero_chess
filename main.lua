@@ -221,6 +221,11 @@ do -- Image & Texture & Quad
             desc = "一个棋子",
             link = "https://space.bilibili.com/678336655",
         },
+        {
+            name = "一只阿魇",
+            desc = "听说四片叶子能带来幸福",
+            link = "https://space.bilibili.com/687226953",
+        },
         -- {
         --     name="",
         --     desc="",
