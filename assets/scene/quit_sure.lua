@@ -6,14 +6,14 @@ local btnN = WIDGET.new {
     x = -180, y = 100, w = 300, h = 100,
     frameColor = COLOR.LD, fillColor = COLOR.dL,
     fontSize = 30, text = function() return ("$2 $1 $2"):repD(Texts.quit_back, CHAR.icon.back) end,
-    onClick = WIDGET.c_pressKey 'escape'
+    onClick = WIDGET.c_pressKey 'escape',
 }
 local btnY = WIDGET.new {
     type = 'button_simp', pos = { .5, .5 },
     x = 180, y = 100, w = 300, h = 100,
     frameColor = COLOR.R, fillColor = COLOR.LR,
     fontSize = 30, text = function() return ("$2 $1 $2"):repD(Texts.quit_sure, CHAR.icon.cross_big) end,
-    onClick = WIDGET.c_pressKey 'return'
+    onClick = WIDGET.c_pressKey 'return',
 }
 local function freshWidget(timer)
     btnN.y = 100 + timer * 300

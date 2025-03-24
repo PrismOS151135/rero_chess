@@ -45,7 +45,6 @@ function scene.draw()
     FONT.set(30)
     GC.mStr(Texts.menu_info, 500, 210)
     GC.setColor(Jump.bool() and COLOR.D or COLOR.G)
-    FONT.set(25)
     GC.mStr(Texts.menu_desc, 500, 260)
 
     -- Fumo
@@ -136,15 +135,15 @@ scene.widgetList = {
     WIDGET.new {
         type = 'button_simp', pos = { .5, .5 },
         x = -130, y = 180, w = 180, h = 80, fillColor = 'dL',
-        fontSize = 35, fontType = 'norm', text = function() return Texts.menu_local .. " " .. CHAR.icon.person end,
-        onClick = WIDGET.c_pressKey 'enter'
+        fontSize = 40, fontType = 'norm', text = function() return Texts.menu_local .. " " .. CHAR.icon.person end,
+        onClick = WIDGET.c_pressKey 'enter',
     },
     WIDGET.new {
         type = 'button_simp', pos = { .5, .5 },
         x = 130, y = 180, w = 180, h = 80,
         fillColor = 'dL',
-        fontSize = 35, fontType = 'norm', text = function() return Texts.menu_network .. " " .. CHAR.icon.people end,
-        onClick = WIDGET.c_goScn 'mp_menu'
+        fontSize = 40, fontType = 'norm', text = function() return Texts.menu_network .. " " .. CHAR.icon.people end,
+        onClick = WIDGET.c_goScn 'mp_menu',
     },
     QuitButton,
 }

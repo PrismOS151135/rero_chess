@@ -6,6 +6,7 @@ local DATA = {
     skinEquip = '普通的棋子娘',
     doodle = { '微笑', '哇噻', '小草', '小花', '流泪', '爱心', '开心' },
     doodleEquip = { '微笑', '开心', '小草', '小花', '流泪' },
+    dust = 0,
 }
 
 local _DATA = {}
@@ -13,17 +14,15 @@ function _DATA.load()
     TABLE.update(DATA, FILE.load('data', '-canskip') or NONE)
 end
 
-local function saver() DATA.save(true) end
-function _DATA.save(silent)
+local function saver() DATA.save() end
+function _DATA.save()
     if not TASK.lock('data_save_fastLock', .0626) then return end
-    TWEEN.tag_kill('tag_data_save')
+    TWEEN.tag_kill('data_save')
     if TASK.lock('data_save', 5) then
-        if not silent then
-            TEXT:add { text = CHAR.icon.save, x = SCR.w0 - 10, y = SCR.h0 + 5, color = 'D', align = 'bottomright', a = .0626, duration = .62 }
-        end
+        TEXT:add { text = CHAR.icon.save, x = SCR.w0 - 10, y = SCR.h0 + 5, color = 'lD', align = 'bottomright', a = .0626, duration = .62 }
         FILE.save(DATA, 'data')
     else
-        TWEEN.new():setOnFinish(saver):setTag('tag_data_save'):run()
+        TWEEN.new():setOnFinish(saver):setTag('data_save'):run()
     end
 end
 
