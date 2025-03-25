@@ -1,3 +1,6 @@
+local sin, cos = math.sin, math.cos
+
+
 ---@type Zenitha.Scene
 local scene = {}
 
@@ -8,16 +11,24 @@ local rnd = {
 local page ---@type number
 local maxPage ---@type number
 local doodleSel ---@type false | table
+local repCursor
+local needSave
 
 local function selectOne(name)
-    if name then
+    if not name then
+        doodleSel = false
+        return
+    end
+    if repCursor then
+        DATA.doodleEquip[repCursor] = name
+        repCursor = false
+        needSave = true
+    else
         doodleSel = {
             nameText = GC.newText(FONT.get(25), DoodleData[name].name),
             descText = GC.newText(FONT.get(25)),
         }
         doodleSel.descText:setf(DoodleData[name].desc, 340, 'left')
-    else
-        doodleSel = false
     end
 end
 
@@ -52,21 +63,35 @@ function scene.load()
     maxPage = math.ceil(#DATA.doodle / 12)
     selectOne()
     refreshPage()
+    repCursor = false
+    needSave = false
+end
+
+function scene.unload()
+    if needSave then
+        DATA.save()
+    end
 end
 
 local gc = love.graphics
 local gc_push, gc_pop = gc.push, gc.pop
 local gc_translate, gc_scale = gc.translate, gc.scale
 local gc_rotate, gc_shear = gc.rotate, gc.shear
-local gc_setColor, gc_setLineWidth, gc_setLineJoin = gc.setColor, gc.setLineWidth, gc.setLineJoin
+local gc_setColor, gc_setLineWidth = gc.setColor, gc.setLineWidth
 local gc_draw, gc_line = gc.draw, gc.line
-local gc_rectangle, gc_circle, gc_polygon = gc.rectangle, gc.circle, gc.polygon
+local gc_rectangle = gc.rectangle
 local gc_print, gc_printf = gc.print, gc.printf
 
 function scene.draw()
-    gc_setColor(COLOR.D)
-    FONT.set(30)
-    gc_print("涂鸦 ——查看涂鸦说明或装备", 110, 5)
+    if not repCursor then
+        gc_setColor(COLOR.D)
+        FONT.set(30)
+        gc_print("涂鸦 ——查看涂鸦说明或装备", 110, 5)
+    else
+        gc_setColor(love.timer.getTime() % .62 < .26 and COLOR.O or COLOR.M)
+        FONT.set(30)
+        GC.mStr("选择用来替换的涂鸦", 110 + 390 / 2, 5)
+    end
 
     gc_setColor(1, 1, 1)
 
@@ -82,7 +107,11 @@ function scene.draw()
         local D = DATA.doodleEquip[i]
         if D then
             local a = -1.62 + MATH.tau / 5 * (i - 1)
-            GC.mDrawQ(TEX.doodle, QUAD.doodle[D], 100 * math.cos(a), 100 * math.sin(a), 0, .5)
+            local x, y = 100 * cos(a), 100 * sin(a)
+            GC.mDrawQ(TEX.doodle, QUAD.doodle[D], x, y, 0, .5)
+            if repCursor == i then
+                GC.mDrawQ(TEX.world.default, QUAD.world.target, x, y, love.timer.getTime() * 2.6, .42)
+            end
         end
     end
     GC.ucs_back()
@@ -135,6 +164,17 @@ for y = -1.5, 1.5 do
             end,
         })
     end
+end
+
+for i = 1, 5 do
+    local a = -1.62 + MATH.tau / 5 * (i - 1)
+    table.insert(scene.widgetList, WIDGET.new {
+        type = 'button_invis',
+        x = 750 + 100 * cos(a), y = 180 + 100 * sin(a), w = 80,
+        onClick = function()
+            repCursor = i
+        end,
+    })
 end
 
 table.insert(scene.widgetList, WIDGET.new {

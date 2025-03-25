@@ -8,6 +8,7 @@ local rnd = {
 local page ---@type number
 local maxPage ---@type number
 local selected ---@type ReroChess.Skin.Select
+local needSave
 local skinFace
 local showFaceName
 local showFaceNameList = {
@@ -67,6 +68,13 @@ function scene.load()
     maxPage = math.ceil(#DATA.skin / 12)
     selectOne(DATA.skinEquip)
     refreshPage()
+    needSave = false
+end
+
+function scene.unload()
+    if needSave then
+        DATA.save()
+    end
 end
 
 local gc = love.graphics
@@ -188,7 +196,7 @@ table.insert(scene.widgetList, WIDGET.new {
     lineWidth = 2,
     onClick = function()
         DATA.skinEquip = selected.name
-        DATA.save()
+        needSave = true
         selectOne(selected.name)
     end
 })
