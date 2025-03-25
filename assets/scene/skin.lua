@@ -81,7 +81,7 @@ local gc_print, gc_printf = gc.print, gc.printf
 function scene.draw()
     gc_setColor(COLOR.D)
     FONT.set(30)
-    gc_print("棋子皮肤 ——查看棋子说明或使用，戳戳预览表情", 110, -5)
+    gc_print("棋子皮肤 ——查看棋子说明或使用，戳戳预览表情", 110, 5)
 
     gc_setColor(1, 1, 1)
 

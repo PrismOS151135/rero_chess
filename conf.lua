@@ -39,7 +39,7 @@ function love.conf(t)
     W.borderless=mobile
     W.resizable=not mobile
     W.fullscreentype=mobile and 'exclusive' or 'desktop' -- Fullscreen type
-    W.width,W.height=1280,800
+    W.width,W.height=1250,750
     W.minwidth,W.minheight=160,100
     W.title=require'version'.appName..'  '..require'version'.appVer
 

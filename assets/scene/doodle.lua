@@ -66,7 +66,7 @@ local gc_print, gc_printf = gc.print, gc.printf
 function scene.draw()
     gc_setColor(COLOR.D)
     FONT.set(30)
-    gc_print("涂鸦 ——查看涂鸦说明或装备", 110, -5)
+    gc_print("涂鸦 ——查看涂鸦说明或装备", 110, 5)
 
     gc_setColor(1, 1, 1)
 
