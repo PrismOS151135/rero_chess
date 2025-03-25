@@ -16,9 +16,7 @@ end
 
 function scene.keyDown(key, isRep)
     if isRep then return true end
-    if key == 'enter' then
-        SCN.go('play', nil, 'newGame')
-    elseif key == 'escape' then
+    if key == 'escape' then
         SCN.go('quit_sure', 'none', 'quit')
     end
     return true
@@ -134,16 +132,22 @@ scene.widgetList = {
     },
     WIDGET.new {
         type = 'button_simp', pos = { .5, .5 },
-        x = -130, y = 180, w = 180, h = 80, fillColor = 'dL',
-        fontSize = 40, fontType = 'norm', text = function() return Texts.menu_local .. " " .. CHAR.icon.person end,
-        onClick = WIDGET.c_pressKey 'enter',
+        x = -260, y = 180, w = 180, h = 80, fillColor = 'dL',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_lan',
+        onClick = function() SCN.go('room', nil, 'lan') end,
     },
     WIDGET.new {
         type = 'button_simp', pos = { .5, .5 },
-        x = 130, y = 180, w = 180, h = 80,
+        x = 0, y = 180, w = 180, h = 80, fillColor = 'dL',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_local',
+        onClick = function() SCN.go('room', nil, 'local') end,
+    },
+    WIDGET.new {
+        type = 'button_simp', pos = { .5, .5 },
+        x = 260, y = 180, w = 180, h = 80,
         fillColor = 'dL',
-        fontSize = 40, fontType = 'norm', text = function() return Texts.menu_network .. " " .. CHAR.icon.people end,
-        onClick = WIDGET.c_goScn 'mp_menu',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_wan',
+        onClick = function() SCN.go('room', nil, 'wan') end,
     },
     QuitButton,
 }
