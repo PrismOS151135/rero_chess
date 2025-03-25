@@ -23,13 +23,12 @@ local function selectOne(name)
         DATA.doodleEquip[repCursor] = name
         repCursor = false
         needSave = true
-    else
-        doodleSel = {
-            nameText = GC.newText(FONT.get(25), DoodleData[name].name),
-            descText = GC.newText(FONT.get(25)),
-        }
-        doodleSel.descText:setf(DoodleData[name].desc, 340, 'left')
     end
+    doodleSel = {
+        nameText = GC.newText(FONT.get(25), DoodleData[name].name),
+        descText = GC.newText(FONT.get(25)),
+    }
+    doodleSel.descText:setf(DoodleData[name].desc, 340, 'left')
 end
 
 local cacheData = {}
@@ -172,6 +171,12 @@ for i = 1, 5 do
         type = 'button_invis',
         x = 750 + 100 * cos(a), y = 180 + 100 * sin(a), w = 80,
         onClick = function()
+            if repCursor == i then
+                repCursor = false
+                return
+            end
+            repCursor = false
+            selectOne(DATA.doodleEquip[i])
             repCursor = i
         end,
     })
