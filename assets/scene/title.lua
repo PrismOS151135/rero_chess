@@ -55,8 +55,6 @@ function scene.draw()
     GC.mStr(Texts.menu_title, 500, 100)
     FONT.set(30)
     GC.mStr(Texts.menu_info, 500, 210)
-    GC.setColor(Jump.bool() and COLOR.D or COLOR.G)
-    GC.mStr(Texts.menu_desc, 500, 260)
 
     -- Submenu
     if subMenu then

@@ -1,8 +1,7 @@
 ---@class ReroChess.I18N
 local L = {
     menu_title = "仍然不知道叫啥棋",
-    menu_info = "26F工作室 & 略nd  联合出品",
-    menu_desc = "开发火热进行中，目前功能极少，仅供演示",
+    menu_info = "26F工作室 & 略nd  联合出品\n开发火热进行中(确信)，目前功能极少，仅供演示",
     menu_offline = "离线游戏",
     menu_lan = "局域网玩",
     menu_wan = "广域网玩",
