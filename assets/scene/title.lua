@@ -4,10 +4,23 @@ local scene = {}
 local subButtonClick
 local fumoAnimTimer = 0
 
+local subMenu = false
+local function selectSubMenu(m)
+    subMenu = m
+    local L = scene.widgetList
+    L.offline:setVisible(not m)
+    L.lan:setVisible(not m)
+    L.wan:setVisible(not m)
+    L.create:setVisible(m)
+    L.join:setVisible(m)
+    L.back:setVisible(m)
+end
+
 function scene.load()
     subButtonClick = 0
     CURSOR.set('pointer')
     BG.set('title')
+    selectSubMenu(subMenu)
 end
 
 function scene.unload()
@@ -44,6 +57,13 @@ function scene.draw()
     GC.mStr(Texts.menu_info, 500, 210)
     GC.setColor(Jump.bool() and COLOR.D or COLOR.G)
     GC.mStr(Texts.menu_desc, 500, 260)
+
+    -- Submenu
+    if subMenu then
+        FONT.set(50)
+        GC.setColor(COLOR.D)
+        GC.mStr(Texts.menu_subTitle[subMenu], 500, 335)
+    end
 
     -- Fumo
     GC.setColor(1, 1, 1)
@@ -131,24 +151,63 @@ scene.widgetList = {
         end,
     },
     WIDGET.new {
+        name = 'offline',
         type = 'button_simp', pos = { .5, .5 },
-        x = -260, y = 180, w = 180, h = 80, fillColor = 'dL',
+        x = -260, y = 120, w = 180, h = 80, fillColor = 'dL',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_offline',
+        onClick = function() SCN.go('play', nil, 'newGame') end,
+    },
+    WIDGET.new {
+        name = 'lan',
+        type = 'button_simp', pos = { .5, .5 },
+        x = 0, y = 120, w = 180, h = 80, fillColor = 'dL',
         fontSize = 40, fontType = 'norm', text = LANG 'menu_lan',
-        onClick = function() SCN.go('room', nil, 'lan') end,
+        onClick = function() selectSubMenu('lan') end,
     },
     WIDGET.new {
+        name = 'wan',
         type = 'button_simp', pos = { .5, .5 },
-        x = 0, y = 180, w = 180, h = 80, fillColor = 'dL',
-        fontSize = 40, fontType = 'norm', text = LANG 'menu_local',
-        onClick = function() SCN.go('room', nil, 'local') end,
-    },
-    WIDGET.new {
-        type = 'button_simp', pos = { .5, .5 },
-        x = 260, y = 180, w = 180, h = 80,
-        fillColor = 'dL',
+        x = 260, y = 120, w = 180, h = 80, fillColor = 'dL',
         fontSize = 40, fontType = 'norm', text = LANG 'menu_wan',
-        onClick = function() SCN.go('room', nil, 'wan') end,
+        onClick = function() selectSubMenu('wan') end,
+    },
+    WIDGET.new {
+        name = 'create',
+        type = 'button_simp', pos = { .5, .5 },
+        x = -260, y = 160, w = 180, h = 80, fillColor = 'lG',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_create',
+        onClick = function()
+            if subMenu == 'lan' then
+                SCN.go('room_lan_create')
+            elseif subMenu == 'wan' then
+                MSG('info', "暂不可用")
+            end
+        end,
+        visibleFunc = FALSE,
+    },
+    WIDGET.new {
+        name = 'join',
+        type = 'button_simp', pos = { .5, .5 },
+        x = 0, y = 160, w = 180, h = 80, fillColor = 'lS',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_join',
+        onClick = function()
+            if subMenu == 'lan' then
+                SCN.go('room_lan_join')
+            elseif subMenu == 'wan' then
+                MSG('info', "暂不可用")
+            end
+        end,
+        visibleFunc = FALSE,
+    },
+    WIDGET.new {
+        name = 'back',
+        type = 'button_simp', pos = { .5, .5 },
+        x = 260, y = 160, w = 180, h = 80, fillColor = 'DL',
+        fontSize = 40, fontType = 'norm', text = LANG 'menu_back',
+        onClick = function() selectSubMenu(false) end,
+        visibleFunc = FALSE,
     },
     QuitButton,
 }
+
 return scene

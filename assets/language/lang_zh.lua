@@ -3,9 +3,16 @@ local L = {
     menu_title = "仍然不知道叫啥棋",
     menu_info = "26F工作室 & 略nd  联合出品",
     menu_desc = "开发火热进行中，目前功能极少，仅供演示",
+    menu_offline = "离线游戏",
     menu_lan = "局域网玩",
-    menu_local = "本地游戏",
     menu_wan = "广域网玩",
+    menu_create = "创建房间",
+    menu_join = "加入房间",
+    menu_back = "返回",
+    menu_subTitle = {
+        lan = "局域网游戏",
+        wan = "广域网游戏",
+    },
 
     crash_sure = "真的不关注一下嘛…？\n如果已经关注了的话也点一下这个关注按钮让我知道喔",
     crash_thanks = "感谢！",
