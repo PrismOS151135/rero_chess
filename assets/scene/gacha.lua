@@ -101,7 +101,7 @@ function scene.draw()
 
     GC.replaceTransform(SCR.xOy_d)
     FONT.set(50)
-    GC.strokePrint('full', 2, COLOR.L, COLOR.D, Texts.gacha_help, 0, -60, nil, 'center')
+    GC.strokePrint('full', 2, COLOR.dL, COLOR.D, Texts.gacha_help, 0, -60, nil, 'center')
     GC.setColor(1, 1, 1)
 
     GC.translate(0, -120)

@@ -176,12 +176,12 @@ scene.widgetList = {
         fontSize = 40, fontType = 'norm', text = LANG 'menu_create',
         onClick = function()
             if subMenu == 'lan' then
-                SCN.go('room_lan_create')
+                SCN.go('numpad', nil, 'lan_create')
             elseif subMenu == 'wan' then
                 MSG('info', "暂不可用")
+                -- SCN.go('numpad', nil, 'wan_join')
             end
         end,
-        visibleFunc = FALSE,
     },
     WIDGET.new {
         name = 'join',
@@ -190,12 +190,12 @@ scene.widgetList = {
         fontSize = 40, fontType = 'norm', text = LANG 'menu_join',
         onClick = function()
             if subMenu == 'lan' then
-                SCN.go('room_lan_join')
+                SCN.go('numpad', nil, 'lan_join')
             elseif subMenu == 'wan' then
                 MSG('info', "暂不可用")
+                -- SCN.go('numpad',nil,'wan_join')
             end
         end,
-        visibleFunc = FALSE,
     },
     WIDGET.new {
         name = 'back',
@@ -203,7 +203,6 @@ scene.widgetList = {
         x = 260, y = 160, w = 180, h = 80, fillColor = 'DL',
         fontSize = 40, fontType = 'norm', text = LANG 'menu_back',
         onClick = function() selectSubMenu(false) end,
-        visibleFunc = FALSE,
     },
     QuitButton,
 }
