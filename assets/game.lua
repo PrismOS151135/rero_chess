@@ -10,6 +10,7 @@ local Player = require 'assets.player'
 ---@field drawCoroutine {th:thread, p:ReroChess.Player}[]
 ---@field cam Zenitha.Camera
 ---@field text Zenitha.Text
+---@field RNG love.RandomGenerator
 ---
 ---@field roundInfo ReroChess.RoundInfo
 ---@field selectedPlayer false | ReroChess.Player
@@ -36,7 +37,20 @@ Game.__index = Game
 ---
 ---@field sprite? string
 
+---@class ReroChess.CellData: ReroChess.Cell
+---@field id nil
+---@field x? number
+---@field y? number
+---@field dx? number
+---@field dy? number
+---@field prop? string
 
+---@class ReroChess.MapData
+---@field texturePack? string
+---@field playerData ReroChess.PlayerData[]
+---@field decoData Zenitha.drawingCommand[]
+---@field mapData ReroChess.CellData[]
+---@field seed? number
 
 ---@param data string | table
 ---@return ReroChess.CellProp
@@ -83,20 +97,37 @@ local function getTextSize(str)
     return _tempText:getDimensions()
 end
 
----@class ReroChess.CellData: ReroChess.Cell
----@field id nil
----@field x? number
----@field y? number
----@field dx? number
----@field dy? number
----@field prop? string
+---Random Int or 0~1
+function Game:random(a, b)
+    return self.RNG:random(a, b)
+end
 
----@class ReroChess.MapData
----@field texturePack? string
----@field playerData ReroChess.PlayerData[]
----@field decoData Zenitha.drawingCommand[]
----@field mapData ReroChess.CellData[]
---
+---Random Float
+function Game:rand(a, b)
+    return a + self.RNG:random() * (b - a)
+end
+
+---Random value
+function Game:coin(head, tail)
+    return self.RNG:random() > .5 and head or tail
+end
+
+---Random boolean
+function Game:roll(chance)
+    return self.RNG:random() < (chance or .5)
+end
+
+---Random int with custom weight
+function Game:randFreq(fList)
+    local sum = MATH.sum(fList)
+    local r = self.RNG:random() * sum
+    for i = 1, #fList do
+        r = r - fList[i]
+        if r < 0 then return i end
+    end
+    error("WTF why not all positive")
+end
+
 ---@param data ReroChess.MapData
 function Game.new(data)
     assert(data.mapData, "Missing field 'mapData'")
@@ -112,7 +143,6 @@ function Game.new(data)
         spriteBatches = {},
         textBatch = GC.newText(FONT.get(40)),
         drawCoroutine = {},
-
         cam = GC.newCamera(),
         text = TEXT.new(),
         roundInfo = {
@@ -121,6 +151,8 @@ function Game.new(data)
             player = 1,
         },
         selectedPlayer = nil,
+
+        RNG = love.math.newRandomGenerator(data.seed or os.time()),
     }, Game)
 
     -- for i=1,#game.deco do
@@ -447,9 +479,9 @@ function Game:parsePlayer(P, str)
         self.selectedPlayer = nil
         return res
     elseif str == '@random' then
-        return pList[math.random(#pList)]
+        return pList[self:random(#pList)]
     elseif str == '@random_ex' then
-        local r = math.random(#pList - 1)
+        local r = self:random(#pList - 1)
         if r >= P.id then r = r + 1 end
         return pList[r]
     elseif str == '@nearest' then

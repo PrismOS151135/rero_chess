@@ -153,7 +153,7 @@ scene.widgetList = {
         type = 'button_simp', pos = { .5, .5 },
         x = -260, y = 120, w = 180, h = 80, fillColor = 'dL',
         fontSize = 40, fontType = 'norm', text = LANG 'menu_offline',
-        onClick = function() SCN.go('play', nil, 'newGame') end,
+        onClick = function() SCN.go('play', nil, 'demo') end,
     },
     WIDGET.new {
         name = 'lan',

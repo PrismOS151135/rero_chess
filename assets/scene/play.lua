@@ -1,15 +1,18 @@
 ---@type ReroChess.Game
 local game
 
+local mode
+
 ---@type Zenitha.Scene
 local scene = {}
 
 function scene.load()
-    BG.set('play')
-    if SCN.args[1] == 'newGame' then
+    mode = SCN.args[1]
+    if mode == 'demo' then
         MSG('info', "（临时地图）左键走路右键掷骰 键盘回车空格 触屏随便点", 5)
         game = require 'assets.game'.new(FILE.load('assets/map/lue_first.luaon', '-luaon', { TEX = TEX, QUAD = QUAD }))
     end
+    BG.set('play')
 end
 
 function scene.mouseMove(x, y, dx, dy)

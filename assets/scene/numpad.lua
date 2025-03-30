@@ -55,8 +55,14 @@ function scene.keyDown(key, isRep)
         input(key)
     elseif key == ';' then
         input(':')
+    elseif key == 'l' then
+        str = "127.0.0.1:"
+    elseif key == 'w' then
+        str = "192.168."
     elseif key == 'backspace' then
         str = str:sub(1, -2)
+    elseif key == 'delete' then
+        str = ""
     elseif key == 'return' then
         confirm()
     elseif key == 'escape' then

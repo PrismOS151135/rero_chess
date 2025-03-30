@@ -74,7 +74,7 @@ function Player.new(id, data, game)
         size = (data.size or 0.7) / 256,
         faceDir = 1,
         face = 'normal',
-        location = data.startLocation or 1,
+        location = data.startLocation or 'start',
         moveDir = data.startMoveDir or 'next',
         dice = {
             points = { 1, 2, 3, 4, 5, 6, 7 },
@@ -132,7 +132,7 @@ function Player:roll()
                 d.clipTime = t + 1 / 64
                 local r
                 repeat
-                    r = MATH.randFreq(d.weights)
+                    r = self.game:randFreq(d.weights)
                 until r ~= d.valueIndex
                 d.valueIndex = r
                 d.value = d.points[r]

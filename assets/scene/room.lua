@@ -2,15 +2,15 @@
 local scene = {}
 
 local mode, port
-local members = class(require 'assets/memberList')
+NetRoom = class(require 'assets/memberList')
 
 function scene.load(_)
     mode = SCN.args[1]
-    members:reset()
+    NetRoom:reset()
     if mode == 'host' then
         port = SCN.args[2]
-        members:add('0')
-        members:setSelf()
+        NetRoom:add('0')
+        NetRoom:setSelf()
     end
 end
 
@@ -30,9 +30,9 @@ function scene.update(dt)
             if d then
                 print("S_recv", TABLE.dump(d))
                 if d.event == 'client.connect' then
-                    members:add(d.sender)
+                    NetRoom:add(d.sender)
                     TCP.S_send({ e = "join", id = d.sender })
-                    TCP.S_send({ e = "init", d = members:export() }, d.sender)
+                    TCP.S_send({ e = "init", d = NetRoom:export() }, d.sender)
                 elseif d.event == 'client.disconnect' then
                     TCP.S_send({ e = "quit", id = d.sender })
                 end
@@ -43,17 +43,17 @@ function scene.update(dt)
                 print("C_recv", TABLE.dump(d))
                 local pack = d.data
                 if pack.e == 'join' then
-                    members:add(pack.id)
+                    NetRoom:add(pack.id)
                 elseif pack.e == 'quit' then
-                    for i = 1, #members do
-                        if members[i].id == pack.id then
-                            table.remove(members, i)
+                    for i = 1, #NetRoom do
+                        if NetRoom[i].id == pack.id then
+                            table.remove(NetRoom, i)
                             break
                         end
                     end
                 elseif pack.e == 'init' then
-                    members:import(pack.d)
-                    members:setSelf()
+                    NetRoom:import(pack.d)
+                    NetRoom:setSelf()
                 end
             end
         end
@@ -69,9 +69,9 @@ function scene.draw()
         GC.print(port, 100, 40)
     end
 
-    for i = 1, #members do
-        local m = members[i]
-        GC.setColor(m == members.self and COLOR.G or COLOR.D)
+    for i = 1, #NetRoom do
+        local m = NetRoom[i]
+        GC.setColor(m == NetRoom.self and COLOR.G or COLOR.D)
         GC.print(m.id, 100, 90 + i * 25)
     end
 end
