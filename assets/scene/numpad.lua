@@ -59,6 +59,8 @@ function scene.keyDown(key, isRep)
         str = str:sub(1, -2)
     elseif key == 'return' then
         confirm()
+    elseif key == 'escape' then
+        SCN.back()
     end
     return true
 end
