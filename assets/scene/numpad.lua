@@ -5,33 +5,29 @@ local mode
 local str = ""
 
 local function input(i)
-    if mode == 'lan_create' and not tonumber(i) then return end
+    -- if mode == 'lan_create' and not tonumber(i) then return end
     str = str .. i
 end
 
 local function confirm()
-    if mode == 'lan_create' then
-        if str == "" then str = "" .. math.random(16384, 65535) end
-        local port = tonumber(str)
-        if not port then return MSG('info', "必须是数字！") end
-        if port % 1 ~= 0 then return MSG('info', "必须是整数！") end
-        if not MATH.between(port, 16384, 65535) then return MSG('info', "端口必须在16384到65535之间") end
-        TCP.S_start(port)
-        SCN.go('room', nil, 'host', port)
-    elseif mode == 'lan_join' then
-        if not str:match("^%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?%:%d%d%d%d%d$") then
-            return MSG('info', "格式不正确，一般长这样：\n192.168.0.26:26535")
+    -- if mode == 'lan_create' then
+    --     if str == "" then str = "" .. math.random(16384, 65535) end
+    --     local port = tonumber(str)
+    --     if not port then return MSG('info', "必须是数字！") end
+    --     if port % 1 ~= 0 then return MSG('info', "必须是整数！") end
+    --     if not MATH.between(port, 16384, 65535) then return MSG('info', "端口必须在16384到65535之间") end
+    --     TCP.S_start(port)
+    --     SCN.go('room', nil, 'host', port)
+    if mode == 'lan_join' then
+        if not str:match("^%d%d?%d?%.%d%d?%d?%.%d%d?%d?%.%d%d?%d?") then
+            return MSG('info', "格式不正确，一般长这样：\n192.168.0.26")
         end
-        local ip, port = str:before(':'), tonumber(str:after(':'))
-        ---@cast ip string
-        ---@cast port number
-        local ipNums = TABLE.applyeach(ip:split('.'), tonumber)
+        local ipNums = TABLE.applyeach(str:split('.'), tonumber)
         if TABLE.max(ipNums) > 255 or TABLE.min(ipNums) < 0 then return MSG('info', "IP地址格式不正确") end
-        if not MATH.between(port, 16384, 65535) then return MSG('info', "端口必须在16384到65535之间") end
         TASK.lock('lan_connecting')
         TASK.new(function()
+            TCP.C_connect(str, 62626)
             TASK.yieldT(.26)
-            TCP.C_connect(ip, port)
             if TCP.C_isRunning() then
                 SCN.go('room', nil, 'client')
             else
@@ -53,11 +49,7 @@ end
 function scene.keyDown(key, isRep)
     if #key == 1 and tonumber(key) or key == '.' then
         input(key)
-    elseif key == ';' then
-        input(':')
     elseif key == 'l' then
-        str = "127.0.0.1:"
-    elseif key == 'w' then
         str = "192.168."
     elseif key == 'backspace' then
         str = str:sub(1, -2)

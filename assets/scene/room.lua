@@ -1,14 +1,15 @@
 ---@type Zenitha.Scene
 local scene = {}
 
-local mode, port
+local mode, address
 NetRoom = class(require 'assets/memberList')
 
 function scene.load(_)
     mode = SCN.args[1]
     NetRoom:reset()
     if mode == 'host' then
-        port = SCN.args[2]
+        local dns = require 'socket'.dns
+        address = dns.toip(dns.gethostname())
         NetRoom:add('0')
         NetRoom:setSelf()
     end
@@ -71,7 +72,7 @@ function scene.draw()
     GC.setColor(COLOR.D)
     GC.print(mode, 100, 10)
     if mode == 'host' then
-        GC.print(port, 100, 40)
+        GC.print(address, 100, 40)
     end
 
     for i = 1, #NetRoom do

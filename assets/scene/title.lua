@@ -176,7 +176,8 @@ scene.widgetList = {
         fontSize = 40, fontType = 'norm', text = LANG 'menu_create',
         onClick = function()
             if subMenu == 'lan' then
-                SCN.go('numpad', nil, 'lan_create')
+                TCP.S_start(62626)
+                SCN.go('room', nil, 'host')
             elseif subMenu == 'wan' then
                 MSG('info', "暂不可用")
                 -- SCN.go('numpad', nil, 'wan_join')
