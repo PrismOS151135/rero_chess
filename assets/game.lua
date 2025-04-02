@@ -137,7 +137,7 @@ function Game.new(data)
     ---@type ReroChess.Game
     local game = setmetatable({
         map = {},
-        deco = data.decoData or {},
+        deco = data.decoData,
         players = {},
 
         spriteBatches = {},
@@ -562,8 +562,10 @@ function Game:draw()
     gc_replaceTransform(SCR.xOy_m)
     self.cam:apply()
 
-    gc_setColor(1, 1, 1)
-    GC.execute(self.deco)
+    if self.deco then
+        gc_setColor(1, 1, 1)
+        GC.execute(self.deco)
+    end
 
     local SB = self.spriteBatches
     gc_setColor(1, 1, 1)

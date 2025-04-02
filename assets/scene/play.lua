@@ -1,16 +1,22 @@
 ---@type ReroChess.Game
 local game
 
-local mode
+local mode, host
+local prefix
 
 ---@type Zenitha.Scene
 local scene = {}
 
 function scene.load()
-    mode = SCN.args[1]
+    mode, host = SCN.args[1], SCN.args[2]
+    prefix = host == true and 'S' or 'C'
     if mode == 'demo' then
         MSG('info', "（临时地图）左键走路右键掷骰 键盘回车空格 触屏随便点", 5)
-        game = require 'assets.game'.new(FILE.load('assets/map/lue_first.luaon', '-luaon', { TEX = TEX, QUAD = QUAD }))
+        game = require 'assets.game'.new(FILE.load('assets/map/lue_first.luaon', '-luaon',
+            { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
+    elseif mode == 'netgame' then
+        game = require 'assets.game'.new(FILE.load('assets/map/net_test.luaon', '-luaon',
+            { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
     end
     BG.set('play')
 end
@@ -29,6 +35,23 @@ end
 function scene.mouseUp(x, y, k)
     if k == 1 then
         CURSOR.set('pointer')
+    end
+end
+
+local function doAction(act, manual)
+    -- Not local turn
+    if mode == 'netgame' and manual then
+        if game.roundInfo.player ~= NetRoom.selfID + 1 then return end
+        TCP[prefix .. '_send'] {
+            e = 'action',
+            act = act,
+        }
+    end
+
+    if act == 'move' then
+        game:step()
+    elseif act == 'dice' then
+        game:startRound()
     end
 end
 
@@ -56,12 +79,7 @@ function scene.mouseClick(x, y, k)
             game.selectedPlayer = closest
         end
     else
-        -- Normal
-        if k == 1 then
-            game:step()
-        elseif k == 2 then
-            game:startRound()
-        end
+        doAction(k == 1 and 'move' or 'dice', true)
     end
 end
 
@@ -91,6 +109,17 @@ function scene.keyDown(key, isRep)
 end
 
 function scene.update(dt)
+    local d = TCP[prefix .. '_receive']()
+    if d then
+        if d.event == 'client.disconnect' then
+            -- TCP[prefix .. '_send'] { e = "quit", id = d.sender }
+        else
+            local pack = d.data
+            if pack.e == 'action' then
+                doAction(pack.act, false)
+            end
+        end
+    end
     game:update(dt)
 end
 

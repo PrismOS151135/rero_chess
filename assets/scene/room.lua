@@ -18,8 +18,11 @@ function scene.mouseDown(x, y, k)
 end
 
 function scene.keyDown(key, isRep)
-    if key == 's' then
-        TCP.C_send("123", '0')
+    if key == 'return' then
+        if mode == 'host' then
+            TCP.S_send({ e = "start" })
+            SCN.swapTo('play', nil, 'netgame', mode == 'host')
+        end
     end
 end
 
@@ -54,6 +57,8 @@ function scene.update(dt)
                 elseif pack.e == 'init' then
                     NetRoom:import(pack.d)
                     NetRoom:setSelf()
+                elseif pack.e == 'start' then
+                    SCN.swapTo('play', nil, 'netgame', mode == 'host')
                 end
             end
         end
