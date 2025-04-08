@@ -2,14 +2,15 @@
 local game
 
 local mode, host
-local prefix
+
+local function send(...) return (host and TCP.S_send or TCP.C_send)(...) end
+local function recv() return (host and TCP.S_receive or TCP.C_receive)() end
 
 ---@type Zenitha.Scene
 local scene = {}
 
 function scene.load()
     mode, host = SCN.args[1], SCN.args[2]
-    prefix = host == true and 'S' or 'C'
     if mode == 'demo' then
         MSG('info', "（临时地图）左键走路右键掷骰 键盘回车空格 触屏随便点", 5)
         game = require 'assets.game'.new(FILE.load('assets/map/lue_first.luaon', '-luaon',
@@ -19,6 +20,16 @@ function scene.load()
             { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
     end
     BG.set('play')
+end
+
+function scene.unload()
+    if mode == 'netgame' then
+        if host then
+            TCP.S_send({ e = 'end' })
+        else
+            TCP.C_send({ e = 'end' })
+        end
+    end
 end
 
 function scene.mouseMove(x, y, dx, dy)
@@ -42,7 +53,7 @@ local function doAction(act, manual)
     -- Not local turn
     if mode == 'netgame' and manual then
         if game.roundInfo.player ~= NetRoom.selfID + 1 then return end
-        TCP[prefix .. '_send'] {
+        send{
             e = 'action',
             act = act,
         }
@@ -109,10 +120,10 @@ function scene.keyDown(key, isRep)
 end
 
 function scene.update(dt)
-    local d = TCP[prefix .. '_receive']()
+    local d = recv()
     if d then
         if d.event == 'client.disconnect' then
-            -- TCP[prefix .. '_send'] { e = "quit", id = d.sender }
+            -- send{ e = "quit", id = d.sender }
         else
             local pack = d.data
             if pack.e == 'action' then

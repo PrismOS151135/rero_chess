@@ -18,6 +18,8 @@ local L = {
         lan_join = "输入IP地址加入网络房间",
     },
 
+    room_start = "开始",
+
     crash_sure = "真的不关注一下嘛…？\n如果已经关注了的话也点一下这个关注按钮让我知道喔",
     crash_thanks = "感谢！",
 

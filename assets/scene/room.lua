@@ -13,6 +13,7 @@ function scene.load(_)
         NetRoom:add('0')
         NetRoom:setSelf()
     end
+    scene.widgetList.start:setVisible(mode == 'host')
 end
 
 function scene.mouseDown(x, y, k)
@@ -75,14 +76,26 @@ function scene.draw()
         GC.print(address, 100, 40)
     end
 
+    GC.setColor(COLOR.D)
     for i = 1, #NetRoom do
         local m = NetRoom[i]
-        GC.setColor(m == NetRoom.self and COLOR.G or COLOR.D)
-        GC.print(m.id, 100, 90 + i * 25)
+        GC.print("玩家" .. m.id, 100, 90 + i * 25)
+        if m == NetRoom.self then
+            GC.print("我→", 26, 90 + i * 25)
+        end
     end
 end
 
 scene.widgetList = {
+    WIDGET.new {
+        name='start',
+        type = 'button_simp',
+        pos = { 1, 1 },
+        x = -100, y = -70, w = 140, h = 80,
+        fontSize = 40,
+        text = LANG 'room_start',
+        onClick = WIDGET.c_pressKey'return',
+    },
     QuitButton,
 }
 
