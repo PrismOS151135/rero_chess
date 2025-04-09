@@ -20,12 +20,17 @@ function scene.mouseDown(x, y, k)
 end
 
 function scene.keyDown(key, isRep)
-    if key == 'return' then
-        if mode == 'host' then
-            TCP.S_send({ e = "start" })
-            SCN.swapTo('play', nil, 'netgame', mode == 'host')
+    if mode == 'host' then
+        if key == 'return' then
+            if #NetRoom > 1 then
+                TCP.S_send({ e = "start" })
+                SCN.swapTo('play', nil, 'netgame', mode == 'host')
+            else
+                MSG('other', Texts.room_notEnoughPlayers, 1)
+            end
         end
     end
+    return true
 end
 
 function scene.update(dt)
@@ -79,22 +84,22 @@ function scene.draw()
     GC.setColor(COLOR.D)
     for i = 1, #NetRoom do
         local m = NetRoom[i]
-        GC.print("玩家" .. m.id, 100, 90 + i * 25)
+        GC.print("玩家" .. m.id, 126, 90 + i * 25)
         if m == NetRoom.self then
-            GC.print("我→", 26, 90 + i * 25)
+            GC.print("我→", 62, 90 + i * 25)
         end
     end
 end
 
 scene.widgetList = {
     WIDGET.new {
-        name='start',
+        name = 'start',
         type = 'button_simp',
-        pos = { 1, 1 },
-        x = -100, y = -70, w = 140, h = 80,
+        pos = { .5, 1 },
+        y = -70, w = 160, h = 80,
         fontSize = 40,
         text = LANG 'room_start',
-        onClick = WIDGET.c_pressKey'return',
+        onClick = WIDGET.c_pressKey 'return',
     },
     QuitButton,
 }
