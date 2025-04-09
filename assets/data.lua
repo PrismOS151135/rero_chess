@@ -11,7 +11,7 @@ local DATA = {
 
 local _DATA = {}
 function _DATA.load()
-    TABLE.update(DATA, FILE.load('data', '-canskip') or NONE)
+    TABLE.update(DATA, FILE.load('data') or NONE)
 end
 
 local function saver() DATA.save() end

@@ -64,6 +64,7 @@ function scene.draw()
     end
 
     -- Fumo
+    GC.replaceTransform(SCR.xOy_dl)
     GC.setColor(1, 1, 1)
     local q, rot, kx, ky
     if DATA.fumoDmg < 20 then
@@ -94,7 +95,7 @@ function scene.draw()
         q = QUAD.ui.title.fumo.rip[6]
     end
     local _, _, w, h = q:getViewport()
-    GC.draw(TEX.ui, q, 50, 600, rot, kx, ky, w / 2, h)
+    GC.draw(TEX.ui, q, scene.widgetList.fumo.x, scene.widgetList.fumo.y + 65, rot, kx, ky, w / 2, h)
 end
 
 function scene.overDraw()
@@ -119,7 +120,7 @@ scene.widgetList = {
             end
         end,
     },
-    WIDGET.new { type = 'button_invis', x = 50, y = 530, w = 100, h = 130,
+    WIDGET.new { type = 'button_invis', pos = { 0, 1 }, x = 60, y = -70, w = 120, h = 130,
         name = 'fumo',
         onPress = function()
             if fumoAnimTimer < .626 then
