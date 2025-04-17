@@ -2,7 +2,7 @@
 local scene = {}
 
 local mode, address
-NetRoom = class(require 'assets/memberList')
+NetRoom = require 'assets/memberList'.new()
 
 function scene.load(_)
     mode = SCN.args[1]

@@ -7,6 +7,10 @@
 ---@field [number|string] Member
 local MemberList = {}
 
+function MemberList.new()
+    return setmetatable({}, { __index = MemberList })
+end
+
 function MemberList:reset()
     TABLE.clear(self)
 end
