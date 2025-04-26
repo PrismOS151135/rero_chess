@@ -29,7 +29,7 @@ local function confirm()
             TCP.C_connect(str, 62626)
             TASK.yieldT(.26)
             if TCP.C_isRunning() then
-                SCN.go('room', nil, 'client')
+                SCN.swapTo('room', nil, 'client')
             else
                 MSG('info', "连接失败...")
             end

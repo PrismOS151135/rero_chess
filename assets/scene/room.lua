@@ -28,6 +28,14 @@ function scene.keyDown(key, isRep)
             else
                 MSG('other', Texts.room_notEnoughPlayers, 1)
             end
+        elseif key == 'escape' then
+            TCP.S_stop()
+            SCN.back()
+        end
+    elseif mode == 'client' then
+        if key == 'escape' then
+            TCP.C_disconnect()
+            SCN.back()
         end
     end
     return true
@@ -44,6 +52,7 @@ function scene.update(dt)
                     TCP.S_send({ e = "join", id = d.sender })
                     TCP.S_send({ e = "init", d = NetRoom:export() }, d.sender)
                 elseif d.event == 'client.disconnect' then
+                    NetRoom:remove(d.sender)
                     TCP.S_send({ e = "quit", id = d.sender })
                 end
             end
@@ -55,12 +64,7 @@ function scene.update(dt)
                 if pack.e == 'join' then
                     NetRoom:add(pack.id)
                 elseif pack.e == 'quit' then
-                    for i = 1, #NetRoom do
-                        if NetRoom[i].id == pack.id then
-                            table.remove(NetRoom, i)
-                            break
-                        end
-                    end
+                    NetRoom:remove(pack.id)
                 elseif pack.e == 'init' then
                     NetRoom:import(pack.d)
                     NetRoom:setSelf()
@@ -86,7 +90,9 @@ function scene.draw()
         local m = NetRoom[i]
         GC.print("玩家" .. m.id, 126, 90 + i * 25)
         if m == NetRoom.self then
+            GC.setColor(COLOR.DL)
             GC.print("我→", 62, 90 + i * 25)
+            GC.setColor(COLOR.D)
         end
     end
 end

@@ -49,7 +49,8 @@ end
 
 function MemberList:remove(id)
     if not self[id] then return MSG('error', "remove: id not found") end
-    TABLE.deleteAll(self, self[id])
+    table.remove(self, TABLE.find(self, self[id]))
+    self[id] = nil
 end
 
 return MemberList
