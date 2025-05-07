@@ -93,4 +93,5 @@ scene.widgetList = {
     WIDGET.new { type = 'button_invis', x = 635, y = 100, w = 65, h = 55, onClick = leave },
     WIDGET.new { name = 'sub', type = 'button_invis', x = 385, y = 420, w = 160, h = 90, onClick = subscribe },
 }
+
 return scene

@@ -428,15 +428,19 @@ local function roundThread(self)
     self.roundInfo.lock = false
 end
 
+---@return true? success
 function Game:startRound()
-    if self.roundInfo.lock then return end
-    TASK.new(roundThread, self)
+    if not self.roundInfo.lock then
+        TASK.new(roundThread, self)
+        return true
+    end
 end
 
 -- local function checkStep(self)
 --     TASK.forceLock('game_step',.26)
 --     repeat TASK.yieldT(.026) until not self.roundInfo.step or not TASK.getLock('game_step')
 -- end
+---@return true? success
 function Game:step()
     if self.roundInfo.step then return end
     self.roundInfo.step = true

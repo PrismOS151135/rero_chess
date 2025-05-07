@@ -24,4 +24,5 @@ end
 scene.widgetList = {
     QuitButton,
 }
+
 return scene

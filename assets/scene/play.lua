@@ -52,17 +52,17 @@ end
 local function doAction(act, manual)
     -- Not local turn
     if mode == 'netgame' and manual then
-        if game.roundInfo.player ~= NetRoom.selfID + 1 then return end
-        send{
+        if game.roundInfo.player ~= NetRoom:getSelfSeat() then return end
+        send {
             e = 'action',
             act = act,
         }
-    end
-
-    if act == 'move' then
-        game:step()
-    elseif act == 'dice' then
-        game:startRound()
+    else
+        if act == 'move' then
+            game:step()
+        elseif act == 'dice' then
+            game:startRound()
+        end
     end
 end
 
@@ -148,4 +148,5 @@ end
 scene.widgetList = {
     QuitButton,
 }
+
 return scene

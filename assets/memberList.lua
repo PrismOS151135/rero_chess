@@ -53,4 +53,9 @@ function MemberList:remove(id)
     self[id] = nil
 end
 
+---@return number 0 = not found
+function MemberList:getSelfSeat()
+    return TABLE.find(self, self.self) or 0
+end
+
 return MemberList
