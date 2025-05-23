@@ -4,16 +4,18 @@ local scene = {}
 local mode, address
 NetRoom = require 'assets/memberList'.new()
 
+local cache = {}
+
 function scene.load(_)
     mode = SCN.args[1]
     NetRoom:reset()
     if mode == 'host' then
         local dns = require 'socket'.dns
         address = dns.toip(dns.gethostname())
-        NetRoom:add('0')
-        NetRoom:setSelf()
+        NetRoom:add({ id = '0', self = true, skin = DATA.skinEquip })
     end
     scene.widgetList.start:setVisible(mode == 'host')
+    for i = 1, 6 do cache[i] = TABLE.getRandom(QUAD.world.tile) end
 end
 
 function scene.mouseDown(x, y, k)
@@ -48,7 +50,7 @@ function scene.update(dt)
             if d then
                 print("S_recv", TABLE.dump(d))
                 if d.event == 'client.connect' then
-                    NetRoom:add(d.sender)
+                    NetRoom:add({ id = d.sender })
                     TCP.S_send({ e = "join", id = d.sender })
                     TCP.S_send({ e = "init", d = NetRoom:export() }, d.sender)
                 elseif d.event == 'client.disconnect' then
@@ -62,12 +64,11 @@ function scene.update(dt)
                 print("C_recv", TABLE.dump(d))
                 local pack = d.data
                 if pack.e == 'join' then
-                    NetRoom:add(pack.id)
+                    NetRoom:add({ id = pack.id })
                 elseif pack.e == 'quit' then
                     NetRoom:remove(pack.id)
                 elseif pack.e == 'init' then
                     NetRoom:import(pack.d)
-                    NetRoom:setSelf()
                 elseif pack.e == 'start' then
                     SCN.swapTo('play', nil, 'netgame', mode == 'host')
                 end
@@ -75,6 +76,11 @@ function scene.update(dt)
         end
     end
 end
+
+local pos = {
+    { 250, 200 }, { 500, 200 }, { 750, 200 },
+    { 250, 400 }, { 500, 400 }, { 750, 400 },
+}
 
 function scene.draw()
     FONT.set(30)
@@ -85,15 +91,26 @@ function scene.draw()
         GC.print(address, 100, 40)
     end
 
-    GC.setColor(COLOR.D)
-    for i = 1, #NetRoom do
+    for i = 1, 6 do
+        GC.push('transform')
+        GC.translate(pos[i][1], pos[i][2])
+        GC.scale(.5)
+        GC.setColor(1, 1, 1)
+        GC.mDrawQ(TEX.world.default, cache[i])
         local m = NetRoom[i]
-        GC.print("玩家" .. m.id, 126, 90 + i * 25)
-        if m == NetRoom.self then
-            GC.setColor(COLOR.DL)
-            GC.print("我→", 62, 90 + i * 25)
+        if m then
+            -- m == NetRoom.self
             GC.setColor(COLOR.D)
+            GC.ucs_move('s', 2, 2)
+            GC.mStr("玩家" .. m.id, 0, -120)
+            if m.skin then
+                GC.setColor(1, 1, 1)
+                GC.mDraw(TEX.chess[m.skin].base, 0, -26, 0, .42)
+                GC.mDraw(TEX.chess[m.skin].normal, 0, -26, 0, .42)
+            end
+            GC.ucs_back()
         end
+        GC.pop()
     end
 end
 
