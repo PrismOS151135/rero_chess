@@ -1,5 +1,6 @@
 ---@class Member
 ---@field id string
+---@field skin string
 
 ---@class MemberList
 ---@field self Member
@@ -30,21 +31,23 @@ function MemberList:import(data)
         local p = { id = id }
         self[i] = p
         self[p.id] = p
+        self.selfID = id
+        self.self = p
     end
 end
 
-function MemberList:add(id)
-    if self[id] then return MSG('error', "add: id already exists") end
-    local p = { id = id }
+function MemberList:add(data)
+    if self[data.id] then return MSG('error', "add: id already exists") end
+    local p = {
+        id = data.id,
+        skin = data.skin,
+    }
     self[#self + 1] = p
-    self[id] = p
-end
-
-function MemberList:setSelf(id)
-    if id == nil then id = self[#self].id end
-    if not self[id] then return MSG('error', "setSelf: id not found") end
-    self.selfID = id
-    self.self = self[id]
+    self[data.id] = p
+    if data.self then
+        self.selfID = data.id
+        self.self = p
+    end
 end
 
 function MemberList:remove(id)
