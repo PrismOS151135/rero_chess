@@ -1,6 +1,7 @@
 ---@class ReroChess.CellEvent
 local Prop = {}
 
+-- System
 Prop.label = {
     tag = true,
     parse = function(prop)
@@ -27,8 +28,7 @@ Prop.center = {
     tag = true,
 }
 
-
-
+-- Display
 Prop.text = {
     tag = true,
     parse = function(prop)
@@ -39,8 +39,7 @@ Prop.text = {
     end,
 }
 
-
-
+-- Actions
 Prop.step = {
     parse = function(prop)
         prop[2] = tonumber(prop[2])
@@ -229,5 +228,7 @@ Prop.exit = {
         P:teleport(target)
     end,
 }
+
+Prop.win = {}
 
 return Prop

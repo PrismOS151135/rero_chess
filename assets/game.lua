@@ -12,6 +12,7 @@ local Player = require 'assets.player'
 ---@field text Zenitha.Text
 ---@field RNG love.RandomGenerator
 ---
+---@field result string | false
 ---@field roundInfo ReroChess.RoundInfo
 ---@field selectedPlayer false | ReroChess.Player
 local Game = {}
@@ -145,6 +146,8 @@ function Game.new(data)
         drawCoroutine = {},
         cam = GC.newCamera(),
         text = TEXT.new(),
+
+        result = false,
         roundInfo = {
             lock = false,
             step = false,
@@ -408,6 +411,14 @@ local function roundThread(self)
         if allStop then break end
     end
 
+    -- Check winning
+    for _, prop in next, self.map[p.location].propList do
+        if prop[1] == 'win' then
+            self:finish('win', p.id)
+            return
+        end
+    end
+
     -- Next round
     local rd = self.roundInfo
     if p.extraTurn > 0 then
@@ -430,6 +441,7 @@ end
 
 ---@return true? success
 function Game:startRound()
+    if self.result then return end
     if not self.roundInfo.lock then
         TASK.new(roundThread, self)
         return true
@@ -442,11 +454,20 @@ end
 -- end
 ---@return true? success
 function Game:step()
+    if self.result then return end
     if self.roundInfo.step then return end
     self.roundInfo.step = true
     -- TASK.removeTask_code(checkStep)
     -- TASK.new(checkStep,self)
     return true
+end
+
+---@param result 'win'
+---@param playerID integer
+function Game:finish(result, playerID)
+    if self.result then return end
+    self.result = result
+    MSG('other', "游戏结束: " .. playerID)
 end
 
 ---@param P ReroChess.Player
@@ -545,6 +566,7 @@ function Game:getNext(id, dir)
 end
 
 function Game:update(dt)
+    if self.result then return end
     self.text:update(dt)
     self.cam:update(dt)
 end

@@ -2,7 +2,7 @@
 local scene = {}
 
 local mode, address
-NetRoom = require 'assets/memberList'.new()
+NetRoom = require 'assets.roomList'.new()
 
 local cache = {}
 

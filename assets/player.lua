@@ -22,6 +22,7 @@ local Prop = require 'assets.prop'
 ---
 ---Variables for moving in round
 ---@field moving boolean
+---@field teleporting boolean
 ---@field stepRemain integer
 ---@field nextLocation integer
 ---@field curDir 'next' | 'prev' | false
@@ -220,8 +221,10 @@ local function moveThread(self, stepCount, manual)
         self.game:sortPlayerLayer()
     end
 
-    self.moving = false
-    self.face = 'normal'
+    if not self.teleporting then
+        self.moving = false
+        self.face = 'normal'
+    end
 end
 
 function Player:move(stepCount, manual)
@@ -240,6 +243,7 @@ end
 local function teleportThread(self, target)
     -- if self.moving then return MSG('error',"错误：尝试传送移动中的棋子") end
     self.moving = true
+    self.teleporting = true
     local animLock = true
 
     self.nextLocation = target
@@ -268,6 +272,8 @@ local function teleportThread(self, target)
 
     -- Wait until animation end
     repeat coroutine.yield() until not animLock
+    self.moving = false
+    self.teleporting = false
     self.face = 'normal'
 end
 
@@ -275,6 +281,7 @@ function Player:teleport(target)
     TASK.new(teleportThread, self, target)
 end
 
+---Called on each step, only cells with .prop[0]==true (instant) will be triggered when moving is not finished
 function Player:triggerCell()
     for _, prop in next, self.game.map[self.location].propList do
         if prop[0] or self.stepRemain == 0 then
@@ -424,6 +431,9 @@ function Player:draw()
             -- Name Tag
             gc_translate(0, -.626 + 10 * Jump.nametag(self.id) * self.size)
             gc_setColor(.3, .3, .3, .5)
+            if self.moving then
+                gc_setColor(1, 0, 0)
+            end
             gc_mRect('fill', 0, 0, (self._name:getWidth() + 10) * .01, (self._name:getHeight() + 2) * .01)
             gc_setColor(self.color)
             gc_mDraw(self._name, 0, 0, nil, .01)
