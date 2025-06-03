@@ -194,7 +194,7 @@ Prop.swap = {
     end,
     ---@param P1 ReroChess.Player
     ---@param P2 ReroChess.Player
-    code = function(P1, P2)
+    code = function(_, P1, P2)
         P1.x, P2.x = P2.x, P1.x
         P1.y, P2.y = P2.y, P1.y
         P1.location, P2.location = P2.location, P1.location
