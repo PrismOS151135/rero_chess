@@ -40,6 +40,6 @@ return {
         {0,-1,prop='swap,@self,@spec_ex'},{0,-1},{0,-1,prop='move,-1'},{0,-1,prop='move,-18'},{0,-1,prop='exit,@spec_trap_ex,jail?,监狱出口 text,救人出狱'},{0,-1,prop='teleport,医院,@spec_free_ex teleport,监狱 text,选人住院\n自己坐牢'},{0,-1,prop='move,-1,@nearest'},{0,-1,prop='move,2'},{0,-1},
         {1,-h,prop='move,-12'},{1,0,prop='text,前方\n苦痛之路'},{1,0,prop='move,-1'},{1,0,prop='move,-1'},{1,0,prop='move,-1'},
         {0,1,prop='diceMod,-,1'},{0,1},{0,1,prop='move,-3'},{0,1,prop='move,-1'},{0,1,prop='move,-1'},{0,1},{0,1,prop='move,-2'},{0,1,prop='move,-1'},{0,1,prop='move,-1'},{0,1},
-        {-1,0,prop='move,-2'},{-1,0,prop='teleport,起点 text,回到起点'},{-1,0,prop='label,终点 text,终点'},
+        {-1,0,prop='move,-2'},{-1,0,prop='teleport,起点 text,回到起点'},{-1,0,prop='label,终点 text,终点 win'},
     },
 }
