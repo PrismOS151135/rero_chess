@@ -12,7 +12,7 @@ local scene = {}
 function scene.load()
     mode, host = SCN.args[1], SCN.args[2]
     if mode == 'demo' then
-        MSG('info', "（临时地图）左键走路右键掷骰 键盘回车空格 触屏随便点", 5)
+        MSG('info', "略nd地图一号\n鼠标左键走路右键掷骰", 5)
         game = require 'assets.game'.new(FILE.load('assets/map/lue_first.luaon', '-luaon',
             { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
     elseif mode == 'netgame' then

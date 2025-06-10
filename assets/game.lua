@@ -158,6 +158,8 @@ function Game.new(data)
         RNG = love.math.newRandomGenerator(data.seed or os.time()),
     }, Game)
 
+    game.cam.moveSpeed = 6
+
     -- for i=1,#game.deco do
     --     -- TODO
     -- end
@@ -423,7 +425,7 @@ local function roundThread(self)
     local rd = self.roundInfo
     if p.extraTurn > 0 then
         p.extraTurn = p.extraTurn - 1
-        MSG('other', "玩家" .. rd.player .. "的额外回合")
+        LOG("玩家" .. rd.player .. "的额外回合")
     else
         while true do
             rd.player = rd.player % #pList + 1
@@ -431,7 +433,7 @@ local function roundThread(self)
             if p.extraTurn >= 0 then break end
             p.extraTurn = p.extraTurn + 1
         end
-        MSG('other', "玩家" .. rd.player .. "的回合")
+        LOG("玩家" .. rd.player .. "的回合")
     end
 
     repeat TASK.yieldT(.1) until p.dice.animState == 'hide'
@@ -439,10 +441,16 @@ local function roundThread(self)
     self.roundInfo.lock = false
 end
 
+function Game:focusPlayer(id)
+    self.cam.x0 = -self.players[id].x * self.cam.k
+    self.cam.y0 = -self.players[id].y * self.cam.k
+end
+
 ---@return true? success
 function Game:startRound()
     if self.result then return end
     if not self.roundInfo.lock then
+        self:focusPlayer(self.roundInfo.player)
         TASK.new(roundThread, self)
         return true
     end
