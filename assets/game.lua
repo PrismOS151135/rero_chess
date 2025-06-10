@@ -467,7 +467,7 @@ end
 function Game:finish(result, playerID)
     if self.result then return end
     self.result = result
-    MSG('other', "游戏结束: " .. playerID)
+    SCN.go('play_end', 'none', self.players[playerID])
 end
 
 ---@param P ReroChess.Player
@@ -483,13 +483,17 @@ function Game:parsePlayer(P, str)
         elseif str == '@spec_ex' then
             for i = 1, #pList do pList[i].canBeSelected = pList[i] ~= P end
         elseif str == '@spec_free' then
-            -- TODO
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == false end
         elseif str == '@spec_free_ex' then
-            -- TODO
-        elseif str == '@spec_trap' then
-            -- TODO
-        elseif str == '@spec_trap_ex' then
-            -- TODO
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == false and pList[i] ~= P end
+        elseif str == '@spec_trap_jail' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'jail' end
+        elseif str == '@spec_trap_jail_ex' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'jail' and pList[i] ~= P end
+        elseif str == '@spec_trap_hosp' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'hosp' end
+        elseif str == '@spec_trap_hosp_ex' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'hosp' and pList[i] ~= P end
         end
         local cnt = 0
         TABLE.foreach(pList, function(p) if p.canBeSelected then cnt = cnt + 1 end end)
@@ -582,7 +586,7 @@ function Game:draw()
     if self.selectedPlayer == false then
         gc_replaceTransform(SCR.xOy_u)
         FONT.set(60)
-        GC.strokePrint('full', 4, COLOR.dL, COLOR.D, Texts.play_choosePlayer, 0, 40, 'center')
+        GC.strokePrint('full', 4, COLOR.dL, COLOR.D, Texts.play_choosePlayer, 0, 40, nil, 'center')
     end
 
     gc_replaceTransform(SCR.xOy_m)

@@ -21,6 +21,8 @@ local L = {
     room_start = "开始游戏",
     room_notEnoughPlayers = "至少再找一个人？",
 
+    leave_sure = "返回主菜单",
+
     crash_sure = "真的不关注一下嘛…？\n如果已经关注了的话也点一下这个关注按钮让我知道喔",
     crash_thanks = "感谢！",
 

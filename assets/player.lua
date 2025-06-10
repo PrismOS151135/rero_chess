@@ -1,3 +1,9 @@
+local diceGrowTime = 0.26
+local diceFlyTime = 0.62
+local diceRollTime = 2.6
+local diceBounceTime = .62
+local diceHideTime = 1
+local stepTime = 0.26
 local Prop = require 'assets.prop'
 
 ---@class ReroChess.Player
@@ -106,6 +112,19 @@ function Player.new(id, data, game)
     return player
 end
 
+---@return false | string
+function Player:onTrap()
+    local props = self.game.map[self.location].propList
+    if props then
+        for i = 1, #props do
+            if props[i][1] == 'trap' then
+                return props[i][2]
+            end
+        end
+    end
+    return false
+end
+
 local diceDisappearingCurve = { 1, 1, .7, .4, 0 }
 function Player:roll()
     local d = self.dice
@@ -113,7 +132,7 @@ function Player:roll()
         d.animState = 'roll'
 
         -- Size
-        TWEEN.new(function(t) d.size = .4 + .6 * t end):setDuration(0.26):run()
+        TWEEN.new(function(t) d.size = .4 + .6 * t end):setDuration(diceGrowTime):run()
 
         -- Position
         local sx, sy = self.x, self.y
@@ -123,7 +142,7 @@ function Player:roll()
         TWEEN.new(function(t)
             d.x = MATH.lerp(sx, ex, t)
             d.y = MATH.lerp(sy, ey, t) + t * (t - 1) * 2.6
-        end):setEase('Linear'):setDuration(0.62):run()
+        end):setEase('Linear'):setDuration(diceFlyTime):run()
 
         -- Value
         d.alpha = 1
@@ -138,7 +157,7 @@ function Player:roll()
                 d.valueIndex = r
                 d.value = d.points[r]
             end
-        end):setEase('OutCirc'):setDuration(2.6):setOnFinish(function()
+        end):setEase('OutCirc'):setDuration(diceRollTime):setOnFinish(function()
             if #self.diceMod > 0 then
                 local mod = table.remove(self.diceMod, 1)
                 if mod[1] == '+' then
@@ -163,11 +182,11 @@ function Player:roll()
             d.animState = 'bounce'
             TWEEN.new(function(t)
                 d.size = 1 + math.sin(t * 26) / (1 + 62 * t)
-            end):setEase('Linear'):setOnFinish(function()
+            end):setEase('Linear'):setDuration(diceBounceTime):setOnFinish(function()
                 d.animState = 'fade'
                 TWEEN.new(function(t)
                     d.alpha = MATH.lLerp(diceDisappearingCurve, t)
-                end):setDuration(1):setOnFinish(function()
+                end):setDuration(diceHideTime):setOnFinish(function()
                     d.animState = 'hide'
                 end):run()
             end):run()
@@ -207,7 +226,7 @@ local function moveThread(self, stepCount, manual)
                 self.location = self.nextLocation
                 self.nextLocation, self.curDir = self.game:getNext(self.location, self.curDir)
             end
-        end):setEase('Linear'):setDuration(0.26):setOnFinish(function()
+        end):setEase('Linear'):setDuration(stepTime):setOnFinish(function()
             animLock = false
         end):run()
 
@@ -431,9 +450,7 @@ function Player:draw()
             -- Name Tag
             gc_translate(0, -.626 + 10 * Jump.nametag(self.id) * self.size)
             gc_setColor(.3, .3, .3, .5)
-            if self.moving then
-                gc_setColor(1, 0, 0)
-            end
+            -- if self.moving then gc_setColor(1, 0, 0) end
             gc_mRect('fill', 0, 0, (self._name:getWidth() + 10) * .01, (self._name:getHeight() + 2) * .01)
             gc_setColor(self.color)
             gc_mDraw(self._name, 0, 0, nil, .01)
