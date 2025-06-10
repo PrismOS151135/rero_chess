@@ -13,6 +13,8 @@ function scene.load(_)
         local dns = require 'socket'.dns
         address = dns.toip(dns.gethostname())
         NetRoom:add({ id = '0', self = true, skin = DATA.skinEquip })
+    elseif mode == 'client' then
+        TCP.C_send({ e = 'skin', skin = DATA.skinEquip })
     end
     scene.widgetList.start:setVisible(mode == 'host')
     for i = 1, 6 do cache[i] = TABLE.getRandom(QUAD.world.tile) end
@@ -49,6 +51,7 @@ function scene.update(dt)
             local d = TCP.S_receive()
             if d then
                 print("S_recv", TABLE.dump(d))
+                local pack = d.data
                 if d.event == 'client.connect' then
                     NetRoom:add({ id = d.sender })
                     TCP.S_send({ e = "join", id = d.sender })
@@ -56,6 +59,9 @@ function scene.update(dt)
                 elseif d.event == 'client.disconnect' then
                     NetRoom:remove(d.sender)
                     TCP.S_send({ e = "quit", id = d.sender })
+                elseif pack.e == 'skin' then
+                    NetRoom[d.sender].skin = pack.skin
+                    TCP.S_send({ e = "skin", id = d.sender, skin = pack.skin })
                 end
             end
         elseif mode == 'client' then
@@ -71,6 +77,8 @@ function scene.update(dt)
                     NetRoom:import(pack.d)
                 elseif pack.e == 'start' then
                     SCN.swapTo('play', nil, 'netgame', mode == 'host')
+                elseif pack.e == 'skin' then
+                    NetRoom[pack.id].skin = pack.skin
                 end
             end
         end

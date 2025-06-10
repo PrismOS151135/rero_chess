@@ -19,7 +19,10 @@ end
 function MemberList:export()
     local d = {}
     for i = 1, #self do
-        d[i] = self[i].id
+        d[i] = {
+            id = self[i].id,
+            skin = self[i].skin
+        }
     end
     return d
 end
@@ -27,11 +30,13 @@ end
 function MemberList:import(data)
     self:reset()
     for i = 1, #data do
-        local id = data[i]
-        local p = { id = id }
+        local p = {
+            id = data[i].id,
+            skin = data[i].skin,
+        }
         self[i] = p
         self[p.id] = p
-        self.selfID = id
+        self.selfID = p.id
         self.self = p
     end
 end

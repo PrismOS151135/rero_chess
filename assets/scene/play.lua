@@ -24,11 +24,7 @@ end
 
 function scene.unload()
     if mode == 'netgame' then
-        if host then
-            TCP.S_send({ e = 'end' })
-        else
-            TCP.C_send({ e = 'end' })
-        end
+        send({ e = 'end' })
     end
 end
 
