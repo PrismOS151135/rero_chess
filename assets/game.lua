@@ -521,22 +521,42 @@ function Game:parsePlayer(P, str)
         local r = self:random(#pList - 1)
         if r >= P.id then r = r + 1 end
         return pList[r]
-    elseif str == '@nearest' then
-        -- TODO
-    elseif str == '@farthest' then
-        -- TODO
-    elseif str == '@front' then
-        -- TODO
-    elseif str == '@behind' then
-        -- TODO
+    elseif str == '@first' or str == '@last' then
+        ---@type ReroChess.Player | false
+        local p = false
+        for i = 1, #pList do
+            if not pList[i]:onTrap() then
+                if not p or (str == '@first') == (pList[i].location < p.location) then p = pList[i] end
+            end
+        end
+        return p
     elseif str == '@next' then
-        return pList[P.id % #pList + 1]
+        return pList[P.id < #pList and P.id + 1 or 1]
     elseif str == '@prev' then
-        return pList[P.id == 1 and #pList or P.id - 1]
-    elseif str == '@first' then
-        -- TODO
-    elseif str == '@last' then
-        -- TODO
+        return pList[P.id > 1 and P.id - 1 or #pList]
+    elseif str == '@front' or str == '@behind' then
+        local pList2 = TABLE.copy(pList, 0)
+        for i = #pList2, 1, -1 do
+            if pList2[i]:onTrap() then
+                table.remove(pList2, i)
+            end
+        end
+        table.sort(pList2, function(a, b)
+            return
+                a.location < b.location or
+                (a.location == b.location and a.id < b.id)
+        end)
+        local selfOrder = TABLE.find(pList2, P)
+        if not selfOrder then return false end
+        if str == '@front' then
+            return selfOrder < #pList2 and pList2[selfOrder + 1]
+        else
+            return selfOrder > 1 and pList2[selfOrder - 1]
+        end
+    elseif str == '@nearest' then
+        return pList[P.id % #pList + 1] -- TODO
+    elseif str == '@farthest' then
+        return pList[P.id % #pList + 1] -- TODO
     else
         error('Invalid player reference: ' .. str)
     end
