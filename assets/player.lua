@@ -4,6 +4,7 @@ local diceRollTime = 2.6
 local diceBounceTime = .62
 local diceHideTime = 1
 local stepTime = 0.26
+local stepHeight = 1.5
 local Prop = require 'assets.prop'
 
 ---@class ReroChess.Player
@@ -221,7 +222,7 @@ local function moveThread(self, stepCount, manual)
         -- Move chess
         TWEEN.new(function(t)
             self.x = MATH.lerp(sx, ex, t)
-            self.y = MATH.lerp(sy, ey, t) + t * (t - 1) * 1.5
+            self.y = MATH.lerp(sy, ey, t) + t * (t - 1) * stepHeight
             if t == 1 then
                 self.location = self.nextLocation
                 self.nextLocation, self.curDir = self.game:getNext(self.location, self.curDir)
@@ -343,7 +344,7 @@ local gc_push, gc_pop = gc.push, gc.pop
 local gc_translate, gc_scale, gc_rotate = gc.translate, gc.scale, gc.rotate
 local gc_setShader = gc.setShader
 local gc_setColor, gc_setLineWidth = gc.setColor, gc.setLineWidth
-local gc_line, gc_rectangle, gc_circle, gc_ellipse = gc.line, gc.rectangle, gc.circle, gc.ellipse
+local gc_rectangle, gc_circle, gc_ellipse = gc.rectangle, gc.circle, gc.ellipse
 local gc_draw = gc.draw
 local gc_setAlpha = GC.setAlpha
 local gc_mRect, gc_mDraw, gc_mDrawQ = GC.mRect, GC.mDraw, GC.mDrawQ
