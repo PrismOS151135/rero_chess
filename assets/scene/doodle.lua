@@ -85,11 +85,11 @@ function scene.draw()
     if not repCursor then
         gc_setColor(COLOR.D)
         FONT.set(30)
-        gc_print("涂鸦 ——查看涂鸦说明或装备", 110, 5)
+        gc_print(Texts.doodle_help, 110 + 10 * Jump.smooth(), 5)
     else
         gc_setColor(love.timer.getTime() % .62 < .26 and COLOR.O or COLOR.M)
         FONT.set(30)
-        GC.mStr("选择用来替换的涂鸦", 110 + 390 / 2, 5)
+        GC.mStr(Texts.doodle_help2, 110 + 390 / 2, 5)
     end
 
     gc_setColor(1, 1, 1)
@@ -116,7 +116,7 @@ function scene.draw()
     GC.ucs_back()
 
     -- Name & Desc
-    GC.ucs_move('m', 560, 360)
+    GC.ucs_move('m', 560, 360 + 5 * Jump.nametag())
     gc_rectangle('fill', 10, 10, 360, 160)
     GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
     if doodleSel then

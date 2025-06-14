@@ -1,12 +1,22 @@
 ---@class ReroChess.CellEvent
 local Prop = {}
 
+-- System
 Prop.label = {
     tag = true,
     parse = function(prop)
         assert(
             type(prop[2]) == 'string',
             'label[1] must be string'
+        )
+    end,
+}
+Prop.trap = {
+    tag = true,
+    parse = function(name)
+        assert(
+            type(name[2]) == 'string',
+            'trap[1] must be string'
         )
     end,
 }
@@ -27,8 +37,7 @@ Prop.center = {
     tag = true,
 }
 
-
-
+-- Display
 Prop.text = {
     tag = true,
     parse = function(prop)
@@ -39,8 +48,7 @@ Prop.text = {
     end,
 }
 
-
-
+-- Actions
 Prop.step = {
     parse = function(prop)
         prop[2] = tonumber(prop[2])
@@ -71,7 +79,7 @@ Prop.move = {
         if prop[3] == nil then prop[3] = '@self' end
         assert(
             PlayerRef[prop[3]],
-            'move[3] must be @str'
+            'move[2] must be @str'
         )
     end,
     ---@param P ReroChess.Player
@@ -100,12 +108,12 @@ Prop.teleport = {
         )
     end,
     ---@param P ReroChess.Player
-    code = function(P, target)
-        P:popText {
+    code = function(P, target, player)
+        player:popText {
             text = "传送!",
             duration = 2,
         }
-        P:teleport(target)
+        player:teleport(target)
     end,
 }
 
@@ -155,7 +163,7 @@ Prop.diceMod = {
     ---@param P ReroChess.Player
     code = function(P, op, num)
         P:popText {
-            text = ("下次点数%s%d"):format(op, num),
+            text = ("下次点数%s%1g"):format(op, num),
             duration = 2,
         }
         table.insert(P.diceMod, { op, num })
@@ -195,7 +203,7 @@ Prop.swap = {
     end,
     ---@param P1 ReroChess.Player
     ---@param P2 ReroChess.Player
-    code = function(P1, P2)
+    code = function(_, P1, P2)
         P1.x, P2.x = P2.x, P1.x
         P1.y, P2.y = P2.y, P1.y
         P1.location, P2.location = P2.location, P1.location
@@ -214,10 +222,6 @@ Prop.exit = {
             type(prop[3]) == 'string',
             'exit[2] must be string'
         )
-        assert(
-            type(prop[4]) == 'string',
-            'exit[3] must be string'
-        )
     end,
     ---@param P ReroChess.Player
     ---@param player ReroChess.Player
@@ -229,5 +233,7 @@ Prop.exit = {
         P:teleport(target)
     end,
 }
+
+Prop.win = {}
 
 return Prop

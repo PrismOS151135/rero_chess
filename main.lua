@@ -404,6 +404,10 @@ FONT.load {
 FONT.setDefaultFont('norm')
 FONT.setDefaultFallback('symbol')
 
+BGM.load {
+    main = 'assets/music/main.ogg'
+}
+
 SCN.addSwapStyle('swipe', {
     duration = .5,
     draw = function(t)
@@ -428,8 +432,10 @@ PlayerRef = {
     ['@spec_ex'] = "指定其他玩家", -- Specify (exclude self)
     ['@spec_free'] = "指定自由玩家", -- Specify (free)
     ['@spec_free_ex'] = "指定其他自由玩家", -- Specify (free, exclude self)
-    ['@spec_trap'] = "指定受困玩家", -- Specify (trapped)
-    ['@spec_trap_ex'] = "指定其他受困玩家", -- Specify (trapped, exclude self)
+    ['@spec_trap_jail'] = "指定坐牢玩家", -- Specify (trapped in jail)
+    ['@spec_trap_jail_ex'] = "指定其他坐牢玩家", -- Specify (trapped in jail, exclude self)
+    ['@spec_trap_hosp'] = "指定住院玩家", -- Specify (trapped in hospital)
+    ['@spec_trap_hosp_ex'] = "指定其他住院玩家", -- Specify (trapped in hospital, exclude self)
     ['@random'] = "随机玩家", -- Random
     ['@random_ex'] = "随机其他玩家", -- Random (exclude self)
     ['@nearest'] = "最近玩家", -- Nearest
@@ -450,7 +456,13 @@ CURSOR = require 'assets.cursor'
 DATA = require 'assets.data'
 DATA.load()
 
-local timer = love.timer.getTime
+local function jumpTimer()
+    if BGM.isPlaying() then
+        return BGM.tell()
+    else
+        return love.timer.getTime()
+    end
+end
 local abs, floor, sin, sign = math.abs, math.floor, math.sin, MATH.sign
 local bgAnimScale, timeScale, cycleLen
 Jump = {
@@ -460,36 +472,36 @@ Jump = {
         cycleLen = 60 / bpm
     end,
     bgFrame = function() -- 1~6 1~6 int
-        return floor(timer() * bgAnimScale % 6 + 1)
+        return floor(jumpTimer() * bgAnimScale % 6 + 1)
     end,
     smooth = function() -- 0~1~0 float
-        return abs(sin(timer() * timeScale))
+        return abs(sin(jumpTimer() * timeScale))
     end,
     discrete = function(k) -- 0~1 0~1 float
-        return (timer() * (k or 1)) % cycleLen / cycleLen
+        return (jumpTimer() * (k or 1)) % cycleLen / cycleLen
     end,
     sudden = function(k) -- 0 1 0 1
-        return timer() * (k or 1) / cycleLen % 1 > .5 and 1 or 0
+        return jumpTimer() * (k or 1) / cycleLen % 1 > .5 and 1 or 0
     end,
     bool = function(k) -- F T F T
-        return timer() * (k or 1) / cycleLen % 1 > .5
+        return jumpTimer() * (k or 1) / cycleLen % 1 > .5
     end,
     sin = function(k)
-        return sin(timer() * timeScale * (k or 1))
+        return sin(jumpTimer() * timeScale * (k or 1))
     end,
     swing = function()
-        local s = sin(timer() * timeScale)
+        local s = sin(jumpTimer() * timeScale)
         return sign(s) * s ^ 2
     end,
     dodge = function(k)
-        local s = sin(timer() * timeScale * (k or 1))
+        local s = sin(jumpTimer() * timeScale * (k or 1))
         return sign(s) * abs(s) ^ .5
     end,
     nametag = function(id)
-        return sin(timer() + (id or 0))
+        return sin(jumpTimer() + (id or 0))
     end,
 }
-Jump.setBPM(120)
+Jump.setBPM(129)
 
 ---@type table<string, love.Shader>
 SHADER = {}
@@ -523,6 +535,38 @@ for _, v in next, love.filesystem.getDirectoryItems('assets/scene') do
         SCN.add(sceneName, FILE.load('assets/scene/' .. v, '-lua'))
     end
 end
+
+---@param mode 'menu' | 'play'
+function SetBgmMode(mode, d)
+    if mode == 'menu' then
+        BGM.set('all', 'highgain', .7, d and 0 or 3.5)
+    elseif mode == 'play' then
+        BGM.set('all', 'highgain', 1, .26)
+    end
+end
+
+-- Music Manager
+TASK.new(function()
+    local yield = coroutine.yield
+    -- 4/4 129 BPM
+    local bar = 60 / 129 * 4
+    local marks = {
+        start = 4 * bar,
+        mid1 = 12 * bar,
+        mid2 = 20 * bar,
+        mid3 = 28 * bar,
+        fin = 36 * bar,
+    }
+    while true do
+        if BGM.isPlaying() then
+            local t = BGM.tell()
+            if t > marks.fin then
+                BGM.set('all', 'seek', t - marks.fin + marks.start)
+            end
+        end
+        yield()
+    end
+end)
 
 -- Fumo Manager
 TASK.new(function()
@@ -561,3 +605,6 @@ TASK.new(function()
         end
     end
 end)
+
+BGM.play('main')
+SetBgmMode('menu', true)

@@ -12,6 +12,7 @@ local Player = require 'assets.player'
 ---@field text Zenitha.Text
 ---@field RNG love.RandomGenerator
 ---
+---@field result string | false
 ---@field roundInfo ReroChess.RoundInfo
 ---@field selectedPlayer false | ReroChess.Player
 local Game = {}
@@ -145,6 +146,8 @@ function Game.new(data)
         drawCoroutine = {},
         cam = GC.newCamera(),
         text = TEXT.new(),
+
+        result = false,
         roundInfo = {
             lock = false,
             step = false,
@@ -154,6 +157,8 @@ function Game.new(data)
 
         RNG = love.math.newRandomGenerator(data.seed or os.time()),
     }, Game)
+
+    game.cam.moveSpeed = 6
 
     -- for i=1,#game.deco do
     --     -- TODO
@@ -408,11 +413,19 @@ local function roundThread(self)
         if allStop then break end
     end
 
+    -- Check winning
+    for _, prop in next, self.map[p.location].propList do
+        if prop[1] == 'win' then
+            self:finish('win', p.id)
+            return
+        end
+    end
+
     -- Next round
     local rd = self.roundInfo
     if p.extraTurn > 0 then
         p.extraTurn = p.extraTurn - 1
-        MSG('other', "玩家" .. rd.player .. "的额外回合")
+        LOG("玩家" .. rd.player .. "的额外回合")
     else
         while true do
             rd.player = rd.player % #pList + 1
@@ -420,7 +433,7 @@ local function roundThread(self)
             if p.extraTurn >= 0 then break end
             p.extraTurn = p.extraTurn + 1
         end
-        MSG('other', "玩家" .. rd.player .. "的回合")
+        LOG("玩家" .. rd.player .. "的回合")
     end
 
     repeat TASK.yieldT(.1) until p.dice.animState == 'hide'
@@ -428,9 +441,16 @@ local function roundThread(self)
     self.roundInfo.lock = false
 end
 
+function Game:focusPlayer(id)
+    self.cam.x0 = -self.players[id].x * self.cam.k
+    self.cam.y0 = -self.players[id].y * self.cam.k
+end
+
 ---@return true? success
 function Game:startRound()
+    if self.result then return end
     if not self.roundInfo.lock then
+        self:focusPlayer(self.roundInfo.player)
         TASK.new(roundThread, self)
         return true
     end
@@ -442,11 +462,20 @@ end
 -- end
 ---@return true? success
 function Game:step()
+    if self.result then return end
     if self.roundInfo.step then return end
     self.roundInfo.step = true
     -- TASK.removeTask_code(checkStep)
     -- TASK.new(checkStep,self)
     return true
+end
+
+---@param result 'win'
+---@param playerID integer
+function Game:finish(result, playerID)
+    if self.result then return end
+    self.result = result
+    SCN.go('play_end', 'none', self.players[playerID])
 end
 
 ---@param P ReroChess.Player
@@ -462,13 +491,17 @@ function Game:parsePlayer(P, str)
         elseif str == '@spec_ex' then
             for i = 1, #pList do pList[i].canBeSelected = pList[i] ~= P end
         elseif str == '@spec_free' then
-            -- TODO
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == false end
         elseif str == '@spec_free_ex' then
-            -- TODO
-        elseif str == '@spec_trap' then
-            -- TODO
-        elseif str == '@spec_trap_ex' then
-            -- TODO
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == false and pList[i] ~= P end
+        elseif str == '@spec_trap_jail' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'jail' end
+        elseif str == '@spec_trap_jail_ex' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'jail' and pList[i] ~= P end
+        elseif str == '@spec_trap_hosp' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'hosp' end
+        elseif str == '@spec_trap_hosp_ex' then
+            for i = 1, #pList do pList[i].canBeSelected = pList[i]:onTrap() == 'hosp' and pList[i] ~= P end
         end
         local cnt = 0
         TABLE.foreach(pList, function(p) if p.canBeSelected then cnt = cnt + 1 end end)
@@ -488,22 +521,42 @@ function Game:parsePlayer(P, str)
         local r = self:random(#pList - 1)
         if r >= P.id then r = r + 1 end
         return pList[r]
-    elseif str == '@nearest' then
-        -- TODO
-    elseif str == '@farthest' then
-        -- TODO
-    elseif str == '@front' then
-        -- TODO
-    elseif str == '@behind' then
-        -- TODO
+    elseif str == '@first' or str == '@last' then
+        ---@type ReroChess.Player | false
+        local p = false
+        for i = 1, #pList do
+            if not pList[i]:onTrap() then
+                if not p or (str == '@first') == (pList[i].location < p.location) then p = pList[i] end
+            end
+        end
+        return p
     elseif str == '@next' then
-        return pList[P.id % #pList + 1]
+        return pList[P.id < #pList and P.id + 1 or 1]
     elseif str == '@prev' then
-        return pList[P.id == 1 and #pList or P.id - 1]
-    elseif str == '@first' then
-        -- TODO
-    elseif str == '@last' then
-        -- TODO
+        return pList[P.id > 1 and P.id - 1 or #pList]
+    elseif str == '@front' or str == '@behind' then
+        local pList2 = TABLE.copy(pList, 0)
+        for i = #pList2, 1, -1 do
+            if pList2[i]:onTrap() then
+                table.remove(pList2, i)
+            end
+        end
+        table.sort(pList2, function(a, b)
+            return
+                a.location < b.location or
+                (a.location == b.location and a.id < b.id)
+        end)
+        local selfOrder = TABLE.find(pList2, P)
+        if not selfOrder then return false end
+        if str == '@front' then
+            return selfOrder < #pList2 and pList2[selfOrder + 1]
+        else
+            return selfOrder > 1 and pList2[selfOrder - 1]
+        end
+    elseif str == '@nearest' then
+        return pList[P.id % #pList + 1] -- TODO
+    elseif str == '@farthest' then
+        return pList[P.id % #pList + 1] -- TODO
     else
         error('Invalid player reference: ' .. str)
     end
@@ -545,6 +598,7 @@ function Game:getNext(id, dir)
 end
 
 function Game:update(dt)
+    if self.result then return end
     self.text:update(dt)
     self.cam:update(dt)
 end
@@ -560,7 +614,7 @@ function Game:draw()
     if self.selectedPlayer == false then
         gc_replaceTransform(SCR.xOy_u)
         FONT.set(60)
-        GC.strokePrint('full', 4, COLOR.dL, COLOR.D, Texts.play_choosePlayer, 0, 40, 'center')
+        GC.strokePrint('full', 4, COLOR.dL, COLOR.D, Texts.play_choosePlayer, 0, 40, nil, 'center')
     end
 
     gc_replaceTransform(SCR.xOy_m)

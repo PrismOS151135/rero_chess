@@ -77,6 +77,10 @@ function scene.unload()
     end
 end
 
+function scene.update()
+    CURSOR.set(WIDGET.sel == scene.widgetList.face and 'hand' or 'pointer')
+end
+
 local gc = love.graphics
 local gc_push, gc_pop = gc.push, gc.pop
 local gc_translate, gc_scale = gc.translate, gc.scale
@@ -89,7 +93,7 @@ local gc_print, gc_printf = gc.print, gc.printf
 function scene.draw()
     gc_setColor(COLOR.D)
     FONT.set(30)
-    gc_print("棋子皮肤 ——查看棋子说明或使用，戳戳预览表情", 110, 5)
+    gc_print(Texts.skin_help, 110 + 10 * Jump.smooth(), 5)
 
     gc_setColor(1, 1, 1)
 
@@ -109,7 +113,7 @@ function scene.draw()
     GC.ucs_back()
 
     -- Name & Desc
-    GC.ucs_move('m', 560, 360)
+    GC.ucs_move('m', 560, 360 + 5 * Jump.nametag())
     gc_setColor(1, 1, 1)
     gc_rectangle('fill', 10, 10, 360, 160)
     GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
@@ -181,6 +185,7 @@ table.insert(scene.widgetList, WIDGET.new {
 
 local faceSlide = { 'normal', 'forward', 'backward', 'selected', 'jail' }
 table.insert(scene.widgetList, WIDGET.new {
+    name='face',
     type = 'button_invis',
     x = 750, y = 200, w = 200, h = 260,
     onPress = function()
