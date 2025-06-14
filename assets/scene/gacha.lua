@@ -29,7 +29,7 @@ local function walk(n)
     TWEEN.new(function(t)
         bias = 1 - t
         refreshTileMesh()
-    end):setLoop('repeat', n):setEase('Linear'):setDuration(.42):setOnRepeat(function()
+    end):setLoop('repeat', n):setEase('Linear'):setDuration(60 / 129):setOnRepeat(function()
         table.remove(tileTextureID, 1)
         table.insert(tileTextureID, math.random(0, 4))
     end):setOnFinish(function()
@@ -47,13 +47,13 @@ end
 
 function scene.keyDown(key, isRep)
     if key == 'space' then
-        if TASK.lock('gacha_dice') then
-            -- if DATA.dust < 10 then
-            --     MSG('info', Texts.gacha_notEnoughDust, 1)
-            --     return
-            -- end
-            -- DATA.dust = DATA.dust - 10
-            -- DATA.save()
+        if TASK.lock('gacha_dice', 2.6) then
+            if DATA.dust < 10 then
+                MSG('info', Texts.gacha_notEnoughDust, 1)
+                return
+            end
+            DATA.dust = DATA.dust - 10
+            DATA.save()
             walk(math.random(6))
         end
     elseif key == 'escape' then
@@ -101,7 +101,7 @@ function scene.draw()
 
     GC.replaceTransform(SCR.xOy_d)
     FONT.set(50)
-    GC.strokePrint('full', 2, COLOR.dL, COLOR.D, Texts.gacha_help, 0, -60, nil, 'center')
+    GC.strokePrint('full', 2, COLOR.dL, COLOR.D, Texts.gacha_help, 0, -60 - 10 * Jump.smooth(), nil, 'center')
     GC.setColor(1, 1, 1)
 
     GC.translate(0, -120)

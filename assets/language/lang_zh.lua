@@ -26,6 +26,11 @@ local L = {
     crash_sure = "真的不关注一下嘛…？\n如果已经关注了的话也点一下这个关注按钮让我知道喔",
     crash_thanks = "感谢！",
 
+    skin_help = "棋子皮肤 ——查看棋子说明或使用，戳戳预览表情",
+
+    doodle_help = "涂鸦 ——查看涂鸦说明或更改装备",
+    doodle_help2 = "选择用来替换的涂鸦",
+
     gacha_dice = "掷骰",
     gacha_notEnoughDust = "橡皮屑不够哦，需要通过进行游戏获得",
     gacha_help = "使用10橡皮屑掷骰子一次",
