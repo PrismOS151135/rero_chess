@@ -17,10 +17,11 @@ local function selectSubMenu(m)
 end
 
 function scene.load()
+    selectSubMenu(subMenu)
     subButtonClick = 0
     CURSOR.set('pointer')
     BG.set('title')
-    selectSubMenu(subMenu)
+    SetBgmMode('menu')
 end
 
 function scene.unload()

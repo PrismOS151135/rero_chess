@@ -407,7 +407,6 @@ FONT.setDefaultFallback('symbol')
 BGM.load {
     main = 'assets/music/main.ogg'
 }
-BGM.play('main')
 
 SCN.addSwapStyle('swipe', {
     duration = .5,
@@ -537,6 +536,38 @@ for _, v in next, love.filesystem.getDirectoryItems('assets/scene') do
     end
 end
 
+---@param mode 'menu' | 'play'
+function SetBgmMode(mode, d)
+    if mode == 'menu' then
+        BGM.set('all', 'highgain', .7, d and 0 or 3.5)
+    elseif mode == 'play' then
+        BGM.set('all', 'highgain', 1, .26)
+    end
+end
+
+-- Music Manager
+TASK.new(function()
+    local yield = coroutine.yield
+    -- 4/4 129 BPM
+    local bar = 60 / 129 * 4
+    local marks = {
+        start = 4 * bar,
+        mid1 = 12 * bar,
+        mid2 = 20 * bar,
+        mid3 = 28 * bar,
+        fin = 36 * bar,
+    }
+    while true do
+        if BGM.isPlaying() then
+            local t = BGM.tell()
+            if t > marks.fin then
+                BGM.set('all', 'seek', t - marks.fin + marks.start)
+            end
+        end
+        yield()
+    end
+end)
+
 -- Fumo Manager
 TASK.new(function()
     local yield = TASK.yieldT
@@ -574,3 +605,6 @@ TASK.new(function()
         end
     end
 end)
+
+BGM.play('main')
+SetBgmMode('menu', true)

@@ -20,6 +20,7 @@ function scene.load()
             { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
     end
     BG.set('play')
+    SetBgmMode('play')
 end
 
 function scene.unload()
