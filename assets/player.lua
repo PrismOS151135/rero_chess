@@ -82,7 +82,7 @@ function Player.new(id, data, game)
         size = (data.size or 0.7) / 256,
         faceDir = 1,
         face = 'normal',
-        location = data.startLocation or 'start',
+        location = data.startLocation or 1,
         moveDir = data.startMoveDir or 'next',
         dice = {
             points = { 1, 2, 3, 4, 5, 6, 7 },
