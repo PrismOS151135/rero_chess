@@ -414,10 +414,13 @@ local function roundThread(self)
     end
 
     -- Check winning
-    for _, prop in next, self.map[p.location].propList do
-        if prop[1] == 'win' then
-            self:finish('win', p.id)
-            return
+    for i = 1, #self.players do
+        local _p = self.players[i]
+        for _, prop in next, self.map[_p.location].propList do
+            if prop[1] == 'win' then
+                self:finish('win', _p.id)
+                return
+            end
         end
     end
 
