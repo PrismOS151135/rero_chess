@@ -1,25 +1,12 @@
 ---@type Zenitha.Scene
 local scene = {}
 
-function scene.load()
-end
-
-function scene.mouseDown(x, y, k)
-end
-
-function scene.keyDown(key, isRep)
-end
-
-function scene.update(dt)
+function scene.unload()
+    DATA.save()
 end
 
 local gc = love.graphics
-local gc_push, gc_pop = gc.push, gc.pop
-local gc_translate, gc_scale = gc.translate, gc.scale
-local gc_rotate, gc_shear = gc.rotate, gc.shear
 local gc_setColor, gc_setLineWidth, gc_setLineJoin = gc.setColor, gc.setLineWidth, gc.setLineJoin
-local gc_draw, gc_line = gc.draw, gc.line
-local gc_rectangle, gc_circle, gc_polygon = gc.rectangle, gc.circle, gc.polygon
 local gc_print, gc_printf = gc.print, gc.printf
 
 function scene.draw()
