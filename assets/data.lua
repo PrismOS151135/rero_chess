@@ -7,6 +7,8 @@ local DATA = {
     doodle = { '微笑', '盯', '小草', '小花', '流泪', '爱心', '开心' },
     doodleEquip = { '微笑', '开心', '小草', '小花', '流泪' },
     dust = 0,
+    bgm_vol = 100,
+    sfx_vol = 100,
 }
 
 local _DATA = {}

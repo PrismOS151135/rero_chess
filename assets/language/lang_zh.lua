@@ -35,6 +35,10 @@ local L = {
     gacha_notEnoughDust = "橡皮屑不够哦，需要通过进行游戏获得",
     gacha_help = "使用10橡皮屑掷骰子一次",
 
+    setting_help = "设置 ——更改游戏选项",
+    setting_bgm = "音乐",
+    setting_sfx = "音效",
+
     quit_title_quit = "退出?",
     quit_title_back = "离开?",
     quit_back = "按错了 返回",

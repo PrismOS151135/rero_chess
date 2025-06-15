@@ -116,7 +116,11 @@ WIDGET.setDefaultOption {
         fillColor = 'lD',
     },
     switch = {},
-    slider_fill = {},
+    slider_fill = {
+        fillColor = 'D',
+        lineWidth = 2,
+        h = 30,
+    },
     checkBox = {},
     selector = {},
     listBox = {},
@@ -476,6 +480,8 @@ CHAR = require 'assets.char'
 CURSOR = require 'assets.cursor'
 DATA = require 'assets.data'
 DATA.load()
+BGM.setVol(DATA.bgm_vol / 100)
+SFX.setVol(DATA.sfx_vol / 100)
 
 local function jumpTimer()
     if BGM.isPlaying() then
