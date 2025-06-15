@@ -204,7 +204,10 @@ local function moveThread(self, stepCount, manual)
     self.moving = true
     self.game.roundInfo.step = false
     self.nextLocation, self.curDir = self.game:getNext(self.location,
-        stepCount > 0 and self.moveDir or self.moveDir == 'next' and 'prev' or 'next')
+        stepCount > 0 and self.moveDir or
+        self.moveDir == 'next' and 'prev' or
+        'next'
+    )
 
     while math.abs(self.stepRemain) >= 1 do
         local sx, sy = self.x, self.y
