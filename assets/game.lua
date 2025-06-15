@@ -611,12 +611,6 @@ local gc_rectangle = gc.rectangle
 local resume = coroutine.resume
 
 function Game:draw()
-    if self.selectedPlayer == false then
-        gc_replaceTransform(SCR.xOy_u)
-        FONT.set(60)
-        GC.strokePrint('full', 4, COLOR.dL, COLOR.D, Texts.play_choosePlayer, 0, 40, nil, 'center')
-    end
-
     gc_replaceTransform(SCR.xOy_m)
     self.cam:apply()
 
@@ -675,6 +669,14 @@ function Game:draw()
     -- gc_setLineWidth(10)
     -- gc_line(self.cam.x0-26,self.cam.y0,self.cam.x0+26,self.cam.y0)
     -- gc_line(self.cam.x0,self.cam.y0-26,self.cam.x0,self.cam.y0+26)
+
+    -- "Select Player" Text
+    gc_replaceTransform(SCR.xOy)
+    if self.selectedPlayer == false then
+        gc_replaceTransform(SCR.xOy_u)
+        FONT.set(60)
+        GC.strokePrint('full', 4, COLOR.dL, COLOR.D, Texts.play_choosePlayer, 0, 40, nil, 'center')
+    end
 end
 
 function Game:destroy()
