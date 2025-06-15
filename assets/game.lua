@@ -183,7 +183,8 @@ function Game.new(data)
     end
     local strokeColor = { .9, .9, .9, .42 }
     local instColor, normalColor = { .26, 0, 0 }, { .05, .05, .05 }
-    local function addQ(mode, cell, prop, item)
+    local function addQ(mode, cell, prop, item, angle)
+        if not angle then angle = 0 end
         if mode == 'text' then
             local w, h = getTextSize(item)
             local k = 0.65 / math.max(w, h)
@@ -193,7 +194,7 @@ function Game.new(data)
                         { strokeColor, item },
                         620, 'center',
                         cell.x + (-310 + dx) * k, cell.y - h / 2 * k + dy * k,
-                        nil, k
+                        angle, k
                     )
                 end
             end
@@ -201,14 +202,14 @@ function Game.new(data)
                 { prop[0] and instColor or normalColor, item },
                 620, 'center',
                 cell.x + (-310) * k, cell.y - h / 2 * k,
-                nil, k
+                angle, k
             )
         elseif mode == 'deco' then
             -- decoSB:add(
             pathSB:add(
                 item,
                 cell.x - .26, cell.y - .26,
-                nil, 0.004, nil,
+                angle, 0.004, nil,
                 -- cell.x,cell.y,
                 -- nil,0.01,nil,
                 getQuadCenter(item)
@@ -276,7 +277,9 @@ function Game.new(data)
         end
 
         -- Process props
-        for _, cell in next, map do
+        -- for id, cell in next, map do
+        for id = 1, #map do
+            local cell = map[id]
             local remCount = 0
             for i = 1, #cell.propList do
                 i = i - remCount
@@ -289,8 +292,20 @@ function Game.new(data)
                     addQ('deco', cell, prop, QUAD.world.moveF)
                 elseif prop[1] == 'move' then
                     addQ('text', cell, prop,
-                        ("%s%s%d格"):format(PlayerRef[prop[3]], prop[2] > 0 and '进' or '退', math.abs(prop[2])))
-                    addQ('deco', cell, prop, prop[2] > 0 and QUAD.world.moveF or QUAD.world.moveB)
+                        ("%s%s%d格"):format(PlayerRef[prop[3]], prop[2] >= 0 and '进' or '退', math.abs(prop[2])))
+                    local sprite = prop[2] > 0 and QUAD.world.moveF or QUAD.world.moveB
+                    local angle = 0
+                    if prop[3] == '@self' then
+                        local nxtCell, prevCell = map[id + 1], map[id - 1]
+                        local nxtAngle = nxtCell and math.atan2(nxtCell.y - cell.y, nxtCell.x - cell.x)
+                        local prevAngle = prevCell and math.atan2(cell.y - prevCell.y, cell.x - prevCell.x)
+                        if prop[2] > 0 then
+                            angle = nxtAngle or prevAngle or 0
+                        elseif prop[2] < 0 then
+                            angle = prevAngle or nxtAngle or 0
+                        end
+                    end
+                    addQ('deco', cell, prop, sprite, angle)
                 elseif prop[1] == 'teleport' then
                     if type(prop[2]) == 'string' then
                         prop[2] = assertf(map[prop[2]], 'Invalid teleport target: %s', prop[2]).id
@@ -347,7 +362,7 @@ function Game.new(data)
                         quad,
                         (c1.x + c2.x) / 2,
                         (c1.y + c2.y) / 2,
-                        MATH.roundUnit(math.atan2(c2.y - c1.y, c2.x - c1.x) + math.pi / 2, math.pi / 2),
+                        MATH.roundUnit(math.atan2(c2.y - c1.y, c2.x - c1.x) + 1.5708, 1.5708),
                         0.0035, nil,
                         getQuadCenter(quad)
                     )
