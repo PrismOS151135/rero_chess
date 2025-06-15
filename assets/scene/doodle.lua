@@ -5,8 +5,8 @@ local sin, cos = math.sin, math.cos
 local scene = {}
 
 local rnd = {
-    rq1 = nil,
-    rq2 = nil,
+    rm1 = nil,
+    rm2 = nil,
 }
 local page ---@type number
 local maxPage ---@type number
@@ -56,8 +56,8 @@ local function refreshPage()
 end
 
 function scene.load()
-    rnd.rq1 = TABLE.getRandom(QUAD.world.tile)
-    rnd.rq2 = TABLE.getRandom(QUAD.world.tile)
+    rnd.rm1 = GC.new9mesh(380, 530, 50, 50, TEX.world.default, TABLE.getRandom(QUAD.world.tile):getViewport())
+    rnd.rm2 = GC.new9mesh(380, 180, 40, 50, TEX.world.default, TABLE.getRandom(QUAD.world.tile):getViewport())
     page = 1
     maxPage = math.ceil(#DATA.doodle / 12)
     selectOne()
@@ -85,7 +85,7 @@ function scene.draw()
     if not repCursor then
         gc_setColor(COLOR.D)
         FONT.set(30)
-        gc_print(Texts.doodle_help, 110 + 10 * Jump.smooth(), 5)
+        gc_print(Texts.doodle_help, 110 + 10 * Jump.smooth(), 10)
     else
         gc_setColor(love.timer.getTime() % .62 < .26 and COLOR.O or COLOR.M)
         FONT.set(30)
@@ -96,7 +96,7 @@ function scene.draw()
 
     -- Big panel
     GC.ucs_move('m', 110, 30)
-    GC.rDrawQ(TEX.world.default, rnd.rq1, 0, 10, 390, 560)
+    GC.draw(rnd.rm1, 0, 20)
     GC.ucs_back()
 
     -- Skin preview
@@ -118,7 +118,7 @@ function scene.draw()
     -- Name & Desc
     GC.ucs_move('m', 560, 360 + 5 * Jump.nametag())
     gc_rectangle('fill', 10, 10, 360, 160)
-    GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
+    GC.draw(rnd.rm2)
     if doodleSel then
         gc_setLineWidth(6)
         gc_line(25 - 2, 50, 355 + 2, 50)
@@ -157,7 +157,7 @@ for y = -1.5, 1.5 do
         table.insert(scene.widgetList, WIDGET.new {
             type = 'button_doodle',
             name = tostring(cid),
-            x = 300 + x * 110, y = 300 + y * 115, w = 100, h = 105,
+            x = 300 + x * 110, y = 300 + y * 120, w = 100, h = 110,
             onClick = function()
                 selectOne(cacheData[cid].name)
             end,

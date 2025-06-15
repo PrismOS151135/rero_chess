@@ -2,8 +2,8 @@
 local scene = {}
 
 local rnd = {
-    rq1 = nil,
-    rq2 = nil,
+    rm1 = nil,
+    rm2 = nil,
 }
 local page ---@type number
 local maxPage ---@type number
@@ -62,8 +62,9 @@ local function refreshPage()
 end
 
 function scene.load()
-    rnd.rq1 = TABLE.getRandom(QUAD.world.tile)
-    rnd.rq2 = TABLE.getRandom(QUAD.world.tile)
+    rnd.rm1 = GC.new9mesh(380, 530, 50, 50, TEX.world.default, TABLE.getRandom(QUAD.world.tile):getViewport())
+    rnd.rm2 = GC.new9mesh(380, 180, 40, 50, TEX.world.default, TABLE.getRandom(QUAD.world.tile):getViewport())
+
     page = 1
     maxPage = math.ceil(#DATA.skin / 12)
     selectOne(DATA.skinEquip)
@@ -93,13 +94,13 @@ local gc_print, gc_printf = gc.print, gc.printf
 function scene.draw()
     gc_setColor(COLOR.D)
     FONT.set(30)
-    gc_print(Texts.skin_help, 110 + 10 * Jump.smooth(), 5)
+    gc_print(Texts.skin_help, 110 + 10 * Jump.smooth(), 10)
 
     gc_setColor(1, 1, 1)
 
     -- Big panel
     GC.ucs_move('m', 110, 30)
-    GC.rDrawQ(TEX.world.default, rnd.rq1, 0, 10, 390, 560)
+    GC.draw(rnd.rm1, 0, 20)
     GC.ucs_back()
 
     -- Skin preview
@@ -116,7 +117,7 @@ function scene.draw()
     GC.ucs_move('m', 560, 360 + 5 * Jump.nametag())
     gc_setColor(1, 1, 1)
     gc_rectangle('fill', 10, 10, 360, 160)
-    GC.rDrawQ(TEX.world.default, rnd.rq2, 0, 0, 380, 180)
+    GC.draw(rnd.rm2)
     GC.strokeDraw('full', 2, selected.nameText, 25, 15)
     GC.strokeDraw('full', 2, selected.descText, 25, 55)
     gc_setLineWidth(6)
@@ -185,7 +186,7 @@ table.insert(scene.widgetList, WIDGET.new {
 
 local faceSlide = { 'normal', 'forward', 'backward', 'selected', 'jail' }
 table.insert(scene.widgetList, WIDGET.new {
-    name='face',
+    name = 'face',
     type = 'button_invis',
     x = 750, y = 200, w = 200, h = 260,
     onPress = function()
@@ -203,6 +204,8 @@ table.insert(scene.widgetList, WIDGET.new {
         DATA.skinEquip = selected.name
         needSave = true
         selectOne(selected.name)
+        skinFace = MATH.coin('forward', 'selected')
+        showFaceName = false
     end
 })
 table.insert(scene.widgetList, WIDGET.new {
