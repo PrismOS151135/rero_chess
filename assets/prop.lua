@@ -64,8 +64,16 @@ Prop.step = {
             duration = 2,
             x = 0.4,
         }
-        P.stepRemain = P.stepRemain + dist
-        P.face = 'forward'
+        if P.stepRemain > 0 then
+            P.stepRemain = P.stepRemain + dist
+            P.face = 'forward'
+        elseif P.stepRemain < 0 then
+            P.stepRemain = P.stepRemain - dist
+            P.face = 'backward'
+        else
+            P.stepRemain = P.curDir == 'next' and dist or -dist
+            P.face = P.stepRemain > 0 and 'forward' or 'backward'
+        end
     end,
 }
 

@@ -116,7 +116,11 @@ WIDGET.setDefaultOption {
         fillColor = 'lD',
     },
     switch = {},
-    slider_fill = {},
+    slider_fill = {
+        fillColor = 'D',
+        lineWidth = 2,
+        h = 30,
+    },
     checkBox = {},
     selector = {},
     listBox = {},
@@ -127,102 +131,123 @@ do -- Image & Texture & Quad
     ChessData = {
         {
             name = "普通的棋子娘",
+            nick = "棋子娘",
             desc = "其实她是骰子变的",
             shadeX = 0.02,
         },
         {
             name = "关注娘",
+            nick = "关注娘",
             desc = "我们需要更多的关注…",
         },
         {
             name = "普通的熊猫人",
+            nick = "熊猫人",
             desc = "普通的熊猫人",
         },
         {
             name = "长相潦草的幽灵",
+            nick = "幽灵",
             shadeR = .3,
             desc = "其实是气球变的",
             shadeX = 0,
         },
         {
             name = "棠棠猫",
+            nick = "棠棠猫",
             desc = "害怕人类",
         },
         {
             name = "十七",
+            nick = "十七",
             desc = "很可爱",
             shadeX = 0.015,
         },
         {
             name = "饭勺",
+            nick = "饭勺",
             desc = "普通的死宅",
         },
         {
             name = "璃子",
+            nick = "璃子",
             desc = "绝对不会生病的人类",
         },
         {
             name = "一只略",
+            nick = "一只略",
             desc = "略",
             link = "https://space.bilibili.com/1344099355",
             shadeX = -.005,
         },
         {
             name = "铅笔略",
+            nick = "铅笔略",
             desc = "掉色了",
         },
         {
             name = "豚豚",
+            nick = "豚豚",
             desc = "从星云中降临的豚豚!!!听说有幸运星属性哦（小声）",
             link = "https://space.bilibili.com/1758613795",
         },
         {
             name = "Pugwit巴哥白",
+            nick = "巴哥白",
             desc = "大概就是一只因为画画穷到吃不起饭买不起衣服，被迫穿塑料袋的狗罢了",
             link = "https://space.bilibili.com/5883019",
         },
         {
             name = "一般路过苦米",
+            nick = "苦米",
             desc = "似乎可以炸掉地球的可怜画画人类",
             link = "https://space.bilibili.com/343175801",
         },
         {
             name = "机鱼吐司",
+            nick = "机鱼",
             desc = "能创开你的防线的机鱼",
             link = "https://space.bilibili.com/85881762",
         },
         {
             name = "Mos",
+            nick = "Mos",
             desc = "她似乎在寻找一个合适的话题",
             link = "https://space.bilibili.com/481182075",
         },
         {
             name = "纸鸽",
+            nick = "纸鸽",
             desc = "芝士鸽子 时不时去码头整点薯条",
             link = "https://space.bilibili.com/1233810672",
         },
         {
             name = "valera",
+            nick = "VA",
             desc = "“就填是个破写歌的”",
             link = "https://space.bilibili.com/3546821743872630",
         },
         {
             name = "蓝飘飘",
+            nick = "蓝飘飘",
             desc = "能爆出肥料的火红莲",
             link = "https://space.bilibili.com/3546619314178489",
         },
         {
             name = "本子魔法使",
+            nick = "魔法使",
             desc = "-“對不起。”\n-“沒關係，人之常情。”",
             link = "https://space.bilibili.com/548994291",
         },
         {
             name = "CJY_e",
+            nick = "CJY",
             desc = "一个棋子",
             link = "https://space.bilibili.com/678336655",
         },
         {
             name = "一只阿魇",
+            nick = "阿魇",
             desc = "听说四片叶子能带来幸福",
             link = "https://space.bilibili.com/687226953",
         },
@@ -455,6 +480,8 @@ CHAR = require 'assets.char'
 CURSOR = require 'assets.cursor'
 DATA = require 'assets.data'
 DATA.load()
+BGM.setVol(DATA.bgm_vol / 100)
+SFX.setVol(DATA.sfx_vol / 100)
 
 local function jumpTimer()
     if BGM.isPlaying() then
@@ -536,37 +563,40 @@ for _, v in next, love.filesystem.getDirectoryItems('assets/scene') do
     end
 end
 
----@param mode 'menu' | 'play'
-function SetBgmMode(mode, d)
-    if mode == 'menu' then
-        BGM.set('all', 'highgain', .7, d and 0 or 3.5)
-    elseif mode == 'play' then
-        BGM.set('all', 'highgain', 1, .26)
-    end
-end
-
--- Music Manager
-TASK.new(function()
-    local yield = coroutine.yield
+do
     -- 4/4 129 BPM
     local bar = 60 / 129 * 4
     local marks = {
-        start = 4 * bar,
-        mid1 = 12 * bar,
-        mid2 = 20 * bar,
-        mid3 = 28 * bar,
-        fin = 36 * bar,
+        04 * bar, -- start
+        12 * bar, -- mid1
+        20 * bar, -- mid2
+        28 * bar, -- mid3
+        36 * bar, -- finish
     }
-    while true do
-        if BGM.isPlaying() then
-            local t = BGM.tell()
-            if t > marks.fin then
-                BGM.set('all', 'seek', t - marks.fin + marks.start)
-            end
+
+    ---@param mode 'menu' | 'play'
+    function SetBgmMode(mode, d)
+        if mode == 'menu' then
+            BGM.set('all', 'highgain', .7, d and 0 or 3.5)
+        elseif mode == 'play' then
+            BGM.set('all', 'highgain', 1, .26)
         end
-        yield()
     end
-end)
+
+    -- Music Manager
+    TASK.new(function()
+        local yield = coroutine.yield
+        while true do
+            if BGM.isPlaying() then
+                local t = BGM.tell()
+                if t > marks[5] then
+                    BGM.set('all', 'seek', t - marks[5] + marks[1])
+                end
+            end
+            yield()
+        end
+    end)
+end
 
 -- Fumo Manager
 TASK.new(function()

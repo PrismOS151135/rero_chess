@@ -82,7 +82,7 @@ function Player.new(id, data, game)
         size = (data.size or 0.7) / 256,
         faceDir = 1,
         face = 'normal',
-        location = data.startLocation or 'start',
+        location = data.startLocation or 1,
         moveDir = data.startMoveDir or 'next',
         dice = {
             points = { 1, 2, 3, 4, 5, 6, 7 },
@@ -138,7 +138,7 @@ function Player:roll()
         -- Position
         local sx, sy = self.x, self.y
         local dist = MATH.rand(.62, 1.26)
-        local rot = MATH.rand(0, -math.pi)
+        local rot = MATH.rand(0, -3.1416)
         local ex, ey = self.x + dist * math.cos(rot), self.y + dist * math.sin(rot) * .5
         TWEEN.new(function(t)
             d.x = MATH.lerp(sx, ex, t)
@@ -204,7 +204,10 @@ local function moveThread(self, stepCount, manual)
     self.moving = true
     self.game.roundInfo.step = false
     self.nextLocation, self.curDir = self.game:getNext(self.location,
-        stepCount > 0 and self.moveDir or self.moveDir == 'next' and 'prev' or 'next')
+        stepCount > 0 and self.moveDir or
+        self.moveDir == 'next' and 'prev' or
+        'next'
+    )
 
     while math.abs(self.stepRemain) >= 1 do
         local sx, sy = self.x, self.y
