@@ -57,9 +57,7 @@ function scene.keyDown(key, isRep)
             walk(math.random(6))
         end
     elseif key == 'escape' then
-        if not TASK.getLock('gacha_dice') then
-            SCN.back()
-        end
+        SCN.back()
     end
     return true
 end
