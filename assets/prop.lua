@@ -118,7 +118,7 @@ Prop.teleport = {
     ---@param P ReroChess.Player
     code = function(P, target, player)
         player:popText {
-            text = "传送!",
+            text = Texts.play_teleport,
             duration = 2,
         }
         player:teleport(target)
@@ -130,7 +130,7 @@ Prop.stop = {
     code = function(P)
         if P.stepRemain > 0 then
             P:popText {
-                text = "停止!",
+                text = Texts.play_stop,
                 duration = 2,
             }
             P.stepRemain = 0
@@ -142,7 +142,7 @@ Prop.reverse = {
     ---@param P ReroChess.Player
     code = function(P)
         P:popText {
-            text = "反转!",
+            text = Texts.play_reverse,
             duration = 2,
         }
         P.moveDir = P.moveDir == 'next' and 'prev' or 'next'
@@ -190,7 +190,7 @@ Prop.exTurn = {
     ---@param P ReroChess.Player
     code = function(P, cnt)
         P:popText {
-            text = cnt > 0 and "额外回合!" or "跳过回合!",
+            text = cnt > 0 and Texts.play_extraTurn or Texts.play_skipTurn,
             duration = 2,
         }
         P.extraTurn = P.extraTurn + cnt
@@ -235,7 +235,7 @@ Prop.exit = {
     ---@param player ReroChess.Player
     code = function(P, player, trapId, target)
         player:popText {
-            text = "被救出!",
+            text = Texts.play_exit,
             duration = 2,
         }
         P:teleport(target)
