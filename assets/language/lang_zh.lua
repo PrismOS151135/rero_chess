@@ -2,7 +2,7 @@
 local L = {
     menu_title = "仍然不知道叫啥棋",
     menu_info = "26F工作室 & 略nd  联合出品\n开发火热进行中(确信)，目前功能极少，仅供演示",
-    menu_offline = "离线游戏",
+    menu_offline = "一个人玩",
     menu_lan = "局域网玩",
     menu_wan = "广域网玩",
     menu_create = "创建房间",
@@ -47,5 +47,11 @@ local L = {
     new_skin = "获得新棋子皮肤",
 
     play_choosePlayer = "选择一个玩家",
+    play_teleport = "传送!",
+    play_stop = "停止!",
+    play_reverse = "反转!",
+    play_exit = "被救出!",
+    play_extraTurn = "额外回合!",
+    play_skipTurn = "跳过回合!",
 }
 return L

@@ -19,6 +19,7 @@ function scene.load()
         game = require 'assets.game'.new(FILE.load('assets/map/net_test.luaon', '-luaon',
             { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
     end
+    scene.widgetList.historyBox:setList(game.hisLog)
     BG.set('play')
     SetBgmMode('play')
 end
@@ -143,6 +144,26 @@ function scene.draw()
 end
 
 scene.widgetList = {
+    {
+        type = 'listBox',
+        name = 'historyBox',
+        pos = { 0, 1 },
+        x = 5,
+        y = -215,
+        w = 260,
+        h = 210,
+        lineHeight = 35,
+        lineWidth = 0,
+        frameColor = 'X',
+        activeColor = { 0, 0, 0, .42 },
+        fillColor = { 0, 0, 0, .1 },
+        drawFunc = function(item)
+            GC.setColor(1, 1, 1)
+            GC.draw(item.mesh, 0, 0)
+            FONT.set(20)
+            GC.print(item.fstr, 6, 8)
+        end,
+    },
     QuitButton,
 }
 

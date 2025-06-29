@@ -11,6 +11,7 @@ local Player = require 'assets.player'
 ---@field cam Zenitha.Camera
 ---@field text Zenitha.Text
 ---@field RNG love.RandomGenerator
+---@field hisLog table[]
 ---
 ---@field result string | false
 ---@field roundInfo ReroChess.RoundInfo
@@ -146,6 +147,7 @@ function Game.new(data)
         drawCoroutine = {},
         cam = GC.newCamera(),
         text = TEXT.new(),
+        hisLog = {},
 
         result = false,
         roundInfo = {
@@ -415,6 +417,7 @@ local function roundThread(self)
     repeat TASK.yieldT(.1) until p.dice.animState == 'bounce'
 
     -- Player move
+    self:log({ p, "丢出了" .. p.dice.value .. "点!" })
     if math.abs(p.dice.value) >= 1 then p:move(p.dice.value, true) end
     while true do
         TASK.yieldT(.1)
@@ -699,6 +702,27 @@ end
 
 function Game:destroy()
     TASK.removeTask_code(roundThread)
+    -- TASK.removeTask_code(checkStep)
+end
+
+---@param fstr (ReroChess.Player | string)[]
+function Game:log(fstr)
+    for i = #fstr, 1, -1 do
+        if type(fstr[i]) == 'table' then
+            local p = fstr[i]
+            fstr[i] = " " .. p.name .. " "
+            table.insert(fstr, i, p.color)
+        else
+            table.insert(fstr, i, COLOR.D)
+        end
+    end
+    if #self.hisLog >= 26 then
+        table.remove(self.hisLog, 1).mesh:release()
+    end
+    table.insert(self.hisLog, {
+        mesh = GC.new9mesh(260, 35, 10, 50, TEX.world.default, TABLE.getRandom(QUAD.world.tile):getViewport()),
+        fstr = fstr,
+    })
 end
 
 return Game
