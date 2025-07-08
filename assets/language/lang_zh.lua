@@ -20,6 +20,7 @@ local L = {
 
     room_start = "开始游戏",
     room_notEnoughPlayers = "至少再找一个人？",
+    room_host = "房主",
 
     leave_sure = "返回主菜单",
 

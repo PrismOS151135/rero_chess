@@ -36,8 +36,10 @@ function MemberList:import(data)
         }
         self[i] = p
         self[p.id] = p
-        self.selfID = p.id
-        self.self = p
+        if i == #data then
+            self.selfID = p.id
+            self.self = p
+        end
     end
 end
 

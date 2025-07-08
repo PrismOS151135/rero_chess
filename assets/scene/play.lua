@@ -3,9 +3,6 @@ local game
 
 local mode, host
 
-local function send(...) return (host and TCP.S_send or TCP.C_send)(...) end
-local function recv() return (host and TCP.S_receive or TCP.C_receive)() end
-
 ---@type Zenitha.Scene
 local scene = {}
 
@@ -26,7 +23,10 @@ end
 
 function scene.unload()
     if mode == 'netgame' then
-        send({ e = 'end' })
+        TCP.C_send({ event = 'end' })
+        if host then
+            TCP.S_stop()
+        end
     end
 end
 
@@ -51,8 +51,8 @@ local function doAction(act, manual)
     -- Not local turn
     if mode == 'netgame' and manual then
         if game.roundInfo.player ~= NetRoom:getSelfSeat() then return end
-        send {
-            e = 'action',
+        TCP.C_send {
+            event = 'action',
             act = act,
         }
     else
@@ -118,13 +118,13 @@ function scene.keyDown(key, isRep)
 end
 
 function scene.update(dt)
-    local d = recv()
+    local d = TCP.C_receive()
     if d then
         if d.event == 'client.disconnect' then
-            -- send{ e = "quit", id = d.sender }
+            -- TCP.C_send{ event = "quit", id = d.sender }
         else
             local pack = d.data
-            if pack.e == 'action' then
+            if pack.event == 'action' then
                 doAction(pack.act, false)
             end
         end
