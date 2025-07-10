@@ -77,7 +77,7 @@ function scene.update(dt)
                 NetRoom:import(pack.data)
             elseif pack.event == 'join' then
                 if NetRoom.selfID == pack.id then
-                    TCP.C_send({ event = 'skin', skin = DATA.skinEquip })
+                    TCP.C_send({ event = 'skin', skin = DATA.skinEquip }, '0')
                 elseif mode ~= 'host' then
                     NetRoom:add({ id = pack.id })
                 end
