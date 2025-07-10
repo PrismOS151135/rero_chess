@@ -122,6 +122,10 @@ function scene.draw()
                 GC.setColor(1, 1, 1)
                 GC.mDraw(TEX.chess[m.skin].base, 0, -26, 0, .42)
                 GC.mDraw(TEX.chess[m.skin].normal, 0, -26, 0, .42)
+            else
+                GC.setColor(COLOR.D)
+                FONT.set(90)
+                GC.mStr("?", 0, -62)
             end
             GC.ucs_back()
         end
