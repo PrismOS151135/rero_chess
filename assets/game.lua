@@ -290,11 +290,10 @@ function Game.new(data)
                 if prop[1] == 'text' then
                     addQ('text', cell, prop, prop[2])
                 elseif prop[1] == 'step' then
-                    addQ('text', cell, prop, ("+%d步"):format(prop[2]))
+                    addQ('text', cell, prop, Texts.prop_step:format(prop[2]))
                     addQ('deco', cell, prop, QUAD.world.moveF)
                 elseif prop[1] == 'move' then
-                    addQ('text', cell, prop,
-                        ("%s%s%d格"):format(PlayerRef[prop[3]], prop[2] >= 0 and '进' or '退', math.abs(prop[2])))
+                    addQ('text', cell, prop, (prop[2] >= 0 and Texts.prop_move_f or Texts.prop_move_b):format(PlayerRef[prop[3]], math.abs(prop[2])))
                     local sprite = prop[2] > 0 and QUAD.world.moveF or QUAD.world.moveB
                     local angle = 0
                     if prop[3] == '@self' then
@@ -314,22 +313,22 @@ function Game.new(data)
                     end
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'stop' then
-                    addQ('text', cell, prop, "停止")
+                    addQ('text', cell, prop, Texts.prop_stop)
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'reverse' then
-                    addQ('text', cell, prop, "反转")
+                    addQ('text', cell, prop, Texts.prop_reverse)
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'diceMod' then
-                    addQ('text', cell, prop, "下次点数" .. prop[2] .. prop[3])
+                    addQ('text', cell, prop, Texts.prop_diceMod:format(prop[2], prop[3]))
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'exTurn' then
-                    addQ('text', cell, prop, (prop[2] > 0 and "再骰%d次" or "跳过%d回合"):format(math.abs(prop[2])))
+                    addQ('text', cell, prop, (prop[2] > 0 and Texts.prop_exTurn_extra or Texts.prop_exTurn_skip):format(math.abs(prop[2])))
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'swap' then
-                    addQ('text', cell, prop, "指定别人换位")
+                    addQ('text', cell, prop, Texts.prop_swap)
                     addQ('deco', cell, prop, QUAD.world.warn)
                 elseif prop[1] == 'exit' then
-                    addQ('text', cell, prop, "救人出狱")
+                    addQ('text', cell, prop, Texts.prop_exit)
                     addQ('deco', cell, prop, QUAD.world.warn)
                 end
 
@@ -417,7 +416,7 @@ local function roundThread(self)
     repeat TASK.yieldT(.1) until p.dice.animState == 'bounce'
 
     -- Player move
-    self:log({ p, "丢出了" .. p.dice.value .. "点!" })
+    self:log({ p, Texts.log_dice:format(p.dice.value) })
     if math.abs(p.dice.value) >= 1 then p:move(p.dice.value, true) end
     while true do
         TASK.yieldT(.1)

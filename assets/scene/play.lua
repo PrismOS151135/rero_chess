@@ -1,18 +1,18 @@
 ---@type ReroChess.Game
 local game
 
-local mode, host
+local gameMode, host
 
 ---@type Zenitha.Scene
 local scene = {}
 
 function scene.load()
-    mode, host = SCN.args[1], SCN.args[2]
-    if mode == 'demo' then
+    gameMode, host = SCN.args[1], SCN.args[2]
+    if gameMode == 'demo' then
         MSG('info', "略nd地图一号\n鼠标左键走路右键掷骰", 5)
         game = require 'assets.game'.new(FILE.load('assets/map/lue_first.luaon', '-luaon',
             { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
-    elseif mode == 'netgame' then
+    elseif gameMode == 'netgame' then
         game = require 'assets.game'.new(FILE.load('assets/map/net_test.luaon', '-luaon',
             { TEX = TEX, QUAD = QUAD, COLOR = COLOR }))
     end
@@ -22,7 +22,7 @@ function scene.load()
 end
 
 function scene.unload()
-    if mode == 'netgame' then
+    if gameMode == 'netgame' then
         TCP.C_send({ event = 'quit' }, '0')
         if host then
             TCP.S_stop()
@@ -49,7 +49,7 @@ end
 
 local function doAction(act, manual)
     -- Not local turn
-    if mode == 'netgame' and manual then
+    if gameMode == 'netgame' and manual then
         if game.roundInfo.player ~= NetRoom:getSelfSeat() then return end
         TCP.C_send {
             event = 'action',

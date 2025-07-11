@@ -322,6 +322,12 @@ function Player:teleport(target)
     TASK.new(teleportThread, self, target)
 end
 
+local logProps = {
+    diceMod = true,
+    exTurn = true,
+    swap = true,
+    exit = true,
+}
 ---Called on each step, only cells with .prop[0]==true (instant) will be triggered when moving is not finished
 function Player:triggerCell()
     for _, prop in next, self.game.map[self.location].propList do
@@ -337,8 +343,11 @@ function Player:triggerCell()
                 end
             end
             if noTarget then
-                self:popText { text = '没有目标!' }
+                self:popText { text = Texts.play_noTarget }
             else
+                if logProps[prop[1]] then
+                    self.game:log({ self, "触发了" .. prop[1] })
+                end
                 Prop[prop[1]].code(self, unpack(args))
             end
         end
