@@ -5,8 +5,10 @@ local mode, address
 NetRoom = require 'assets.roomList'.new()
 
 local cache = {}
+local updateDelta = 1e99
 
 function scene.load(_)
+    updateDelta = 0
     mode = SCN.args[1]
     NetRoom:reset()
     if mode == 'host' then
@@ -19,6 +21,13 @@ function scene.load(_)
     for i = 1, 6 do cache[i] = TABLE.getRandom(QUAD.world.tile) end
 end
 
+function scene.unload()
+    TCP.C_disconnect()
+    if mode == 'host' then
+        TCP.S_stop()
+    end
+end
+
 function scene.mouseDown(x, y, k)
 end
 
@@ -26,23 +35,17 @@ function scene.keyDown(key, isRep)
     if key == 'return' then
         if mode == 'host' then
             if #NetRoom > 1 then
-                TCP.S_send({ event = "start" })
-                SCN.swapTo('play', nil, 'netgame', mode == 'host')
+                TCP.S_send({ event = 'start' })
             else
                 MSG('other', Texts.room_notEnoughPlayers, 1)
             end
         end
     elseif key == 'escape' then
-        if mode == 'host' then
-            TCP.S_stop()
-        end
-        TCP.C_disconnect()
         SCN.back()
     end
     return true
 end
 
-local updateDelta = 0
 function scene.update(dt)
     updateDelta = updateDelta - dt
     if updateDelta < 0 then
@@ -71,7 +74,6 @@ function scene.update(dt)
             if not d then break end
             if d.sender then break end -- only accept broadcast messages
             -- print("C_recv", TABLE.dump(d))
-
             local pack = d.data
             if pack.event == 'init' then
                 NetRoom:import(pack.data)
@@ -88,6 +90,12 @@ function scene.update(dt)
             elseif pack.event == 'skin' then
                 NetRoom[pack.id].skin = pack.skin
             end
+        end
+
+        if not TCP.C_isRunning() then
+            updateDelta = 1e99
+            MSG('warn', Texts.room_disconnected, 1)
+            SCN.back()
         end
     end
 end

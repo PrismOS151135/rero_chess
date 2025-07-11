@@ -21,6 +21,7 @@ local L = {
     room_start = "开始游戏",
     room_notEnoughPlayers = "至少再找一个人？",
     room_host = "房主",
+    room_disconnected = "连接已断开…？发生甚么事了",
 
     leave_sure = "返回主菜单",
 
