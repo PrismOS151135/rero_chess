@@ -179,6 +179,8 @@ scene.widgetList = {
         onClick = function()
             if subMenu == 'lan' then
                 TCP.S_start(62626)
+                TCP.S_setPermission({ broadcast = false })
+                TCP.C_connect('localhost', 62626)
                 SCN.go('room', nil, 'host')
             elseif subMenu == 'wan' then
                 MSG('info', "暂不可用")

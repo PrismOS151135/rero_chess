@@ -128,6 +128,14 @@ end
 
 local diceDisappearingCurve = { 1, 1, .7, .4, 0 }
 function Player:roll()
+    if love.keyboard.isDown('`') then -- Debug
+        diceFlyTime = 0.26
+        diceRollTime = .62
+        diceBounceTime = .26
+        diceHideTime = .42
+        stepTime = 0.1
+        stepHeight = 1
+    end
     local d = self.dice
     if d.animState == 'hide' then
         d.animState = 'roll'
@@ -157,6 +165,15 @@ function Player:roll()
                 until r ~= d.valueIndex
                 d.valueIndex = r
                 d.value = d.points[r]
+
+                if t > .99 then -- Debug
+                    for i = 1, 6 do
+                        if love.keyboard.isDown(tostring(i)) then
+                            d.value = i
+                            break
+                        end
+                    end
+                end
             end
         end):setEase('OutCirc'):setDuration(diceRollTime):setOnFinish(function()
             if #self.diceMod > 0 then
@@ -229,6 +246,7 @@ local function moveThread(self, stepCount, manual)
             if t == 1 then
                 self.location = self.nextLocation
                 self.nextLocation, self.curDir = self.game:getNext(self.location, self.curDir)
+                self.game:focusPlayer(self.id)
             end
         end):setEase('Linear'):setDuration(stepTime):setOnFinish(function()
             animLock = false
@@ -304,6 +322,12 @@ function Player:teleport(target)
     TASK.new(teleportThread, self, target)
 end
 
+local logProps = {
+    diceMod = true,
+    exTurn = true,
+    swap = true,
+    exit = true,
+}
 ---Called on each step, only cells with .prop[0]==true (instant) will be triggered when moving is not finished
 function Player:triggerCell()
     for _, prop in next, self.game.map[self.location].propList do
@@ -319,8 +343,11 @@ function Player:triggerCell()
                 end
             end
             if noTarget then
-                self:popText { text = '没有目标!' }
+                self:popText { text = Texts.play_noTarget }
             else
+                if logProps[prop[1]] then
+                    self.game:log({ self, "触发了" .. prop[1] })
+                end
                 Prop[prop[1]].code(self, unpack(args))
             end
         end

@@ -20,6 +20,8 @@ local L = {
 
     room_start = "开始游戏",
     room_notEnoughPlayers = "至少再找一个人？",
+    room_host = "房主",
+    room_disconnected = "连接已断开…？发生甚么事了",
 
     leave_sure = "返回主菜单",
 
@@ -53,5 +55,19 @@ local L = {
     play_exit = "被救出!",
     play_extraTurn = "额外回合!",
     play_skipTurn = "跳过回合!",
+    play_noTarget="没有目标!",
+
+    prop_step = "+%d步",
+    prop_move_f = "%s进%d格",
+    prop_move_b = "%s退%d格",
+    prop_stop = "停止",
+    prop_reverse = "反转",
+    prop_diceMod = "下次点数%s%s",
+    prop_exTurn_extra = "额外%d回合",
+    prop_exTurn_skip = "跳过%d回合",
+    prop_swap = "指定别人换位",
+    prop_exit = "救人出狱",
+
+    log_dice = "丢出了%d点",
 }
 return L
